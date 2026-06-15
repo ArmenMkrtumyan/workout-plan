@@ -397,6 +397,8 @@ views.meals = () => {
   if (Object.keys(overrides).length)
     h += `<button class="btn ghost small" style="margin-bottom:14px" onclick="resetSwaps()">↺ Reset all swaps to default plan</button>`;
 
+  h += shoppingListHTML();
+
   const byWeek = {};
   for (const r of P.mealCalendar) (byWeek[r.Week] ||= []).push(r);
   const today = todayISO();
@@ -510,6 +512,54 @@ const money = (n) => "$" + (Number.isInteger(n) ? n : n.toFixed(2));
 // Target search link from each item's search terms (first segment = cleanest query).
 const targetSearchUrl = (g) =>
   "https://www.target.com/s?searchTerm=" + encodeURIComponent((g["Target search/aisle words"] || g.Item).split(",")[0].trim());
+
+/* ---------- weekly shopping checklist (got-it + actual price you paid) ---------- */
+const LS_BOUGHT = "wp_bought_v1";
+const LS_ACTUAL = "wp_actual_price_v1";
+let bought = loadJSON(LS_BOUGHT);      // { "Eggs": true }
+let actualPrice = loadJSON(LS_ACTUAL); // { "Eggs": 4.29 }
+const jsq = (s) => String(s).replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+const round2 = (n) => Math.round(n * 100) / 100;
+window.toggleBought = (item) => {
+  if (bought[item]) delete bought[item]; else bought[item] = true;
+  saveJSON(LS_BOUGHT, bought);
+  const y = window.scrollY; render(); window.scrollTo(0, y);
+};
+window.setActualPrice = (item, val) => {
+  const n = parseFloat(val);
+  if (val === "" || isNaN(n)) delete actualPrice[item]; else actualPrice[item] = n;
+  saveJSON(LS_ACTUAL, actualPrice);
+  const y = window.scrollY; render(); window.scrollTo(0, y);
+};
+function shoppingListHTML() {
+  let estWeekly = 0;
+  for (const [c, f] of Object.values(PRICES)) if (f === "wk") estWeekly += c;
+  let actual = 0, priced = 0;
+  for (const g of P.grocery) { const v = actualPrice[g.Item]; if (v != null) { actual += v; priced++; } }
+
+  const byCat = {};
+  for (const g of P.grocery) (byCat[g.Category] ||= []).push(g);
+  let rows = "";
+  for (const cat of Object.keys(byCat)) {
+    rows += `<tr><td colspan="3" style="background:var(--panel2);font-weight:700;font-size:.74rem;text-transform:uppercase;letter-spacing:.4px;color:var(--muted)">${esc(cat)}</td></tr>`;
+    for (const g of byCat[cat]) {
+      const got = !!bought[g.Item];
+      const ap = actualPrice[g.Item];
+      const est = PRICES[g.Item] ? PRICES[g.Item][0] : "";
+      rows += `<tr class="${got ? "got" : ""}">
+        <td><b>${esc(g.Item)}</b> <span class="muted" style="font-size:.78rem">· ${esc(g["Weekly Quantity"])}</span>
+          <div style="font-size:.76rem;margin-top:3px"><a href="${targetSearchUrl(g)}" target="_blank" rel="noopener" class="shop-link">🎯 Buy at Target ↗</a></div></td>
+        <td style="text-align:center"><input type="checkbox" class="gotbox" ${got ? "checked" : ""} onchange="toggleBought('${jsq(g.Item)}')" aria-label="Got it"></td>
+        <td class="num"><span class="muted">$</span><input class="price" type="number" inputmode="decimal" step="0.01" value="${ap ?? ""}" placeholder="${est}" onchange="setActualPrice('${jsq(g.Item)}',this.value)" aria-label="Price paid"></td>
+      </tr>`;
+    }
+  }
+  return `<details class="collapse" open>
+    <summary><span>🛒 Weekly grocery list</span><span class="muted" style="font-weight:400;font-size:.85rem">paid ${money(round2(actual))} · ${priced}/${P.grocery.length} priced</span></summary>
+    <p class="muted" style="font-size:.84rem">Open each at Target, pick what you want, and type the price you paid. Greyed numbers are my estimate. Estimated weekly cost ≈ <b>${money(estWeekly)}</b>.</p>
+    <div class="table-wrap"><table><thead><tr><th>Item · amount</th><th style="text-align:center">Got it</th><th>Price paid</th></tr></thead><tbody>${rows}</tbody></table></div>
+  </details>`;
+}
 
 views.grocery = () => {
   // totals

@@ -111,6 +111,10 @@ input.wt.sug{color:var(--muted);border-style:dashed}
 input.wt.set{border-color:var(--accent);color:var(--text);font-weight:600}
 a.shop-link{color:var(--accent2);font-weight:600}
 a.shop-link:hover{text-decoration:underline}
+input.price{width:80px;padding:6px 7px;font-size:15px;text-align:right}
+input.gotbox{width:20px;height:20px;cursor:pointer;accent-color:var(--accent)}
+tr.got{background:rgba(18,160,109,.08)}
+tr.got td:first-child b{color:var(--accent)}
 .btn{cursor:pointer;border:1px solid var(--line);background:var(--panel);color:var(--text);
   padding:7px 13px;border-radius:8px;font-size:.82rem;font-weight:600;transition:.15s}
 .btn:hover{border-color:var(--accent);color:var(--accent)}
