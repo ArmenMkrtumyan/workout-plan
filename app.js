@@ -252,23 +252,49 @@ views.training = () => {
   </ul></div>`;
   return h;
 };
-window.openWorkout = (template, date) => {
+window.openWorkout = (template, date, full = false) => {
   const ex = exercisesFor(template);
   const wk = date ? (P.gymCalendar.find((r) => r.Date === date)?.Week || currentWeek()) : currentWeek();
   const colKey = weekColKey(wk);
   const cols = ["Weeks 1–2", "Weeks 3–4", "Weeks 5–6", "Weeks 7–8"];
-  let h = `<h2 style="margin-top:0">${esc(template)}</h2><p class="muted">Week ${wk} target column highlighted · ${esc(date ? fmtDate(date) : "current week")}</p>`;
+  const dateArg = date ? `'${esc(date)}'` : "null";
+
+  let h = `<h2 style="margin-top:0">${esc(template)}</h2><p class="muted">${esc(date ? fmtDate(date) + " · " : "")}Week ${wk} of 8</p>`;
   if (template.includes("Optional")) h += `<p class="note-box warn">Optional. Only do this if recovered — the priority on Saturday is the long walk.</p>`;
-  h += `<div class="table-wrap"><table><thead><tr><th>#</th><th>Exercise</th>
-    ${cols.map((c) => `<th class="${c === colKey ? "hl" : ""}">${esc(c)}</th>`).join("")}
-    <th>Rest</th></tr></thead><tbody>`;
-  for (const e of ex) {
-    h += `<tr><td class="num">${esc(e.Order)}</td><td><b>${esc(e.Exercise)}</b>
-      <div class="muted" style="font-size:.78rem">${esc(e["Technique cue"])} · alt: ${esc(e["Substitute if busy"])}</div></td>
-      ${cols.map((c) => `<td class="num ${c === colKey ? "hl" : ""}">${esc(e[c])}</td>`).join("")}
-      <td class="num">${esc(e.Rest)}</td></tr>`;
+
+  // plain-language legend
+  h += `<p class="note-box" style="margin-bottom:14px">
+    <b>How to read this:</b> "<b>3 x 8</b>" = 3 sets of 8 reps. <b>DB</b> = dumbbell.<br>
+    <b>RPE</b> (Rate of Perceived Exertion) = how hard a set should feel:
+    <b>RPE 6–7</b> ≈ 3–4 reps left in the tank, <b>RPE 8</b> ≈ 2 reps left. Don't grind to failure.</p>`;
+
+  // toggle: this week only  ↔  full 8-week progression
+  h += `<div style="margin-bottom:12px"><button class="btn small" onclick="openWorkout('${esc(template)}',${dateArg},${full ? "false" : "true"})">
+    ${full ? "← Show this week only" : "Show full 8-week progression"}</button></div>`;
+
+  if (full) {
+    h += `<div class="table-wrap"><table><thead><tr><th>#</th><th>Exercise</th>
+      ${cols.map((c) => `<th class="${c === colKey ? "hl" : ""}">${esc(c)}</th>`).join("")}
+      <th>Rest</th></tr></thead><tbody>`;
+    for (const e of ex) {
+      h += `<tr><td class="num">${esc(e.Order)}</td><td><b>${esc(e.Exercise)}</b>
+        <div class="muted" style="font-size:.78rem">${esc(e["Technique cue"])} · alt: ${esc(e["Substitute if busy"])}</div></td>
+        ${cols.map((c) => `<td class="num ${c === colKey ? "hl" : ""}">${esc(e[c])}</td>`).join("")}
+        <td class="num">${esc(e.Rest)}</td></tr>`;
+    }
+    h += `</tbody></table></div>`;
+  } else {
+    // compact: only this week's prescription
+    h += `<div class="table-wrap"><table><thead><tr>
+      <th>#</th><th>Exercise</th><th>This week</th><th>Rest</th></tr></thead><tbody>`;
+    for (const e of ex) {
+      h += `<tr><td class="num">${esc(e.Order)}</td><td><b>${esc(e.Exercise)}</b>
+        <div class="muted" style="font-size:.78rem">${esc(e["Technique cue"])} · alt: ${esc(e["Substitute if busy"])}</div></td>
+        <td class="num"><b>${esc(e[colKey])}</b></td>
+        <td class="num">${esc(e.Rest)}</td></tr>`;
+    }
+    h += `</tbody></table></div>`;
   }
-  h += `</tbody></table></div>`;
   openModal(h);
 };
 window.openDayInfo = (date) => {
