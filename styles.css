@@ -99,6 +99,9 @@ td.num{font-variant-numeric:tabular-nums}
 .mealslot .info .name{font-weight:600}
 .mealslot .info .macros{color:var(--muted);font-size:.8rem}
 .mealslot .slot-label{color:var(--muted);font-size:.74rem;text-transform:uppercase;letter-spacing:.4px;min-width:78px}
+.mealslot.done{background:rgba(18,160,109,.10);border-radius:8px;padding-left:8px;padding-right:8px}
+.mealslot.done .name{color:var(--accent)}
+.slot-actions{display:flex;gap:6px;flex-shrink:0}
 .btn{cursor:pointer;border:1px solid var(--line);background:var(--panel);color:var(--text);
   padding:7px 13px;border-radius:8px;font-size:.82rem;font-weight:600;transition:.15s}
 .btn:hover{border-color:var(--accent);color:var(--accent)}

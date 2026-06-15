@@ -24,10 +24,20 @@ function itemMacro(name) {
 /* ---------- persistent state (localStorage) ---------- */
 const LS_SWAP = "wp_meal_overrides_v1";
 const LS_PROG = "wp_progress_v1";
+const LS_DONE = "wp_meal_done_v1";
 const loadJSON = (k) => { try { return JSON.parse(localStorage.getItem(k)) || {}; } catch { return {}; } };
 const saveJSON = (k, v) => localStorage.setItem(k, JSON.stringify(v));
 let overrides = loadJSON(LS_SWAP); // { "2026-06-15": { "Breakfast": "Protein Oatmeal" } }
 let progress = loadJSON(LS_PROG);  // { "2026-06-15": { weight, calories, protein, steps, cardio, trained, sleep, timing, notes } }
+let mealDone = loadJSON(LS_DONE);  // { "2026-06-15": { "Breakfast": true } }
+const isDone = (date, slot) => !!(mealDone[date] && mealDone[date][slot]);
+window.toggleMeal = (date, slot) => {
+  mealDone[date] ||= {};
+  if (mealDone[date][slot]) delete mealDone[date][slot]; else mealDone[date][slot] = true;
+  if (!Object.keys(mealDone[date]).length) delete mealDone[date];
+  saveJSON(LS_DONE, mealDone);
+  const y = window.scrollY; render(); window.scrollTo(0, y); // re-render without losing place
+};
 
 const MEAL_SLOTS = ["Breakfast", "Lunch", "Dinner", "Snack 1", "Snack 2"];
 function slotType(slot) {
@@ -46,6 +56,25 @@ function dayTotals(dayRow) {
     cal += m.cal; pro += m.pro;
   }
   return { cal, pro };
+}
+// macros actually eaten so far (only meals marked Done)
+function dayConsumed(dayRow) {
+  let cal = 0, pro = 0, doneCount = 0, totalCount = 0;
+  for (const slot of MEAL_SLOTS) {
+    const name = mealFor(dayRow, slot);
+    if (!name) continue;
+    totalCount++;
+    if (isDone(dayRow.Date, slot)) { const m = itemMacro(name); cal += m.cal; pro += m.pro; doneCount++; }
+  }
+  return { cal, pro, doneCount, totalCount };
+}
+function consumedLine(dayRow) {
+  const c = dayConsumed(dayRow), t = dayTotals(dayRow);
+  if (!c.doneCount) return `<div class="muted" style="font-size:.8rem;margin-top:10px">Tap <b>Done</b> as you eat — your running total appears here.</div>`;
+  const full = c.doneCount === c.totalCount;
+  return `<div class="note-box ${full ? "" : ""}" style="margin-top:10px;font-size:.88rem">
+    ✅ <b>Eaten:</b> ${c.cal} kcal · ${c.pro}g protein
+    <span class="muted">— ${c.doneCount}/${c.totalCount} meals · planned ${t.cal} kcal · ${t.pro}g${full ? " · day complete 🎉" : ""}</span></div>`;
 }
 
 /* ---------- date helpers ---------- */
@@ -142,6 +171,7 @@ views.today = () => {
         <span class="pill blue">${tot.cal} kcal · ${tot.pro}g P</span>
       </div>
       <div style="margin-top:10px">${MEAL_SLOTS.map((s) => mealSlotRow(meal, s)).join("")}</div>
+      ${consumedLine(meal)}
     </div>`;
 
   // Timing
@@ -340,6 +370,7 @@ views.meals = () => {
         </div>
         <div class="muted" style="font-size:.76rem;margin-bottom:8px">${esc(fmtDate(day.Date))}</div>
         ${MEAL_SLOTS.map((s) => mealSlotRow(day, s)).join("")}
+        ${consumedLine(day)}
       </div>`;
     }
     h += `</div></div>`;
@@ -352,13 +383,17 @@ function mealSlotRow(day, slot) {
   const m = itemMacro(name);
   const swapped = overrides[day.Date] && overrides[day.Date][slot];
   const candidates = swapCandidates(name, slot);
-  return `<div class="mealslot">
+  const done = isDone(day.Date, slot);
+  return `<div class="mealslot ${done ? "done" : ""}">
     <span class="slot-label">${esc(slot)}</span>
     <div class="info" style="flex:1">
-      <div class="name">${esc(name || "—")}${swapped ? '<span class="swapped-flag">swapped</span>' : ""}</div>
+      <div class="name">${done ? "✓ " : ""}${esc(name || "—")}${swapped ? '<span class="swapped-flag">swapped</span>' : ""}</div>
       <div class="macros">${m.cal} kcal · ${m.pro}g protein</div>
     </div>
-    ${name && candidates.length ? `<button class="btn small" onclick="openSwap('${esc(day.Date)}','${esc(slot)}')">Swap</button>` : ""}
+    <div class="slot-actions">
+      ${name ? `<button class="btn small ${done ? "primary" : ""}" onclick="toggleMeal('${esc(day.Date)}','${esc(slot)}')">${done ? "✓ Done" : "Done"}</button>` : ""}
+      ${name && candidates.length ? `<button class="btn small" onclick="openSwap('${esc(day.Date)}','${esc(slot)}')">Swap</button>` : ""}
+    </div>
   </div>`;
 }
 // matching candidates: same meal type, similar calories (±120) & protein (±12); all recipes are cheap & dorm-easy
