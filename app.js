@@ -110,23 +110,32 @@ views.today = () => {
       ${isToday ? "" : `<button class="btn small" onclick="jumpToday()">Jump to today</button>`}
     </div>`;
 
-  // Workout summary
-  h += `<div class="grid cols-2">`;
+  // Workout — shown inline (this week's prescription)
+  const ex = exercisesFor(day["Workout Template"]);
+  const colKey = weekColKey(wk);
+  const intensity = (P.gymCalendar.find((r) => r.Week === wk) || {}).Intensity || "";
   h += `<div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <h3 style="margin:0">🏋️ ${esc(day.Focus)}</h3>
+        <h3 style="margin:0">🏋️ ${esc(day.Focus)}${day.Notes ? ` <span class="muted" style="font-weight:400;font-size:.88rem">· ${esc(day.Notes)}</span>` : ""}</h3>
         <span class="pill ${day.Focus === "Rest" ? "grey" : "green"}">${esc(day.Day)}</span>
-      </div>
-      <p class="muted" style="margin:8px 0">${esc(day.Notes || "")}</p>
-      <div class="muted" style="font-size:.86rem"><b>Cardio:</b> ${esc(day.Cardio)}<br>
-        <b>Core/Mobility:</b> ${esc(day["Core/Mobility"])}<br>
-        <b>Intensity:</b> ${esc(day.Intensity)}</div>
-      ${exercisesFor(day["Workout Template"]).length
-        ? `<button class="btn primary" style="margin-top:12px" onclick="openWorkout('${esc(day["Workout Template"])}')">View full workout</button>`
-        : `<p class="note-box" style="margin-top:12px">No lifting today — focus on the walk, steps, and recovery.</p>`}
-    </div>`;
+      </div>`;
+  if (ex.length) {
+    h += `<p class="muted" style="font-size:.85rem;margin:8px 0 12px">💪 <b>Effort (all sets):</b> ${esc(intensity)} &nbsp;·&nbsp; 🚶 ${esc(day.Cardio)}</p>`;
+    h += `<div class="table-wrap"><table><thead><tr><th>#</th><th>Exercise</th><th>This week</th><th>Rest</th></tr></thead><tbody>`;
+    for (const e of ex) {
+      h += `<tr><td class="num">${esc(e.Order)}</td><td><b>${esc(e.Exercise)}</b>
+        <div class="muted" style="font-size:.78rem">${esc(e["Technique cue"])} · alt: ${esc(e["Substitute if busy"])}</div></td>
+        <td class="num"><b>${esc(e[colKey])}</b></td><td class="num">${esc(e.Rest)}</td></tr>`;
+    }
+    h += `</tbody></table></div>
+      <div style="margin-top:10px"><button class="btn small ghost" onclick="openWorkout('${esc(day["Workout Template"])}','${esc(day.Date)}',true)">Show full 8-week progression</button></div>`;
+  } else {
+    h += `<p class="muted" style="margin:8px 0 0">${esc(day.Notes || "")}</p>
+      <p class="note-box" style="margin-top:12px">🚶 <b>Today:</b> ${esc(day.Cardio)} · ${esc(day["Core/Mobility"])}. Focus on steps and recovery — no heavy lifting.</p>`;
+  }
+  h += `</div>`;
 
-  // Meal summary
+  // Meals
   h += `<div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center">
         <h3 style="margin:0">🍽️ Meals</h3>
@@ -134,7 +143,6 @@ views.today = () => {
       </div>
       <div style="margin-top:10px">${MEAL_SLOTS.map((s) => mealSlotRow(meal, s)).join("")}</div>
     </div>`;
-  h += `</div>`;
 
   // Timing
   h += `<h2>⏱️ Today's timing</h2><div class="card"><div class="grid auto">
