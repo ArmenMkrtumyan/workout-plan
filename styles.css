@@ -106,6 +106,9 @@ td.num{font-variant-numeric:tabular-nums}
 .stat.timing-chip:hover{border-color:var(--accent)}
 .stat.timing-chip.done{background:rgba(18,160,109,.10);border-color:var(--accent)}
 .stat.timing-chip.done .label{color:var(--accent)}
+input.wt{width:62px;padding:6px 7px;font-size:15px;text-align:right}
+input.wt.sug{color:var(--muted);border-style:dashed}
+input.wt.set{border-color:var(--accent);color:var(--text);font-weight:600}
 .btn{cursor:pointer;border:1px solid var(--line);background:var(--panel);color:var(--text);
   padding:7px 13px;border-radius:8px;font-size:.82rem;font-weight:600;transition:.15s}
 .btn:hover{border-color:var(--accent);color:var(--accent)}

@@ -47,6 +47,47 @@ function toggleFlag(store, lsKey, date, key) {
   const y = window.scrollY; render(); window.scrollTo(0, y);
 }
 
+/* ---------- per-exercise working weights (lb) ---------- */
+// Starting suggestions for a returning lifter ~150 lb at week-1 effort (RPE 6–7).
+// DB moves = weight PER dumbbell. These are guesses — edit to what you actually lift.
+// Keyed by "<Template>#<Order>"; null = bodyweight / not weight-based.
+const SUGGESTED = {
+  "Push A#1": 95, "Push A#2": 30, "Push A#3": 25, "Push A#4": 10, "Push A#5": 25, "Push A#6": 30, "Push A#7": 25,
+  "Pull A#1": 90, "Pull A#2": 50, "Pull A#3": 90, "Pull A#4": 25, "Pull A#5": 25, "Pull A#6": 20, "Pull A#7": 20,
+  "Legs A#1": 90, "Legs A#2": 25, "Legs A#3": 200, "Legs A#4": 70, "Legs A#5": 80, "Legs A#6": 120, "Legs A#7": null,
+  "Upper Mixed#1": 75, "Upper Mixed#2": 90, "Upper Mixed#3": 45, "Upper Mixed#4": 25, "Upper Mixed#5": 10, "Upper Mixed#6": 25, "Upper Mixed#7": 30,
+  "Lower B#1": 135, "Lower B#2": 60, "Lower B#3": 20, "Lower B#4": 50, "Lower B#5": 70, "Lower B#6": 120, "Lower B#7": null,
+  "Arms (Optional / Sat)#1": 50, "Arms (Optional / Sat)#2": 75, "Arms (Optional / Sat)#3": 30,
+  "Arms (Optional / Sat)#4": 30, "Arms (Optional / Sat)#5": 10, "Arms (Optional / Sat)#6": 15, "Arms (Optional / Sat)#7": null,
+};
+const LS_WEIGHT = "wp_weights_v1";
+let weights = loadJSON(LS_WEIGHT); // { "Push A#1": 105 }  (user-confirmed actual weights)
+const exKey = (e) => `${e.Template}#${e.Order}`;
+window.setWeight = (k, val, el) => {
+  const n = parseFloat(val);
+  if (val === "" || isNaN(n)) { delete weights[k]; if (el) { el.classList.remove("set"); el.classList.add("sug"); } }
+  else { weights[k] = n; if (el) { el.classList.add("set"); el.classList.remove("sug"); } }
+  saveJSON(LS_WEIGHT, weights);
+};
+function weightCell(e) {
+  const k = exKey(e);
+  const sug = SUGGESTED[k];
+  const cur = weights[k];
+  if (sug == null && cur == null) return `<span class="muted">BW</span>`;
+  const val = cur != null ? cur : sug;
+  const set = cur != null;
+  return `<input class="wt ${set ? "set" : "sug"}" type="number" inputmode="decimal" step="2.5" value="${val}"
+    onchange="setWeight('${k}',this.value,this)" aria-label="Working weight in pounds"> <span class="muted" style="font-size:.72rem">lb</span>`;
+}
+// shared compact exercise row (this week's prescription + editable weight)
+function exRowCompact(e, colKey) {
+  return `<tr><td class="num">${esc(e.Order)}</td><td><b>${esc(e.Exercise)}</b>
+    <div class="muted" style="font-size:.78rem">${esc(e["Technique cue"])} · alt: ${esc(e["Substitute if busy"])}</div></td>
+    <td class="num"><b>${esc(e[colKey])}</b></td>
+    <td class="num">${weightCell(e)}</td>
+    <td class="num">${esc(e.Rest)}</td></tr>`;
+}
+
 const MEAL_SLOTS = ["Breakfast", "Lunch", "Dinner", "Snack 1", "Snack 2"];
 function slotType(slot) {
   if (slot === "Breakfast") return ["Breakfast"];
@@ -158,13 +199,10 @@ views.today = () => {
       </div>`;
   if (ex.length) {
     h += `<p class="muted" style="font-size:.85rem;margin:8px 0 12px">💪 <b>Effort (all sets):</b> ${esc(intensity)} &nbsp;·&nbsp; 🚶 ${esc(day.Cardio)}</p>`;
-    h += `<div class="table-wrap"><table><thead><tr><th>#</th><th>Exercise</th><th>This week</th><th>Rest</th></tr></thead><tbody>`;
-    for (const e of ex) {
-      h += `<tr><td class="num">${esc(e.Order)}</td><td><b>${esc(e.Exercise)}</b>
-        <div class="muted" style="font-size:.78rem">${esc(e["Technique cue"])} · alt: ${esc(e["Substitute if busy"])}</div></td>
-        <td class="num"><b>${esc(e[colKey])}</b></td><td class="num">${esc(e.Rest)}</td></tr>`;
-    }
+    h += `<div class="table-wrap"><table><thead><tr><th>#</th><th>Exercise</th><th>This week</th><th>Weight</th><th>Rest</th></tr></thead><tbody>`;
+    for (const e of ex) h += exRowCompact(e, colKey);
     h += `</tbody></table></div>
+      <p class="muted" style="font-size:.78rem;margin:8px 0 0">Weights (lb) are starting suggestions — tap to edit to what you actually lift. They save and carry to next week. DB moves = per dumbbell.</p>
       <div style="margin-top:10px"><button class="btn small ghost" onclick="openWorkout('${esc(day["Workout Template"])}','${esc(day.Date)}',true)">Show full 8-week progression</button></div>`;
   } else {
     h += `<p class="muted" style="margin:8px 0 0">${esc(day.Notes || "")}</p>
@@ -337,16 +375,12 @@ window.openWorkout = (template, date, full = false) => {
     }
     h += `</tbody></table></div>`;
   } else {
-    // compact: only this week's prescription
+    // compact: only this week's prescription + editable weight
     h += `<div class="table-wrap"><table><thead><tr>
-      <th>#</th><th>Exercise</th><th>This week</th><th>Rest</th></tr></thead><tbody>`;
-    for (const e of ex) {
-      h += `<tr><td class="num">${esc(e.Order)}</td><td><b>${esc(e.Exercise)}</b>
-        <div class="muted" style="font-size:.78rem">${esc(e["Technique cue"])} · alt: ${esc(e["Substitute if busy"])}</div></td>
-        <td class="num"><b>${esc(e[colKey])}</b></td>
-        <td class="num">${esc(e.Rest)}</td></tr>`;
-    }
-    h += `</tbody></table></div>`;
+      <th>#</th><th>Exercise</th><th>This week</th><th>Weight</th><th>Rest</th></tr></thead><tbody>`;
+    for (const e of ex) h += exRowCompact(e, colKey);
+    h += `</tbody></table></div>
+      <p class="muted" style="font-size:.78rem;margin:8px 0 0">Weights (lb) are starting suggestions — edit to what you actually lift; they save and carry forward. DB moves = per dumbbell.</p>`;
   }
   openModal(h);
 };
