@@ -31,13 +31,21 @@ let overrides = loadJSON(LS_SWAP); // { "2026-06-15": { "Breakfast": "Protein Oa
 let progress = loadJSON(LS_PROG);  // { "2026-06-15": { weight, calories, protein, steps, cardio, trained, sleep, timing, notes } }
 let mealDone = loadJSON(LS_DONE);  // { "2026-06-15": { "Breakfast": true } }
 const isDone = (date, slot) => !!(mealDone[date] && mealDone[date][slot]);
-window.toggleMeal = (date, slot) => {
-  mealDone[date] ||= {};
-  if (mealDone[date][slot]) delete mealDone[date][slot]; else mealDone[date][slot] = true;
-  if (!Object.keys(mealDone[date]).length) delete mealDone[date];
-  saveJSON(LS_DONE, mealDone);
-  const y = window.scrollY; render(); window.scrollTo(0, y); // re-render without losing place
-};
+window.toggleMeal = (date, slot) => toggleFlag(mealDone, LS_DONE, date, slot);
+
+const LS_TIMING = "wp_timing_done_v1";
+let timingDone = loadJSON(LS_TIMING); // { "2026-06-15": { "Meal 1": true } }
+const isTimingDone = (date, label) => !!(timingDone[date] && timingDone[date][label]);
+window.toggleTiming = (date, label) => toggleFlag(timingDone, LS_TIMING, date, label);
+
+// shared toggle for any { date: { key: true } } store; re-renders without losing scroll
+function toggleFlag(store, lsKey, date, key) {
+  store[date] ||= {};
+  if (store[date][key]) delete store[date][key]; else store[date][key] = true;
+  if (!Object.keys(store[date]).length) delete store[date];
+  saveJSON(lsKey, store);
+  const y = window.scrollY; render(); window.scrollTo(0, y);
+}
 
 const MEAL_SLOTS = ["Breakfast", "Lunch", "Dinner", "Snack 1", "Snack 2"];
 function slotType(slot) {
@@ -176,12 +184,12 @@ views.today = () => {
 
   // Timing
   h += `<h2>⏱️ Today's timing</h2><div class="card"><div class="grid auto">
-      ${timingChip("Wake", meal["Wake / Early Work"])}
-      ${timingChip("Meal 1", meal["Meal 1 Time"])}
-      ${timingChip(day.Focus === "Rest" || day.Focus === "Active Recovery" ? "Activity" : "Gym", meal["Gym Window"])}
-      ${timingChip("Meal 2", meal["Meal 2 Time"])}
-      ${timingChip("Snack", meal["Snack Time"])}
-      ${timingChip("Meal 3", meal["Meal 3 Time"])}
+      ${timingChip("Wake", meal["Wake / Early Work"], day.Date)}
+      ${timingChip("Meal 1", meal["Meal 1 Time"], day.Date)}
+      ${timingChip(day.Focus === "Rest" || day.Focus === "Active Recovery" ? "Activity" : "Gym", meal["Gym Window"], day.Date)}
+      ${timingChip("Meal 2", meal["Meal 2 Time"], day.Date)}
+      ${timingChip("Snack", meal["Snack Time"], day.Date)}
+      ${timingChip("Meal 3", meal["Meal 3 Time"], day.Date)}
     </div>
     <p class="note-box" style="margin-top:14px">${esc(meal["Timing Notes"] || "")}</p></div>`;
 
@@ -201,8 +209,11 @@ views.today = () => {
     </div>`;
   return h;
 };
-function timingChip(label, val) {
-  return `<div class="stat"><div class="label">${esc(label)}</div><div class="value" style="font-size:1rem">${esc(val || "—")}</div></div>`;
+function timingChip(label, val, date) {
+  const done = isTimingDone(date, label);
+  return `<div class="stat timing-chip ${done ? "done" : ""}" role="button" onclick="toggleTiming('${esc(date)}','${esc(label)}')">
+    <div class="label">${done ? "✓ " : ""}${esc(label)}</div>
+    <div class="value" style="font-size:1rem">${esc(val || "—")}</div></div>`;
 }
 window.quickLog = (iso) => {
   const p = progress[iso] || { date: iso };
