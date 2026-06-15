@@ -7,3 +7,13 @@
 
 # Spreadsheet backup (keep the working source, not the backup)
 *.BACKUP.xlsx
+
+# Target shopping research PDFs (large; not part of the app)
+*.pdf
+protein/
+carbs/
+fruits/
+vegetables/
+fat/
+condiment/
+containers/

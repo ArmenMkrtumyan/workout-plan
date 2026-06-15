@@ -513,6 +513,45 @@ const money = (n) => "$" + (Number.isInteger(n) ? n : n.toFixed(2));
 const targetSearchUrl = (g) =>
   "https://www.target.com/s?searchTerm=" + encodeURIComponent((g["Target search/aisle words"] || g.Item).split(",")[0].trim());
 
+/* ---------- CONFIRMED products (from the actual Target cart, Fenway) ---------- */
+// price = sale price paid; products = [name, product-page path]. Specific links, not searches.
+const TGT = "https://www.target.com";
+const CONFIRMED = {
+  "Chicken breast or tenderloins": { price: 8.07, label: "~$8 ($2.69/lb)", products: [["Fresh Boneless & Skinless Chicken Breast Value Pack (2.5–5.25 lb)", "/p/-/A-86676070"]] },
+  "93% lean ground turkey": { price: 4.24, products: [["G&G Fresh 93/7 Ground Turkey, 16oz", "/p/-/A-79853412"]] },
+  "Eggs": { price: 1.44, products: [["G&G Cage-Free Large White Eggs, 12ct", "/p/-/A-83719456"]] },
+  "Liquid egg whites": { price: 6.62, products: [["G&G Cage-Free Liquid Egg Whites, 32oz", "/p/-/A-79520023"]] },
+  "Nonfat Greek yogurt": { price: 5.52, products: [["FAGE Total 0% Plain Greek Yogurt, 32oz", "/p/-/A-14729218"]] },
+  "Cottage cheese": { price: 4.24, products: [["Good Culture 2% Simply Cottage Cheese, 16oz", "/p/-/A-52007667"]] },
+  "Tuna cans/pouches": { price: 1.01, products: [["G&G Chunk Light Tuna in Water, 5oz", "/p/-/A-76833339"]] },
+  "Salmon/frozen fish": { price: 10.19, products: [["G&G Atlantic Salmon, Frozen, 16oz", "/p/-/A-80114702"]] },
+  "Whey protein": { price: 31.44, products: [["ON Gold Standard 100% Whey, Double Rich Chocolate", "/p/-/A-78807252"]] },
+  "Oats": { price: 4.07, products: [["G&G Old Fashioned Oats, 42oz", "/p/-/A-79364999"]] },
+  "Rice": { price: 3.73, products: [["G&G Jasmine Rice, 32oz", "/p/-/A-54604313"]] },
+  "Potatoes": { price: 2.80, products: [["Idaho Russet Potatoes, 5 lb", "/p/-/A-77775602"]] },
+  "Whole-wheat wraps": { price: 3.82, products: [["Mission Carb Balance Whole Wheat Tortillas (taco)", "/p/-/A-49159664"]] },
+  "Whole-wheat bread": { price: 1.69, products: [["Market Pantry 100% Whole Wheat Bread, 20oz", "/p/-/A-85593788"]] },
+  "Pasta": { price: 1.61, products: [["Barilla Penne Pasta, 16oz", "/p/-/A-13156215"]] },
+  "Bananas": { price: 2.73, label: "$0.39 ea", products: [["G&G Fresh Banana (each)", "/p/-/A-15013944"]] },
+  "Apples/oranges": { price: 2.80, products: [["G&G Fresh Gala Apples, 3 lb bag", "/p/-/A-54579479"]] },
+  "Frozen berries": { price: 3.31, products: [["G&G Frozen Blueberries, 12oz", "/p/-/A-54532041"]] },
+  "Frozen broccoli/mixed veg": { price: 1.35, products: [["G&G Frozen Broccoli Florets, 12oz", "/p/-/A-79397039"]] },
+  "Spinach/salad greens": { price: 2.12, products: [["G&G Fresh Baby Spinach, 5oz", "/p/-/A-54555524"]] },
+  "Salad kits": { price: 3.65, products: [["G&G Avocado Ranch Chopped Salad Kit, 12.8oz", "/p/-/A-54560621"]] },
+  "Cucumbers/tomatoes/peppers/onions": { price: 7.36, label: "$7.36 (4 items)", products: [
+    ["Rainbow Bell Peppers, 3ct", "/p/-/A-78832378"], ["G&G Grape Tomatoes, 10oz", "/p/-/A-82667184"],
+    ["English Cucumber (each)", "/p/-/A-13219631"], ["Yellow Onion (each)", "/p/-/A-13474244"]] },
+  "Olive oil": { price: 6.54, products: [["G&G Extra Virgin Olive Oil, 16.9oz", "/p/-/A-77643078"]] },
+  "Peanut butter": { price: 1.69, products: [["G&G Creamy Peanut Butter, 16oz", "/p/-/A-84067786"]] },
+  "Avocado": { price: 2.29, products: [["G&G Hass Avocados, 4ct", "/p/-/A-81957708"]] },
+  "Salsa/hot sauce/mustard": { price: 2.71, products: [["G&G Mild Heat Restaurant Style Salsa, 16oz", "/p/-/A-79500172"]] },
+  "Marinara sauce": { price: 2.54, products: [["Bertolli Traditional Marinara, 24oz", "/p/-/A-53589721"]] },
+  "Food containers": { price: 9.34, products: [["Rubbermaid 16pc TakeAlongs Meal Prep Set", "/p/-/A-76539602"]] },
+};
+const confLinks = (item) => CONFIRMED[item]
+  ? CONFIRMED[item].products.map((p) => `<a href="${TGT}${p[1]}" target="_blank" rel="noopener" class="shop-link">🎯 ${esc(p[0])} ↗</a>`).join("<br>")
+  : null;
+
 /* ---------- weekly shopping checklist (got-it + actual price you paid) ---------- */
 const LS_BOUGHT = "wp_bought_v1";
 const LS_ACTUAL = "wp_actual_price_v1";
@@ -532,10 +571,12 @@ window.setActualPrice = (item, val) => {
   const y = window.scrollY; render(); window.scrollTo(0, y);
 };
 function shoppingListHTML() {
-  let estWeekly = 0;
-  for (const [c, f] of Object.values(PRICES)) if (f === "wk") estWeekly += c;
-  let actual = 0, priced = 0;
-  for (const g of P.grocery) { const v = actualPrice[g.Item]; if (v != null) { actual += v; priced++; } }
+  // running total uses your entered price if any, else the confirmed cart price
+  let total = 0, priced = 0;
+  for (const g of P.grocery) {
+    const v = (g.Item in actualPrice) ? actualPrice[g.Item] : (CONFIRMED[g.Item] ? CONFIRMED[g.Item].price : null);
+    if (v != null) { total += v; priced++; }
+  }
 
   const byCat = {};
   for (const g of P.grocery) (byCat[g.Category] ||= []).push(g);
@@ -543,21 +584,23 @@ function shoppingListHTML() {
   for (const cat of Object.keys(byCat)) {
     rows += `<tr><td colspan="3" style="background:var(--panel2);font-weight:700;font-size:.74rem;text-transform:uppercase;letter-spacing:.4px;color:var(--muted)">${esc(cat)}</td></tr>`;
     for (const g of byCat[cat]) {
+      const cf = CONFIRMED[g.Item];
       const got = !!bought[g.Item];
-      const ap = actualPrice[g.Item];
-      const est = PRICES[g.Item] ? PRICES[g.Item][0] : "";
+      const userP = (g.Item in actualPrice) ? actualPrice[g.Item] : null;
+      const links = confLinks(g.Item) || `<a href="${targetSearchUrl(g)}" target="_blank" rel="noopener" class="shop-link">🎯 Buy at Target ↗</a>`;
+      const ph = cf ? cf.price : (PRICES[g.Item] ? PRICES[g.Item][0] : "");
       rows += `<tr class="${got ? "got" : ""}">
         <td><b>${esc(g.Item)}</b> <span class="muted" style="font-size:.78rem">· ${esc(g["Weekly Quantity"])}</span>
-          <div style="font-size:.76rem;margin-top:3px"><a href="${targetSearchUrl(g)}" target="_blank" rel="noopener" class="shop-link">🎯 Buy at Target ↗</a></div></td>
+          <div style="font-size:.76rem;margin-top:4px">${links}</div></td>
         <td style="text-align:center"><input type="checkbox" class="gotbox" ${got ? "checked" : ""} onchange="toggleBought('${jsq(g.Item)}')" aria-label="Got it"></td>
-        <td class="num"><span class="muted">$</span><input class="price" type="number" inputmode="decimal" step="0.01" value="${ap ?? ""}" placeholder="${est}" onchange="setActualPrice('${jsq(g.Item)}',this.value)" aria-label="Price paid"></td>
+        <td class="num"><span class="muted">$</span><input class="price" type="number" inputmode="decimal" step="0.01" value="${userP ?? (cf ? cf.price : "")}" placeholder="${ph}" onchange="setActualPrice('${jsq(g.Item)}',this.value)" aria-label="Price paid"></td>
       </tr>`;
     }
   }
   return `<details class="collapse" open>
-    <summary><span>🛒 Weekly grocery list</span><span class="muted" style="font-weight:400;font-size:.85rem">paid ${money(round2(actual))} · ${priced}/${P.grocery.length} priced</span></summary>
-    <p class="muted" style="font-size:.84rem">Open each at Target, pick what you want, and type the price you paid. Greyed numbers are my estimate. Estimated weekly cost ≈ <b>${money(estWeekly)}</b>.</p>
-    <div class="table-wrap"><table><thead><tr><th>Item · amount</th><th style="text-align:center">Got it</th><th>Price paid</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <summary><span>🛒 Weekly grocery list</span><span class="muted" style="font-weight:400;font-size:.85rem">≈ ${money(round2(total))} · ${priced}/${P.grocery.length} from your cart</span></summary>
+    <p class="muted" style="font-size:.84rem">Prices and links are your actual Target picks (Fenway). Each links straight to the product page. Edit a price if it changes.</p>
+    <div class="table-wrap"><table><thead><tr><th>Item · amount</th><th style="text-align:center">Got it</th><th>Price</th></tr></thead><tbody>${rows}</tbody></table></div>
   </details>`;
 }
 
@@ -577,22 +620,26 @@ views.grocery = () => {
     ${stat("One-time (containers)", "≈ " + money(once))}
   </div>`;
   h += `<p class="note-box">Estimate, not a live price check. Weekly items × ~4.3 weeks + monthly staples. City-Target prices are baked in (~5–10% over a suburban Super Target). Dropping the two optional items — fish & whey — would bring this to about <b>${money(monthlyTotal - 28 - Math.round(11 * 4.3))}/month</b>.</p>`;
-  h += `<p class="note-box">🎯 Each item below links to a <b>Target search</b> — pick the Good &amp; Gather (store-brand) option to match these prices. Set your store to <b>Boston Fenway</b> on Target first for accurate stock &amp; pickup.</p>`;
+  h += `<p class="note-box">🎯 Items below link straight to the <b>exact products</b> in your Target cart (Fenway), with the prices you paid. Items not yet confirmed fall back to a Target search.</p>`;
 
   const byCat = {};
   for (const g of P.grocery) (byCat[g.Category] ||= []).push(g);
   for (const cat of Object.keys(byCat)) {
-    const catWeekly = byCat[cat].reduce((s, g) => s + ((PRICES[g.Item]?.[1] === "wk") ? PRICES[g.Item][0] : 0), 0);
-    h += `<h2>${esc(cat)} ${catWeekly ? `<span class="pill green">~${money(catWeekly)}/wk</span>` : ""}</h2>
+    const catWeekly = byCat[cat].reduce((s, g) => s + (CONFIRMED[g.Item] ? CONFIRMED[g.Item].price : ((PRICES[g.Item]?.[1] === "wk") ? PRICES[g.Item][0] : 0)), 0);
+    h += `<h2>${esc(cat)} ${catWeekly ? `<span class="pill green">~${money(round2(catWeekly))}</span>` : ""}</h2>
       <div class="table-wrap"><table><thead><tr>
-      <th>Item</th><th>Est. cost</th><th>Qty / week</th><th>Used for</th><th>Note</th></tr></thead><tbody>`;
+      <th>Item</th><th>Price</th><th>Qty / week</th><th>Used for</th><th>Note</th></tr></thead><tbody>`;
     for (const g of byCat[cat]) {
+      const cf = CONFIRMED[g.Item];
       const p = PRICES[g.Item];
-      const costCell = p
-        ? `<b>${money(p[0])}</b> <span class="muted" style="font-size:.78rem">${FREQ_LABEL[p[1]]}</span>${p[1] !== "wk" ? ` <span class="pill ${p[1] === "mo" ? "blue" : "grey"}" style="margin-left:2px">${p[1] === "mo" ? "monthly" : "one-time"}</span>` : ""}`
-        : `<span class="muted">—</span>`;
+      const costCell = cf
+        ? `<b>${cf.label || money(cf.price)}</b>`
+        : (p
+          ? `<b>${money(p[0])}</b> <span class="muted" style="font-size:.78rem">${FREQ_LABEL[p[1]]}</span>${p[1] !== "wk" ? ` <span class="pill ${p[1] === "mo" ? "blue" : "grey"}" style="margin-left:2px">${p[1] === "mo" ? "monthly" : "one-time"}</span>` : ""}`
+          : `<span class="muted">—</span>`);
+      const links = confLinks(g.Item) || `<a href="${targetSearchUrl(g)}" target="_blank" rel="noopener" class="shop-link">🎯 Buy at Target ↗</a>`;
       h += `<tr><td><b>${esc(g.Item)}</b>
-          <div style="font-size:.76rem;margin-top:3px"><a href="${targetSearchUrl(g)}" target="_blank" rel="noopener" class="shop-link">🎯 Buy at Target ↗</a></div></td>
+          <div style="font-size:.76rem;margin-top:3px">${links}</div></td>
         <td class="num">${costCell}</td>
         <td>${esc(g["Weekly Quantity"])}</td><td class="muted">${esc(g["Used for"])}</td>
         <td class="muted">${esc(g["Budget note"])}</td></tr>`;
