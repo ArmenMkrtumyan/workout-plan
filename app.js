@@ -517,7 +517,7 @@ const targetSearchUrl = (g) =>
 // price = sale price paid; products = [name, product-page path]. Specific links, not searches.
 const TGT = "https://www.target.com";
 const CONFIRMED = {
-  "Chicken breast or tenderloins": { price: 8.07, label: "~$8 ($2.69/lb)", products: [["Fresh Boneless & Skinless Chicken Breast Value Pack (2.5–5.25 lb)", "/p/-/A-86676070"]] },
+  "Chicken breast or tenderloins": { price: 11.43, label: "$11.43 ($2.69/lb)", products: [["Fresh Boneless & Skinless Chicken Breast Value Pack (2.5–5.25 lb)", "/p/-/A-86676070"]] },
   "93% lean ground turkey": { price: 4.24, products: [["G&G Fresh 93/7 Ground Turkey, 16oz", "/p/-/A-79853412"]] },
   "Eggs": { price: 1.44, products: [["G&G Cage-Free Large White Eggs, 12ct", "/p/-/A-83719456"]] },
   "Liquid egg whites": { price: 6.62, products: [["G&G Cage-Free Liquid Egg Whites, 32oz", "/p/-/A-79520023"]] },
