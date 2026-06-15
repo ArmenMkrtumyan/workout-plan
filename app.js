@@ -257,10 +257,6 @@ views.dashboard = () => {
   }
   h += `</tbody></table></div></details>`;
 
-  h += `<h2>✅ Daily non-negotiables</h2><div class="card"><ul class="list-clean">
-    ${P.nonNegotiables.map((n, i) => `<li><span class="n">${i + 1}</span><span>${esc(n)}</span></li>`).join("")}
-  </ul></div>`;
-  h += `<p class="note-box">${esc(m["Safety"] || "")} · Adjust only after the 7-day weight trend, never one reading.</p>`;
   return h;
 };
 const stat = (label, value, accent) =>
