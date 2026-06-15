@@ -1,0 +1,9 @@
+# OS / editor
+.DS_Store
+*.swp
+
+# Local Claude project settings
+.claude/
+
+# Spreadsheet backup (keep the working source, not the backup)
+*.BACKUP.xlsx
