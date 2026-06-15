@@ -149,7 +149,9 @@ views.today = () => {
 
   // Quick log
   const pr = progress[iso] || {};
-  h += `<h2>📈 Quick log</h2><div class="card">
+  h += `<h2>📈 Quick log</h2>
+    <p class="muted" style="margin:-8px 0 12px;font-size:.86rem">Weigh yourself first thing in the morning, before eating or drinking. Fill in calories, protein and steps at the end of the day. The full daily log lives in the <b>Progress</b> tab.</p>
+    <div class="card">
       <div class="form-grid">
         <label class="field">Weight (kg)<input type="number" step="0.1" id="qlw" value="${pr.weight ?? ""}"></label>
         <label class="field">Calories<input type="number" id="qlc" value="${pr.calories ?? ""}"></label>
@@ -262,11 +264,16 @@ window.openWorkout = (template, date, full = false) => {
   let h = `<h2 style="margin-top:0">${esc(template)}</h2><p class="muted">${esc(date ? fmtDate(date) + " · " : "")}Week ${wk} of 8</p>`;
   if (template.includes("Optional")) h += `<p class="note-box warn">Optional. Only do this if recovered — the priority on Saturday is the long walk.</p>`;
 
+  // session-wide effort target (applies to every working set this week)
+  const intensity = (P.gymCalendar.find((r) => r.Week === wk) || {}).Intensity || "";
+  if (intensity) h += `<p class="note-box" style="margin-bottom:10px">💪 <b>This week's effort — every working set:</b> ${esc(intensity)}</p>`;
+
   // plain-language legend
   h += `<p class="note-box" style="margin-bottom:14px">
     <b>How to read this:</b> "<b>3 x 8</b>" = 3 sets of 8 reps. <b>DB</b> = dumbbell.<br>
     <b>RPE</b> (Rate of Perceived Exertion) = how hard a set should feel:
-    <b>RPE 6–7</b> ≈ 3–4 reps left in the tank, <b>RPE 8</b> ≈ 2 reps left. Don't grind to failure.</p>`;
+    <b>RPE 6–7</b> ≈ 3–4 reps left in the tank, <b>RPE 8</b> ≈ 2 reps left. Don't grind to failure.<br>
+    Only the main lift repeats an explicit <b>@ RPE</b> as a reminder — but aim for the effort above on <i>all</i> sets.</p>`;
 
   // toggle: this week only  ↔  full 8-week progression
   h += `<div style="margin-bottom:12px"><button class="btn small" onclick="openWorkout('${esc(template)}',${dateArg},${full ? "false" : "true"})">
