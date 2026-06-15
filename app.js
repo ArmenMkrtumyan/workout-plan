@@ -245,16 +245,17 @@ views.dashboard = () => {
     ${stat("Sleep", m["Sleep"])}
   </div>`;
 
-  h += `<h2>🗓️ 8-week overview</h2><div class="table-wrap"><table><thead><tr>
+  const cw = currentWeek();
+  h += `<details class="collapse"><summary><span>🗓️ 8-week overview</span><span class="muted" style="font-weight:400;font-size:.85rem">Week ${cw}/8 · tap to expand</span></summary>
+    <div class="table-wrap" style="margin-top:12px"><table><thead><tr>
     <th>Wk</th><th>Dates</th><th>Target</th><th>Training focus</th><th>Cardio</th><th>Nutrition</th><th>Notes</th>
     </tr></thead><tbody>`;
-  const cw = currentWeek();
   for (const w of P.weekOverview) {
     h += `<tr class="${w.Week === cw ? "hl" : ""}"><td class="num"><b>${w.Week}</b></td><td>${esc(w.Dates)}</td>
       <td class="num">${esc(w["Target kg"])} kg</td><td>${esc(w["Training focus"])}</td>
       <td>${esc(w["Cardio goal"])}</td><td>${esc(w["Nutrition focus"])}</td><td class="muted">${esc(w.Notes)}</td></tr>`;
   }
-  h += `</tbody></table></div>`;
+  h += `</tbody></table></div></details>`;
 
   h += `<h2>✅ Daily non-negotiables</h2><div class="card"><ul class="list-clean">
     ${P.nonNegotiables.map((n, i) => `<li><span class="n">${i + 1}</span><span>${esc(n)}</span></li>`).join("")}
