@@ -507,6 +507,9 @@ const PRICES = {
 };
 const FREQ_LABEL = { wk: "/wk", mo: "/mo", once: "once" };
 const money = (n) => "$" + (Number.isInteger(n) ? n : n.toFixed(2));
+// Target search link from each item's search terms (first segment = cleanest query).
+const targetSearchUrl = (g) =>
+  "https://www.target.com/s?searchTerm=" + encodeURIComponent((g["Target search/aisle words"] || g.Item).split(",")[0].trim());
 
 views.grocery = () => {
   // totals
@@ -524,6 +527,7 @@ views.grocery = () => {
     ${stat("One-time (containers)", "≈ " + money(once))}
   </div>`;
   h += `<p class="note-box">Estimate, not a live price check. Weekly items × ~4.3 weeks + monthly staples. City-Target prices are baked in (~5–10% over a suburban Super Target). Dropping the two optional items — fish & whey — would bring this to about <b>${money(monthlyTotal - 28 - Math.round(11 * 4.3))}/month</b>.</p>`;
+  h += `<p class="note-box">🎯 Each item below links to a <b>Target search</b> — pick the Good &amp; Gather (store-brand) option to match these prices. Set your store to <b>Boston Fenway</b> on Target first for accurate stock &amp; pickup.</p>`;
 
   const byCat = {};
   for (const g of P.grocery) (byCat[g.Category] ||= []).push(g);
@@ -537,7 +541,8 @@ views.grocery = () => {
       const costCell = p
         ? `<b>${money(p[0])}</b> <span class="muted" style="font-size:.78rem">${FREQ_LABEL[p[1]]}</span>${p[1] !== "wk" ? ` <span class="pill ${p[1] === "mo" ? "blue" : "grey"}" style="margin-left:2px">${p[1] === "mo" ? "monthly" : "one-time"}</span>` : ""}`
         : `<span class="muted">—</span>`;
-      h += `<tr><td><b>${esc(g.Item)}</b><div class="muted" style="font-size:.76rem">🔎 ${esc(g["Target search/aisle words"])}</div></td>
+      h += `<tr><td><b>${esc(g.Item)}</b>
+          <div style="font-size:.76rem;margin-top:3px"><a href="${targetSearchUrl(g)}" target="_blank" rel="noopener" class="shop-link">🎯 Buy at Target ↗</a></div></td>
         <td class="num">${costCell}</td>
         <td>${esc(g["Weekly Quantity"])}</td><td class="muted">${esc(g["Used for"])}</td>
         <td class="muted">${esc(g["Budget note"])}</td></tr>`;
