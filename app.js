@@ -532,7 +532,7 @@ const CONFIRMED = {
   "Whole-wheat wraps": { price: 3.82, products: [["Mission Carb Balance Whole Wheat Tortillas (taco)", "/p/-/A-49159664"]] },
   "Whole-wheat bread": { price: 1.69, products: [["Market Pantry 100% Whole Wheat Bread, 20oz", "/p/-/A-85593788"]] },
   "Pasta": { price: 1.61, products: [["Barilla Penne Pasta, 16oz", "/p/-/A-13156215"]] },
-  "Bananas": { price: 2.73, label: "$0.39 ea", products: [["G&G Fresh Banana (each)", "/p/-/A-15013944"]] },
+  "Bananas": { price: 1.65, label: "$1.65 (5 ct)", products: [["G&G Fresh Banana (each)", "/p/-/A-15013944"]] },
   "Apples/oranges": { price: 2.80, products: [["G&G Fresh Gala Apples, 3 lb bag", "/p/-/A-54579479"]] },
   "Frozen berries": { price: 3.31, products: [["G&G Frozen Blueberries, 12oz", "/p/-/A-54532041"]] },
   "Frozen broccoli/mixed veg": { price: 1.35, products: [["G&G Frozen Broccoli Florets, 12oz", "/p/-/A-79397039"]] },
