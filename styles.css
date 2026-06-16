@@ -115,6 +115,10 @@ input.price{width:80px;padding:6px 7px;font-size:15px;text-align:right}
 input.gotbox{width:20px;height:20px;cursor:pointer;accent-color:var(--accent)}
 tr.got{background:rgba(18,160,109,.08)}
 tr.got td:first-child b{color:var(--accent)}
+table.spend{width:100%;border-collapse:collapse}
+table.spend td{padding:8px 4px;border-bottom:1px solid var(--line)}
+table.spend td.num{text-align:right;font-variant-numeric:tabular-nums}
+table.spend tr.grand td{border-top:2px solid var(--line);border-bottom:none;font-size:1.05rem;padding-top:11px}
 .btn{cursor:pointer;border:1px solid var(--line);background:var(--panel);color:var(--text);
   padding:7px 13px;border-radius:8px;font-size:.82rem;font-weight:600;transition:.15s}
 .btn:hover{border-color:var(--accent);color:var(--accent)}

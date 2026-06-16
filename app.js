@@ -652,6 +652,62 @@ views.grocery = () => {
   return h;
 };
 
+/* ---------- SPENDINGS (actual orders) ---------- */
+// Real grocery orders — what you actually paid (after discounts + tax).
+const ORDERS = [
+  {
+    date: "2026-06-15", store: "Target — Boston Fenway", items: 31,
+    subtotal: 162.86, discount: 24.42, discountNote: "15% off one purchase",
+    fulfillment: "Free", tax: 2.76, total: 141.20, payment: "Visa ••4250",
+  },
+];
+const monthKey = (iso) => iso.slice(0, 7);
+const monthName = (key) => new Date(key + "-01T00:00:00").toLocaleDateString(undefined, { month: "long", year: "numeric" });
+
+views.spendings = () => {
+  const totalSpent = ORDERS.reduce((s, o) => s + o.total, 0);
+  const totalSaved = ORDERS.reduce((s, o) => s + o.discount, 0);
+  const totalTax = ORDERS.reduce((s, o) => s + o.tax, 0);
+
+  let h = `<h1>Spendings</h1><p class="subtitle">Your real grocery orders — what you actually paid, after discounts and tax.</p>`;
+  h += `<div class="grid cols-4">
+    ${stat("Total spent", money(round2(totalSpent)), true)}
+    ${stat("Orders", String(ORDERS.length))}
+    ${stat("Saved with deals", money(round2(totalSaved)))}
+    ${stat("Tax paid", money(round2(totalTax)))}
+  </div>`;
+
+  // month-to-date totals
+  const byMonth = {};
+  for (const o of ORDERS) byMonth[monthKey(o.date)] = (byMonth[monthKey(o.date)] || 0) + o.total;
+  h += `<h2>By month</h2><div class="table-wrap"><table><thead><tr><th>Month</th><th>Orders</th><th>Spent</th></tr></thead><tbody>`;
+  for (const k of Object.keys(byMonth).sort()) {
+    const n = ORDERS.filter((o) => monthKey(o.date) === k).length;
+    h += `<tr><td>${esc(monthName(k))}</td><td class="num">${n}</td><td class="num"><b>${money(round2(byMonth[k]))}</b></td></tr>`;
+  }
+  h += `</tbody></table></div>`;
+
+  h += `<h2>Orders</h2>`;
+  for (const o of ORDERS) {
+    h += `<div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <b>${esc(fmtDate(o.date))} · ${esc(o.store)}</b>
+        <span class="pill green">${money(o.total)} paid</span>
+      </div>
+      <table class="spend"><tbody>
+        <tr><td>Subtotal <span class="muted">(${o.items} items)</span></td><td class="num">${money(o.subtotal)}</td></tr>
+        <tr><td>Discounts <span class="muted">— ${esc(o.discountNote)}</span></td><td class="num" style="color:var(--accent)">−${money(o.discount)}</td></tr>
+        <tr><td>Fulfillment</td><td class="num">${esc(o.fulfillment)}</td></tr>
+        <tr><td>Tax</td><td class="num">${money(o.tax)}</td></tr>
+        <tr class="grand"><td><b>Total</b></td><td class="num"><b>${money(o.total)}</b></td></tr>
+        <tr><td class="muted">Paid with</td><td class="num muted">${esc(o.payment)}</td></tr>
+      </tbody></table>
+    </div>`;
+  }
+  h += `<p class="note-box">📊 Each order logged here builds your true monthly grocery spend. Charts + month-by-month tables are the next step — and a button to log new orders yourself.</p>`;
+  return h;
+};
+
 /* ---------- PROGRESS (chart + log) ---------- */
 views.progress = () => {
   const iso = todayISO();
