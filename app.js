@@ -26,7 +26,13 @@ const LS_SWAP = "wp_meal_overrides_v1";
 const LS_PROG = "wp_progress_v1";
 const LS_DONE = "wp_meal_done_v1";
 const loadJSON = (k) => { try { return JSON.parse(localStorage.getItem(k)) || {}; } catch { return {}; } };
-const saveJSON = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+const saveJSON = (k, v) => { localStorage.setItem(k, JSON.stringify(v)); if (window.onDataChanged) window.onDataChanged(); };
+// Re-read all persisted state from localStorage and re-render (called after a cloud pull).
+window.reloadFromStorage = () => {
+  overrides = loadJSON(LS_SWAP); progress = loadJSON(LS_PROG); mealDone = loadJSON(LS_DONE);
+  timingDone = loadJSON(LS_TIMING); weights = loadJSON(LS_WEIGHT); bought = loadJSON(LS_BOUGHT);
+  actualPrice = loadJSON(LS_ACTUAL); render();
+};
 let overrides = loadJSON(LS_SWAP); // { "2026-06-15": { "Breakfast": "Protein Oatmeal" } }
 let progress = loadJSON(LS_PROG);  // { "2026-06-15": { weight, calories, protein, steps, cardio, trained, sleep, timing, notes } }
 let mealDone = loadJSON(LS_DONE);  // { "2026-06-15": { "Breakfast": true } }
