@@ -75,6 +75,14 @@ window.setWeight = (k, val, el) => {
   else { weights[k] = n; if (el) { el.classList.add("set"); el.classList.remove("sug"); } }
   saveJSON(LS_WEIGHT, weights);
 };
+const LB_TO_KG = 0.453592;
+// live-update the kg readout next to a weight input as the user types
+window.kgSync = (input) => {
+  const el = input.closest("td") && input.closest("td").querySelector(".wt-kg");
+  if (!el) return;
+  const v = parseFloat(input.value);
+  el.textContent = isNaN(v) ? "" : (v * LB_TO_KG).toFixed(1) + " kg";
+};
 function weightCell(e) {
   const k = exKey(e);
   const sug = SUGGESTED[k];
@@ -82,8 +90,10 @@ function weightCell(e) {
   if (sug == null && cur == null) return `<span class="muted">BW</span>`;
   const val = cur != null ? cur : sug;
   const set = cur != null;
+  const kg = (val * LB_TO_KG).toFixed(1);
   return `<input class="wt ${set ? "set" : "sug"}" type="number" inputmode="decimal" step="2.5" value="${val}"
-    onchange="setWeight('${k}',this.value,this)" aria-label="Working weight in pounds"> <span class="muted" style="font-size:.72rem">lb</span>`;
+    oninput="window.kgSync(this)" onchange="setWeight('${k}',this.value,this)" aria-label="Working weight in pounds"> <span class="muted" style="font-size:.72rem">lb</span>
+    <div class="wt-kg muted" style="font-size:.72rem">${kg} kg</div>`;
 }
 // shared compact exercise row (this week's prescription + editable weight)
 function exRowCompact(e, colKey) {
@@ -205,7 +215,7 @@ views.today = () => {
       </div>`;
   if (ex.length) {
     h += `<p class="muted" style="font-size:.85rem;margin:8px 0 12px">💪 <b>Effort (all sets):</b> ${esc(intensity)} &nbsp;·&nbsp; 🚶 ${esc(day.Cardio)}</p>`;
-    h += `<div class="table-wrap"><table><thead><tr><th>#</th><th>Exercise</th><th>This week</th><th>Weight</th><th>Rest</th></tr></thead><tbody>`;
+    h += `<div class="table-wrap"><table><thead><tr><th>#</th><th>Exercise</th><th>This week</th><th>Weight (lb · kg)</th><th>Rest</th></tr></thead><tbody>`;
     for (const e of ex) h += exRowCompact(e, colKey);
     h += `</tbody></table></div>
       <p class="muted" style="font-size:.78rem;margin:8px 0 0">Weights (lb) are starting suggestions — tap to edit to what you actually lift. They save and carry to next week. DB moves = per dumbbell.</p>
@@ -383,7 +393,7 @@ window.openWorkout = (template, date, full = false) => {
   } else {
     // compact: only this week's prescription + editable weight
     h += `<div class="table-wrap"><table><thead><tr>
-      <th>#</th><th>Exercise</th><th>This week</th><th>Weight</th><th>Rest</th></tr></thead><tbody>`;
+      <th>#</th><th>Exercise</th><th>This week</th><th>Weight (lb · kg)</th><th>Rest</th></tr></thead><tbody>`;
     for (const e of ex) h += exRowCompact(e, colKey);
     h += `</tbody></table></div>
       <p class="muted" style="font-size:.78rem;margin:8px 0 0">Weights (lb) are starting suggestions — edit to what you actually lift; they save and carry forward. DB moves = per dumbbell.</p>`;
