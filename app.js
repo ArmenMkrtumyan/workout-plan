@@ -114,11 +114,32 @@ function mealFor(dayRow, slot) {
   const date = dayRow.Date;
   return (overrides[date] && overrides[date][slot]) || dayRow[slot];
 }
+
+/* ---------- custom meals (AI-estimated, "I ate something else") ---------- */
+const LS_CUSTOM = "wp_custom_meals_v1";
+let customMeals = loadJSON(LS_CUSTOM);            // { "2026-06-18__Dinner": {name,cal,pro,carbs,fat,restaurant} }
+const customKey = (date, slot) => `${date}__${slot}`;
+const getCustom = (date, slot) => customMeals[customKey(date, slot)];
+window.clearCustomMeal = (date, slot) => {
+  delete customMeals[customKey(date, slot)];
+  saveJSON(LS_CUSTOM, customMeals);
+  const y = window.scrollY; render(); window.scrollTo(0, y);
+};
+// resolved per-slot view: a custom meal overrides the planned/swapped one
+function slotInfo(day, slot) {
+  const c = getCustom(day.Date, slot);
+  if (c) return { name: c.name, cal: c.cal, pro: c.pro, carbs: c.carbs, fat: c.fat, custom: true };
+  const name = mealFor(day, slot);
+  const m = itemMacro(name);
+  return { name, cal: m.cal, pro: m.pro, custom: false };
+}
+
 function dayTotals(dayRow) {
   let cal = 0, pro = 0;
   for (const slot of MEAL_SLOTS) {
-    const m = itemMacro(mealFor(dayRow, slot));
-    cal += m.cal; pro += m.pro;
+    const s = slotInfo(dayRow, slot);
+    if (!s.name) continue;
+    cal += s.cal; pro += s.pro;
   }
   return { cal, pro };
 }
@@ -126,10 +147,10 @@ function dayTotals(dayRow) {
 function dayConsumed(dayRow) {
   let cal = 0, pro = 0, doneCount = 0, totalCount = 0;
   for (const slot of MEAL_SLOTS) {
-    const name = mealFor(dayRow, slot);
-    if (!name) continue;
+    const s = slotInfo(dayRow, slot);
+    if (!s.name) continue;
     totalCount++;
-    if (isDone(dayRow.Date, slot)) { const m = itemMacro(name); cal += m.cal; pro += m.pro; doneCount++; }
+    if (isDone(dayRow.Date, slot)) { cal += s.cal; pro += s.pro; doneCount++; }
   }
   return { cal, pro, doneCount, totalCount };
 }
@@ -438,21 +459,25 @@ views.meals = () => {
   return h;
 };
 function mealSlotRow(day, slot) {
-  const name = mealFor(day, slot);
-  if (!name && slot === "Snack 2") return ""; // no second snack that day
-  const m = itemMacro(name);
+  const s = slotInfo(day, slot);
+  if (!s.name && slot === "Snack 2") return ""; // no second snack that day
   const swapped = overrides[day.Date] && overrides[day.Date][slot];
-  const candidates = swapCandidates(name, slot);
+  const candidates = s.custom ? [] : swapCandidates(s.name, slot);
   const done = isDone(day.Date, slot);
+  const tag = s.custom ? '<span class="swapped-flag" style="color:var(--accent2)">custom</span>'
+    : (swapped ? '<span class="swapped-flag">swapped</span>' : "");
+  const macros = `${s.cal} kcal · ${s.pro}g protein${s.custom && s.carbs != null ? ` · ${s.carbs}g C · ${s.fat}g F` : ""}`;
   return `<div class="mealslot ${done ? "done" : ""}">
     <span class="slot-label">${esc(slot)}</span>
     <div class="info" style="flex:1">
-      <div class="name">${done ? "✓ " : ""}${esc(name || "—")}${swapped ? '<span class="swapped-flag">swapped</span>' : ""}</div>
-      <div class="macros">${m.cal} kcal · ${m.pro}g protein</div>
+      <div class="name">${done ? "✓ " : ""}${esc(s.name || "—")}${tag}</div>
+      <div class="macros">${macros}</div>
     </div>
     <div class="slot-actions">
-      ${name ? `<button class="btn small ${done ? "primary" : ""}" onclick="toggleMeal('${esc(day.Date)}','${esc(slot)}')">${done ? "✓ Done" : "Done"}</button>` : ""}
-      ${name && candidates.length ? `<button class="btn small" onclick="openSwap('${esc(day.Date)}','${esc(slot)}')">Swap</button>` : ""}
+      ${s.name ? `<button class="btn small ${done ? "primary" : ""}" onclick="toggleMeal('${esc(day.Date)}','${esc(slot)}')">${done ? "✓ Done" : "Done"}</button>` : ""}
+      ${s.custom ? `<button class="btn small" title="Back to planned meal" onclick="clearCustomMeal('${esc(day.Date)}','${esc(slot)}')">↺</button>`
+        : (s.name && candidates.length ? `<button class="btn small" onclick="openSwap('${esc(day.Date)}','${esc(slot)}')">Swap</button>` : "")}
+      ${s.name ? `<button class="btn small" title="I ate something else" onclick="openCustomMeal('${esc(day.Date)}','${esc(slot)}')">✎ Other</button>` : ""}
     </div>
   </div>`;
 }
@@ -487,6 +512,67 @@ window.applySwap = (date, slot, name) => {
   closeModal(); render();
 };
 window.resetSwaps = () => { overrides = {}; saveJSON(LS_SWAP, overrides); render(); };
+
+/* ---------- custom meal: AI macro estimate via Google Gemini (free) ---------- */
+const LS_GEMKEY = "wp_gemini_key"; // stored only in this browser, never synced
+const getGemKey = () => localStorage.getItem(LS_GEMKEY) || "";
+async function geminiMacros(desc) {
+  const key = getGemKey();
+  if (!key) throw new Error("no-key");
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(key)}`;
+  const body = {
+    contents: [{ parts: [{ text: `Estimate the nutrition for one serving of this meal as actually eaten. Give realistic integer estimates.\n\n${desc}` }] }],
+    generationConfig: {
+      temperature: 0.2,
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: "object",
+        properties: { calories: { type: "integer" }, protein: { type: "integer" }, carbs: { type: "integer" }, fat: { type: "integer" } },
+        required: ["calories", "protein", "carbs", "fat"],
+      },
+    },
+  };
+  const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  if (!res.ok) throw new Error("api-" + res.status);
+  const data = await res.json();
+  const txt = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!txt) throw new Error("no-output");
+  const j = JSON.parse(txt);
+  return { cal: Math.round(j.calories), pro: Math.round(j.protein), carbs: Math.round(j.carbs), fat: Math.round(j.fat) };
+}
+window.openCustomMeal = (date, slot) => {
+  const hasKey = !!getGemKey();
+  openModal(`<h2 style="margin-top:0">Ate something else?</h2>
+    <p class="muted" style="font-size:.86rem">Describe what you actually had for <b>${esc(slot)}</b> — an AI estimates the macros (approximate) and swaps it in. Your <b>Eaten</b> tally uses the new numbers.</p>
+    ${hasKey ? "" : `<div class="note-box" style="margin-bottom:12px">First time only: paste a free <b>Google Gemini</b> API key — <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" class="shop-link">get one free ↗</a> (no credit card). Stored only in this browser.
+      <label class="field" style="margin-top:8px">Gemini API key<input id="cm-key" type="password" placeholder="AIza…"></label></div>`}
+    <label class="field" style="margin-bottom:10px">What did you eat?<input id="cm-name" placeholder="e.g. Chicken burrito bowl"></label>
+    <label class="field" style="margin-bottom:10px">Restaurant <span class="muted">(optional)</span><input id="cm-rest" placeholder="e.g. Chipotle"></label>
+    <label class="field" style="margin-bottom:12px">Portion / details <span class="muted">(optional)</span><input id="cm-notes" placeholder="e.g. double chicken, no rice, guac"></label>
+    <div id="cm-msg" style="font-size:.84rem;min-height:1.1em;margin-bottom:10px"></div>
+    <button class="btn primary" id="cm-go" onclick="estimateCustomMeal('${esc(date)}','${esc(slot)}')">Estimate &amp; use</button>`);
+};
+window.estimateCustomMeal = async (date, slot) => {
+  const msg = $("#cm-msg"), go = $("#cm-go"), keyEl = $("#cm-key");
+  if (keyEl && keyEl.value.trim()) localStorage.setItem(LS_GEMKEY, keyEl.value.trim());
+  if (!getGemKey()) { msg.style.color = "var(--danger)"; msg.textContent = "Paste your Gemini API key first."; return; }
+  const name = ($("#cm-name").value || "").trim();
+  if (!name) { msg.style.color = "var(--danger)"; msg.textContent = "Tell me what you ate."; return; }
+  const rest = ($("#cm-rest").value || "").trim(), notes = ($("#cm-notes").value || "").trim();
+  const desc = `Meal: ${name}.` + (rest ? ` Restaurant: ${rest}.` : "") + (notes ? ` Details: ${notes}.` : "");
+  go.disabled = true; msg.style.color = "var(--muted)"; msg.textContent = "Estimating…";
+  try {
+    const m = await geminiMacros(desc);
+    customMeals[customKey(date, slot)] = { name: rest ? `${name} · ${rest}` : name, restaurant: rest, cal: m.cal, pro: m.pro, carbs: m.carbs, fat: m.fat };
+    saveJSON(LS_CUSTOM, customMeals);
+    closeModal(); const y = window.scrollY; render(); window.scrollTo(0, y);
+  } catch (e) {
+    go.disabled = false; msg.style.color = "var(--danger)";
+    msg.textContent = /no-key/.test(e.message) ? "Add your Gemini key above."
+      : /api-4/.test(e.message) ? "Key rejected or out of quota — double-check the key."
+      : "Couldn't estimate (network/API issue). Try again.";
+  }
+};
 
 /* ---------- RECIPES ---------- */
 views.recipes = () => {

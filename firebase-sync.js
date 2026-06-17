@@ -25,7 +25,7 @@ setPersistence(auth, browserLocalPersistence).catch(() => {});
 
 const KEYS = [
   "wp_meal_overrides_v1", "wp_progress_v1", "wp_meal_done_v1", "wp_timing_done_v1",
-  "wp_weights_v1", "wp_bought_v1", "wp_actual_price_v1",
+  "wp_weights_v1", "wp_bought_v1", "wp_actual_price_v1", "wp_custom_meals_v1",
 ];
 const DOC = doc(db, "shared", "data"); // one shared doc for the single user
 
