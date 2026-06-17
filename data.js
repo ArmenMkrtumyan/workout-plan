@@ -1,8 +1,8 @@
 window.PLAN = {
  "meta": {
   "title": "2-Month Gym + Meal Plan — Boston / Northeastern",
-  "Start date": "2026-06-17",
-  "End date": "2026-08-11",
+  "Start date": "2026-06-16",
+  "End date": "2026-08-10",
   "Current kg": 67,
   "Target kg": 63,
   "Height": "1.67 m",
@@ -25,7 +25,7 @@ window.PLAN = {
  "weekOverview": [
   {
    "Week": 1,
-   "Dates": "Jun 17–Jun 23",
+   "Dates": "Jun 16–Jun 22",
    "Target kg": 66.5,
    "Training focus": "Re-entry: technique + moderate volume",
    "Cardio goal": "3 x 20–25 min incline walk",
@@ -35,7 +35,7 @@ window.PLAN = {
   },
   {
    "Week": 2,
-   "Dates": "Jun 24–Jun 30",
+   "Dates": "Jun 23–Jun 29",
    "Target kg": 66,
    "Training focus": "Re-entry: technique + moderate volume",
    "Cardio goal": "3 x 20–25 min incline walk",
@@ -45,7 +45,7 @@ window.PLAN = {
   },
   {
    "Week": 3,
-   "Dates": "Jul 1–Jul 7",
+   "Dates": "Jun 30–Jul 6",
    "Target kg": 65.5,
    "Training focus": "Build: progressive overload",
    "Cardio goal": "4 x 25–35 min",
@@ -55,7 +55,7 @@ window.PLAN = {
   },
   {
    "Week": 4,
-   "Dates": "Jul 8–Jul 14",
+   "Dates": "Jul 7–Jul 13",
    "Target kg": 65,
    "Training focus": "Build: progressive overload",
    "Cardio goal": "4 x 25–35 min",
@@ -65,7 +65,7 @@ window.PLAN = {
   },
   {
    "Week": 5,
-   "Dates": "Jul 15–Jul 21",
+   "Dates": "Jul 14–Jul 20",
    "Target kg": 64.5,
    "Training focus": "Peak: strongest training weeks",
    "Cardio goal": "4 x 30–40 min",
@@ -75,7 +75,7 @@ window.PLAN = {
   },
   {
    "Week": 6,
-   "Dates": "Jul 22–Jul 28",
+   "Dates": "Jul 21–Jul 27",
    "Target kg": 64,
    "Training focus": "Peak: strongest training weeks",
    "Cardio goal": "4 x 30–40 min",
@@ -85,7 +85,7 @@ window.PLAN = {
   },
   {
    "Week": 7,
-   "Dates": "Jul 29–Aug 4",
+   "Dates": "Jul 28–Aug 3",
    "Target kg": 63.5,
    "Training focus": "Sharpen: maintain strength, slightly more cardio",
    "Cardio goal": "4–5 x 35–45 min",
@@ -95,7 +95,7 @@ window.PLAN = {
   },
   {
    "Week": 8,
-   "Dates": "Aug 5–Aug 11",
+   "Dates": "Aug 4–Aug 10",
    "Target kg": 63,
    "Training focus": "Sharpen: maintain strength, slightly more cardio",
    "Cardio goal": "4–5 x 35–45 min",
@@ -113,42 +113,42 @@ window.PLAN = {
  ],
  "gymCalendar": [
   {
-   "Date": "2026-06-17",
+   "Date": "2026-06-16",
    "Week": 1,
-   "Day": "Wednesday",
+   "Day": "Tuesday",
    "Focus": "Push",
    "Workout Template": "Push A",
    "Cardio": "20 min incline walk, 8–10% incline",
    "Core/Mobility": "Shoulder warm-up",
    "Intensity": "RPE 6–7; leave 2–3 reps in reserve",
    "Notes": "Chest/shoulders/triceps"
+  },
+  {
+   "Date": "2026-06-17",
+   "Week": 1,
+   "Day": "Wednesday",
+   "Focus": "Pull",
+   "Workout Template": "Pull A",
+   "Cardio": "Optional 15–20 min easy walk",
+   "Core/Mobility": "Upper-back mobility",
+   "Intensity": "RPE 6–7; leave 2–3 reps in reserve",
+   "Notes": "Back/biceps/rear delts"
   },
   {
    "Date": "2026-06-18",
    "Week": 1,
    "Day": "Thursday",
-   "Focus": "Pull",
-   "Workout Template": "Pull A",
-   "Cardio": "Optional 15–20 min easy walk",
-   "Core/Mobility": "Upper-back mobility",
+   "Focus": "Legs",
+   "Workout Template": "Legs A",
+   "Cardio": "No hard cardio",
+   "Core/Mobility": "Core: plank + knee raises",
    "Intensity": "RPE 6–7; leave 2–3 reps in reserve",
-   "Notes": "Back/biceps/rear delts"
+   "Notes": "Main leg strength day"
   },
   {
    "Date": "2026-06-19",
    "Week": 1,
    "Day": "Friday",
-   "Focus": "Legs",
-   "Workout Template": "Legs A",
-   "Cardio": "No hard cardio",
-   "Core/Mobility": "Core: plank + knee raises",
-   "Intensity": "RPE 6–7; leave 2–3 reps in reserve",
-   "Notes": "Main leg strength day"
-  },
-  {
-   "Date": "2026-06-20",
-   "Week": 1,
-   "Day": "Saturday",
    "Focus": "Upper",
    "Workout Template": "Upper Mixed",
    "Cardio": "20 min incline walk, 8–10% incline",
@@ -157,9 +157,9 @@ window.PLAN = {
    "Notes": "Second upper-body stimulus"
   },
   {
-   "Date": "2026-06-21",
+   "Date": "2026-06-20",
    "Week": 1,
-   "Day": "Sunday",
+   "Day": "Saturday",
    "Focus": "Lower + Core",
    "Workout Template": "Lower B",
    "Cardio": "Optional 15 min easy walk",
@@ -168,9 +168,9 @@ window.PLAN = {
    "Notes": "Posterior chain + unilateral legs"
   },
   {
-   "Date": "2026-06-22",
+   "Date": "2026-06-21",
    "Week": 1,
-   "Day": "Monday",
+   "Day": "Sunday",
    "Focus": "Active Recovery",
    "Workout Template": "Conditioning + Mobility",
    "Cardio": "Long walk 45–60 min (or easy bike); 8k–10k steps",
@@ -179,9 +179,9 @@ window.PLAN = {
    "Notes": "Longer walk + optional light arm pump; no heavy lifting"
   },
   {
-   "Date": "2026-06-23",
+   "Date": "2026-06-22",
    "Week": 1,
-   "Day": "Tuesday",
+   "Day": "Monday",
    "Focus": "Rest",
    "Workout Template": "Recovery",
    "Cardio": "Walk outside; aim 8k–10k steps",
@@ -190,9 +190,9 @@ window.PLAN = {
    "Notes": "No heavy lifting"
   },
   {
-   "Date": "2026-06-24",
+   "Date": "2026-06-23",
    "Week": 2,
-   "Day": "Wednesday",
+   "Day": "Tuesday",
    "Focus": "Push",
    "Workout Template": "Push A",
    "Cardio": "20 min incline walk, 8–10% incline",
@@ -201,9 +201,9 @@ window.PLAN = {
    "Notes": "Chest/shoulders/triceps"
   },
   {
-   "Date": "2026-06-25",
+   "Date": "2026-06-24",
    "Week": 2,
-   "Day": "Thursday",
+   "Day": "Wednesday",
    "Focus": "Pull",
    "Workout Template": "Pull A",
    "Cardio": "Optional 15–20 min easy walk",
@@ -212,9 +212,9 @@ window.PLAN = {
    "Notes": "Back/biceps/rear delts"
   },
   {
-   "Date": "2026-06-26",
+   "Date": "2026-06-25",
    "Week": 2,
-   "Day": "Friday",
+   "Day": "Thursday",
    "Focus": "Legs",
    "Workout Template": "Legs A",
    "Cardio": "No hard cardio",
@@ -223,9 +223,9 @@ window.PLAN = {
    "Notes": "Main leg strength day"
   },
   {
-   "Date": "2026-06-27",
+   "Date": "2026-06-26",
    "Week": 2,
-   "Day": "Saturday",
+   "Day": "Friday",
    "Focus": "Upper",
    "Workout Template": "Upper Mixed",
    "Cardio": "20 min incline walk, 8–10% incline",
@@ -234,9 +234,9 @@ window.PLAN = {
    "Notes": "Second upper-body stimulus"
   },
   {
-   "Date": "2026-06-28",
+   "Date": "2026-06-27",
    "Week": 2,
-   "Day": "Sunday",
+   "Day": "Saturday",
    "Focus": "Lower + Core",
    "Workout Template": "Lower B",
    "Cardio": "Optional 15 min easy walk",
@@ -245,9 +245,9 @@ window.PLAN = {
    "Notes": "Posterior chain + unilateral legs"
   },
   {
-   "Date": "2026-06-29",
+   "Date": "2026-06-28",
    "Week": 2,
-   "Day": "Monday",
+   "Day": "Sunday",
    "Focus": "Active Recovery",
    "Workout Template": "Conditioning + Mobility",
    "Cardio": "Long walk 45–60 min (or easy bike); 8k–10k steps",
@@ -256,207 +256,207 @@ window.PLAN = {
    "Notes": "Longer walk + optional light arm pump; no heavy lifting"
   },
   {
-   "Date": "2026-06-30",
+   "Date": "2026-06-29",
    "Week": 2,
-   "Day": "Tuesday",
+   "Day": "Monday",
    "Focus": "Rest",
    "Workout Template": "Recovery",
    "Cardio": "Walk outside; aim 8k–10k steps",
    "Core/Mobility": "Stretch 10 min",
    "Intensity": "RPE 6–7; leave 2–3 reps in reserve",
    "Notes": "No heavy lifting"
+  },
+  {
+   "Date": "2026-06-30",
+   "Week": 3,
+   "Day": "Tuesday",
+   "Focus": "Push",
+   "Workout Template": "Push A",
+   "Cardio": "25–35 min incline walk, 8–12% incline",
+   "Core/Mobility": "Shoulder warm-up",
+   "Intensity": "RPE 7–8; add reps or small weight",
+   "Notes": "Chest/shoulders/triceps"
   },
   {
    "Date": "2026-07-01",
    "Week": 3,
    "Day": "Wednesday",
-   "Focus": "Push",
-   "Workout Template": "Push A",
-   "Cardio": "25–35 min incline walk, 8–12% incline",
-   "Core/Mobility": "Shoulder warm-up",
+   "Focus": "Pull",
+   "Workout Template": "Pull A",
+   "Cardio": "20–25 min incline walk if recovered",
+   "Core/Mobility": "Upper-back mobility",
    "Intensity": "RPE 7–8; add reps or small weight",
-   "Notes": "Chest/shoulders/triceps"
+   "Notes": "Back/biceps/rear delts"
   },
   {
    "Date": "2026-07-02",
    "Week": 3,
    "Day": "Thursday",
-   "Focus": "Pull",
-   "Workout Template": "Pull A",
-   "Cardio": "20–25 min incline walk if recovered",
-   "Core/Mobility": "Upper-back mobility",
+   "Focus": "Legs",
+   "Workout Template": "Legs A",
+   "Cardio": "No hard cardio",
+   "Core/Mobility": "Core: plank + knee raises",
    "Intensity": "RPE 7–8; add reps or small weight",
-   "Notes": "Back/biceps/rear delts"
+   "Notes": "Main leg strength day"
   },
   {
    "Date": "2026-07-03",
    "Week": 3,
    "Day": "Friday",
-   "Focus": "Legs",
-   "Workout Template": "Legs A",
-   "Cardio": "No hard cardio",
-   "Core/Mobility": "Core: plank + knee raises",
+   "Focus": "Upper",
+   "Workout Template": "Upper Mixed",
+   "Cardio": "25–35 min incline walk, 8–12% incline",
+   "Core/Mobility": "Band pull-aparts",
    "Intensity": "RPE 7–8; add reps or small weight",
-   "Notes": "Main leg strength day"
+   "Notes": "Second upper-body stimulus"
   },
   {
    "Date": "2026-07-04",
    "Week": 3,
    "Day": "Saturday",
-   "Focus": "Upper",
-   "Workout Template": "Upper Mixed",
-   "Cardio": "25–35 min incline walk, 8–12% incline",
-   "Core/Mobility": "Band pull-aparts",
+   "Focus": "Lower + Core",
+   "Workout Template": "Lower B",
+   "Cardio": "20–30 min easy walk",
+   "Core/Mobility": "Core circuit",
    "Intensity": "RPE 7–8; add reps or small weight",
-   "Notes": "Second upper-body stimulus"
+   "Notes": "Posterior chain + unilateral legs"
   },
   {
    "Date": "2026-07-05",
    "Week": 3,
    "Day": "Sunday",
-   "Focus": "Lower + Core",
-   "Workout Template": "Lower B",
-   "Cardio": "20–30 min easy walk",
-   "Core/Mobility": "Core circuit",
+   "Focus": "Active Recovery",
+   "Workout Template": "Conditioning + Mobility",
+   "Cardio": "Long walk 45–60 min (or easy bike); 8k–10k steps",
+   "Core/Mobility": "Full-body mobility",
    "Intensity": "RPE 7–8; add reps or small weight",
-   "Notes": "Posterior chain + unilateral legs"
+   "Notes": "Longer walk + optional light arm pump; no heavy lifting"
   },
   {
    "Date": "2026-07-06",
    "Week": 3,
    "Day": "Monday",
-   "Focus": "Active Recovery",
-   "Workout Template": "Conditioning + Mobility",
-   "Cardio": "Long walk 45–60 min (or easy bike); 8k–10k steps",
-   "Core/Mobility": "Full-body mobility",
-   "Intensity": "RPE 7–8; add reps or small weight",
-   "Notes": "Longer walk + optional light arm pump; no heavy lifting"
-  },
-  {
-   "Date": "2026-07-07",
-   "Week": 3,
-   "Day": "Tuesday",
    "Focus": "Rest",
    "Workout Template": "Recovery",
    "Cardio": "Walk outside; aim 8k–10k steps",
    "Core/Mobility": "Stretch 10 min",
    "Intensity": "RPE 7–8; add reps or small weight",
    "Notes": "No heavy lifting"
+  },
+  {
+   "Date": "2026-07-07",
+   "Week": 4,
+   "Day": "Tuesday",
+   "Focus": "Push",
+   "Workout Template": "Push A",
+   "Cardio": "25–35 min incline walk, 8–12% incline",
+   "Core/Mobility": "Shoulder warm-up",
+   "Intensity": "RPE 7–8; add reps or small weight",
+   "Notes": "Chest/shoulders/triceps"
   },
   {
    "Date": "2026-07-08",
    "Week": 4,
    "Day": "Wednesday",
-   "Focus": "Push",
-   "Workout Template": "Push A",
-   "Cardio": "25–35 min incline walk, 8–12% incline",
-   "Core/Mobility": "Shoulder warm-up",
+   "Focus": "Pull",
+   "Workout Template": "Pull A",
+   "Cardio": "20–25 min incline walk if recovered",
+   "Core/Mobility": "Upper-back mobility",
    "Intensity": "RPE 7–8; add reps or small weight",
-   "Notes": "Chest/shoulders/triceps"
+   "Notes": "Back/biceps/rear delts"
   },
   {
    "Date": "2026-07-09",
    "Week": 4,
    "Day": "Thursday",
-   "Focus": "Pull",
-   "Workout Template": "Pull A",
-   "Cardio": "20–25 min incline walk if recovered",
-   "Core/Mobility": "Upper-back mobility",
+   "Focus": "Legs",
+   "Workout Template": "Legs A",
+   "Cardio": "No hard cardio",
+   "Core/Mobility": "Core: plank + knee raises",
    "Intensity": "RPE 7–8; add reps or small weight",
-   "Notes": "Back/biceps/rear delts"
+   "Notes": "Main leg strength day"
   },
   {
    "Date": "2026-07-10",
    "Week": 4,
    "Day": "Friday",
-   "Focus": "Legs",
-   "Workout Template": "Legs A",
-   "Cardio": "No hard cardio",
-   "Core/Mobility": "Core: plank + knee raises",
+   "Focus": "Upper",
+   "Workout Template": "Upper Mixed",
+   "Cardio": "25–35 min incline walk, 8–12% incline",
+   "Core/Mobility": "Band pull-aparts",
    "Intensity": "RPE 7–8; add reps or small weight",
-   "Notes": "Main leg strength day"
+   "Notes": "Second upper-body stimulus"
   },
   {
    "Date": "2026-07-11",
    "Week": 4,
    "Day": "Saturday",
-   "Focus": "Upper",
-   "Workout Template": "Upper Mixed",
-   "Cardio": "25–35 min incline walk, 8–12% incline",
-   "Core/Mobility": "Band pull-aparts",
+   "Focus": "Lower + Core",
+   "Workout Template": "Lower B",
+   "Cardio": "20–30 min easy walk",
+   "Core/Mobility": "Core circuit",
    "Intensity": "RPE 7–8; add reps or small weight",
-   "Notes": "Second upper-body stimulus"
+   "Notes": "Posterior chain + unilateral legs"
   },
   {
    "Date": "2026-07-12",
    "Week": 4,
    "Day": "Sunday",
-   "Focus": "Lower + Core",
-   "Workout Template": "Lower B",
-   "Cardio": "20–30 min easy walk",
-   "Core/Mobility": "Core circuit",
+   "Focus": "Active Recovery",
+   "Workout Template": "Conditioning + Mobility",
+   "Cardio": "Long walk 45–60 min (or easy bike); 8k–10k steps",
+   "Core/Mobility": "Full-body mobility",
    "Intensity": "RPE 7–8; add reps or small weight",
-   "Notes": "Posterior chain + unilateral legs"
+   "Notes": "Longer walk + optional light arm pump; no heavy lifting"
   },
   {
    "Date": "2026-07-13",
    "Week": 4,
    "Day": "Monday",
-   "Focus": "Active Recovery",
-   "Workout Template": "Conditioning + Mobility",
-   "Cardio": "Long walk 45–60 min (or easy bike); 8k–10k steps",
-   "Core/Mobility": "Full-body mobility",
-   "Intensity": "RPE 7–8; add reps or small weight",
-   "Notes": "Longer walk + optional light arm pump; no heavy lifting"
-  },
-  {
-   "Date": "2026-07-14",
-   "Week": 4,
-   "Day": "Tuesday",
    "Focus": "Rest",
    "Workout Template": "Recovery",
    "Cardio": "Walk outside; aim 8k–10k steps",
    "Core/Mobility": "Stretch 10 min",
    "Intensity": "RPE 7–8; add reps or small weight",
    "Notes": "No heavy lifting"
+  },
+  {
+   "Date": "2026-07-14",
+   "Week": 5,
+   "Day": "Tuesday",
+   "Focus": "Push",
+   "Workout Template": "Push A",
+   "Cardio": "25–35 min incline walk, 8–12% incline",
+   "Core/Mobility": "Shoulder warm-up",
+   "Intensity": "RPE 8; last set can be hard but clean",
+   "Notes": "Chest/shoulders/triceps"
   },
   {
    "Date": "2026-07-15",
    "Week": 5,
    "Day": "Wednesday",
-   "Focus": "Push",
-   "Workout Template": "Push A",
-   "Cardio": "25–35 min incline walk, 8–12% incline",
-   "Core/Mobility": "Shoulder warm-up",
+   "Focus": "Pull",
+   "Workout Template": "Pull A",
+   "Cardio": "20–25 min incline walk if recovered",
+   "Core/Mobility": "Upper-back mobility",
    "Intensity": "RPE 8; last set can be hard but clean",
-   "Notes": "Chest/shoulders/triceps"
+   "Notes": "Back/biceps/rear delts"
   },
   {
    "Date": "2026-07-16",
    "Week": 5,
    "Day": "Thursday",
-   "Focus": "Pull",
-   "Workout Template": "Pull A",
-   "Cardio": "20–25 min incline walk if recovered",
-   "Core/Mobility": "Upper-back mobility",
+   "Focus": "Legs",
+   "Workout Template": "Legs A",
+   "Cardio": "No hard cardio",
+   "Core/Mobility": "Core: plank + knee raises",
    "Intensity": "RPE 8; last set can be hard but clean",
-   "Notes": "Back/biceps/rear delts"
+   "Notes": "Main leg strength day"
   },
   {
    "Date": "2026-07-17",
    "Week": 5,
    "Day": "Friday",
-   "Focus": "Legs",
-   "Workout Template": "Legs A",
-   "Cardio": "No hard cardio",
-   "Core/Mobility": "Core: plank + knee raises",
-   "Intensity": "RPE 8; last set can be hard but clean",
-   "Notes": "Main leg strength day"
-  },
-  {
-   "Date": "2026-07-18",
-   "Week": 5,
-   "Day": "Saturday",
    "Focus": "Upper",
    "Workout Template": "Upper Mixed",
    "Cardio": "25–35 min incline walk, 8–12% incline",
@@ -465,9 +465,9 @@ window.PLAN = {
    "Notes": "Second upper-body stimulus"
   },
   {
-   "Date": "2026-07-19",
+   "Date": "2026-07-18",
    "Week": 5,
-   "Day": "Sunday",
+   "Day": "Saturday",
    "Focus": "Lower + Core",
    "Workout Template": "Lower B",
    "Cardio": "20–30 min easy walk",
@@ -476,9 +476,9 @@ window.PLAN = {
    "Notes": "Posterior chain + unilateral legs"
   },
   {
-   "Date": "2026-07-20",
+   "Date": "2026-07-19",
    "Week": 5,
-   "Day": "Monday",
+   "Day": "Sunday",
    "Focus": "Active Recovery",
    "Workout Template": "Conditioning + Mobility",
    "Cardio": "Long walk 45–60 min (or easy bike); 8k–10k steps",
@@ -487,9 +487,9 @@ window.PLAN = {
    "Notes": "Longer walk + optional light arm pump; no heavy lifting"
   },
   {
-   "Date": "2026-07-21",
+   "Date": "2026-07-20",
    "Week": 5,
-   "Day": "Tuesday",
+   "Day": "Monday",
    "Focus": "Rest",
    "Workout Template": "Recovery",
    "Cardio": "Walk outside; aim 8k–10k steps",
@@ -498,9 +498,9 @@ window.PLAN = {
    "Notes": "No heavy lifting"
   },
   {
-   "Date": "2026-07-22",
+   "Date": "2026-07-21",
    "Week": 6,
-   "Day": "Wednesday",
+   "Day": "Tuesday",
    "Focus": "Push",
    "Workout Template": "Push A",
    "Cardio": "25–35 min incline walk, 8–12% incline",
@@ -509,9 +509,9 @@ window.PLAN = {
    "Notes": "Chest/shoulders/triceps"
   },
   {
-   "Date": "2026-07-23",
+   "Date": "2026-07-22",
    "Week": 6,
-   "Day": "Thursday",
+   "Day": "Wednesday",
    "Focus": "Pull",
    "Workout Template": "Pull A",
    "Cardio": "20–25 min incline walk if recovered",
@@ -520,9 +520,9 @@ window.PLAN = {
    "Notes": "Back/biceps/rear delts"
   },
   {
-   "Date": "2026-07-24",
+   "Date": "2026-07-23",
    "Week": 6,
-   "Day": "Friday",
+   "Day": "Thursday",
    "Focus": "Legs",
    "Workout Template": "Legs A",
    "Cardio": "No hard cardio",
@@ -531,9 +531,9 @@ window.PLAN = {
    "Notes": "Main leg strength day"
   },
   {
-   "Date": "2026-07-25",
+   "Date": "2026-07-24",
    "Week": 6,
-   "Day": "Saturday",
+   "Day": "Friday",
    "Focus": "Upper",
    "Workout Template": "Upper Mixed",
    "Cardio": "25–35 min incline walk, 8–12% incline",
@@ -542,9 +542,9 @@ window.PLAN = {
    "Notes": "Second upper-body stimulus"
   },
   {
-   "Date": "2026-07-26",
+   "Date": "2026-07-25",
    "Week": 6,
-   "Day": "Sunday",
+   "Day": "Saturday",
    "Focus": "Lower + Core",
    "Workout Template": "Lower B",
    "Cardio": "20–30 min easy walk",
@@ -553,9 +553,9 @@ window.PLAN = {
    "Notes": "Posterior chain + unilateral legs"
   },
   {
-   "Date": "2026-07-27",
+   "Date": "2026-07-26",
    "Week": 6,
-   "Day": "Monday",
+   "Day": "Sunday",
    "Focus": "Active Recovery",
    "Workout Template": "Conditioning + Mobility",
    "Cardio": "Long walk 45–60 min (or easy bike); 8k–10k steps",
@@ -564,31 +564,31 @@ window.PLAN = {
    "Notes": "Longer walk + optional light arm pump; no heavy lifting"
   },
   {
-   "Date": "2026-07-28",
+   "Date": "2026-07-27",
    "Week": 6,
-   "Day": "Tuesday",
+   "Day": "Monday",
    "Focus": "Rest",
    "Workout Template": "Recovery",
    "Cardio": "Walk outside; aim 8k–10k steps",
    "Core/Mobility": "Stretch 10 min",
    "Intensity": "RPE 8; last set can be hard but clean",
    "Notes": "No heavy lifting"
+  },
+  {
+   "Date": "2026-07-28",
+   "Week": 7,
+   "Day": "Tuesday",
+   "Focus": "Push",
+   "Workout Template": "Push A",
+   "Cardio": "35–40 min incline walk, 8–12% incline",
+   "Core/Mobility": "Shoulder warm-up",
+   "Intensity": "Maintain weights; do not chase failure",
+   "Notes": "Chest/shoulders/triceps"
   },
   {
    "Date": "2026-07-29",
    "Week": 7,
    "Day": "Wednesday",
-   "Focus": "Push",
-   "Workout Template": "Push A",
-   "Cardio": "35–40 min incline walk, 8–12% incline",
-   "Core/Mobility": "Shoulder warm-up",
-   "Intensity": "Maintain weights; do not chase failure",
-   "Notes": "Chest/shoulders/triceps"
-  },
-  {
-   "Date": "2026-07-30",
-   "Week": 7,
-   "Day": "Thursday",
    "Focus": "Pull",
    "Workout Template": "Pull A",
    "Cardio": "25–30 min incline walk",
@@ -597,9 +597,9 @@ window.PLAN = {
    "Notes": "Back/biceps/rear delts"
   },
   {
-   "Date": "2026-07-31",
+   "Date": "2026-07-30",
    "Week": 7,
-   "Day": "Friday",
+   "Day": "Thursday",
    "Focus": "Legs",
    "Workout Template": "Legs A",
    "Cardio": "No hard cardio",
@@ -608,9 +608,9 @@ window.PLAN = {
    "Notes": "Main leg strength day"
   },
   {
-   "Date": "2026-08-01",
+   "Date": "2026-07-31",
    "Week": 7,
-   "Day": "Saturday",
+   "Day": "Friday",
    "Focus": "Upper",
    "Workout Template": "Upper Mixed",
    "Cardio": "35–40 min incline walk, 8–12% incline",
@@ -619,9 +619,9 @@ window.PLAN = {
    "Notes": "Second upper-body stimulus"
   },
   {
-   "Date": "2026-08-02",
+   "Date": "2026-08-01",
    "Week": 7,
-   "Day": "Sunday",
+   "Day": "Saturday",
    "Focus": "Lower + Core",
    "Workout Template": "Lower B",
    "Cardio": "30–35 min incline walk",
@@ -630,9 +630,9 @@ window.PLAN = {
    "Notes": "Posterior chain + unilateral legs"
   },
   {
-   "Date": "2026-08-03",
+   "Date": "2026-08-02",
    "Week": 7,
-   "Day": "Monday",
+   "Day": "Sunday",
    "Focus": "Active Recovery",
    "Workout Template": "Conditioning + Mobility",
    "Cardio": "Long walk 45–60 min (or easy bike); 8k–10k steps",
@@ -641,9 +641,9 @@ window.PLAN = {
    "Notes": "Longer walk + optional light arm pump; no heavy lifting"
   },
   {
-   "Date": "2026-08-04",
+   "Date": "2026-08-03",
    "Week": 7,
-   "Day": "Tuesday",
+   "Day": "Monday",
    "Focus": "Rest",
    "Workout Template": "Recovery",
    "Cardio": "Walk outside; aim 8k–10k steps",
@@ -652,9 +652,9 @@ window.PLAN = {
    "Notes": "No heavy lifting"
   },
   {
-   "Date": "2026-08-05",
+   "Date": "2026-08-04",
    "Week": 8,
-   "Day": "Wednesday",
+   "Day": "Tuesday",
    "Focus": "Push",
    "Workout Template": "Push A",
    "Cardio": "35–40 min incline walk, 8–12% incline",
@@ -663,9 +663,9 @@ window.PLAN = {
    "Notes": "Chest/shoulders/triceps"
   },
   {
-   "Date": "2026-08-06",
+   "Date": "2026-08-05",
    "Week": 8,
-   "Day": "Thursday",
+   "Day": "Wednesday",
    "Focus": "Pull",
    "Workout Template": "Pull A",
    "Cardio": "25–30 min incline walk",
@@ -674,9 +674,9 @@ window.PLAN = {
    "Notes": "Back/biceps/rear delts"
   },
   {
-   "Date": "2026-08-07",
+   "Date": "2026-08-06",
    "Week": 8,
-   "Day": "Friday",
+   "Day": "Thursday",
    "Focus": "Legs",
    "Workout Template": "Legs A",
    "Cardio": "No hard cardio",
@@ -685,9 +685,9 @@ window.PLAN = {
    "Notes": "Main leg strength day"
   },
   {
-   "Date": "2026-08-08",
+   "Date": "2026-08-07",
    "Week": 8,
-   "Day": "Saturday",
+   "Day": "Friday",
    "Focus": "Upper",
    "Workout Template": "Upper Mixed",
    "Cardio": "35–40 min incline walk, 8–12% incline",
@@ -696,9 +696,9 @@ window.PLAN = {
    "Notes": "Second upper-body stimulus"
   },
   {
-   "Date": "2026-08-09",
+   "Date": "2026-08-08",
    "Week": 8,
-   "Day": "Sunday",
+   "Day": "Saturday",
    "Focus": "Lower + Core",
    "Workout Template": "Lower B",
    "Cardio": "30–35 min incline walk",
@@ -707,9 +707,9 @@ window.PLAN = {
    "Notes": "Posterior chain + unilateral legs"
   },
   {
-   "Date": "2026-08-10",
+   "Date": "2026-08-09",
    "Week": 8,
-   "Day": "Monday",
+   "Day": "Sunday",
    "Focus": "Active Recovery",
    "Workout Template": "Conditioning + Mobility",
    "Cardio": "Long walk 45–60 min (or easy bike); 8k–10k steps",
@@ -718,9 +718,9 @@ window.PLAN = {
    "Notes": "Longer walk + optional light arm pump; no heavy lifting"
   },
   {
-   "Date": "2026-08-11",
+   "Date": "2026-08-10",
    "Week": 8,
-   "Day": "Tuesday",
+   "Day": "Monday",
    "Focus": "Rest",
    "Workout Template": "Recovery",
    "Cardio": "Walk outside; aim 8k–10k steps",
@@ -1401,7 +1401,7 @@ window.PLAN = {
  ],
  "mealCalendar": [
   {
-   "Date": "2026-06-17",
+   "Date": "2026-06-16",
    "Week": 1,
    "Training Day": "Push",
    "Breakfast": "Egg Turkey Toast Plate",
@@ -1412,6 +1412,26 @@ window.PLAN = {
    "Approx Calories": null,
    "Protein g": null,
    "Notes": "≈1,940 kcal. Add fruit only if training energy is low.",
+   "Wake / Early Work": "4:00 AM wake; water + coffee/tea",
+   "Meal 1 Time": "8:30 AM pre-workout breakfast",
+   "Gym Window": "9:45–11:00 AM",
+   "Meal 2 Time": "12:00 PM post-workout lunch",
+   "Snack Time": "3:30 PM",
+   "Meal 3 Time": "7:00 PM",
+   "Timing Notes": "Best default: lift after work block, then eat lunch within 1–2 hours."
+  },
+  {
+   "Date": "2026-06-17",
+   "Week": 1,
+   "Training Day": "Pull",
+   "Breakfast": "Greek Yogurt Protein Bowl",
+   "Lunch": "Tuna Greek Yogurt Wrap",
+   "Dinner": "Chicken Rice Bowl",
+   "Snack 1": "Cottage Cheese Fruit Bowl",
+   "Snack 2": null,
+   "Approx Calories": null,
+   "Protein g": null,
+   "Notes": "≈1,915 kcal. Good protein day.",
    "Wake / Early Work": "4:00 AM wake; water + coffee/tea",
    "Meal 1 Time": "8:30 AM pre-workout breakfast",
    "Gym Window": "9:45–11:00 AM",
@@ -1423,26 +1443,6 @@ window.PLAN = {
   {
    "Date": "2026-06-18",
    "Week": 1,
-   "Training Day": "Pull",
-   "Breakfast": "Greek Yogurt Protein Bowl",
-   "Lunch": "Tuna Greek Yogurt Wrap",
-   "Dinner": "Chicken Rice Bowl",
-   "Snack 1": "Cottage Cheese Fruit Bowl",
-   "Snack 2": null,
-   "Approx Calories": null,
-   "Protein g": null,
-   "Notes": "≈1,915 kcal. Good protein day.",
-   "Wake / Early Work": "4:00 AM wake; water + coffee/tea",
-   "Meal 1 Time": "8:30 AM pre-workout breakfast",
-   "Gym Window": "9:45–11:00 AM",
-   "Meal 2 Time": "12:00 PM post-workout lunch",
-   "Snack Time": "3:30 PM",
-   "Meal 3 Time": "7:00 PM",
-   "Timing Notes": "Best default: lift after work block, then eat lunch within 1–2 hours."
-  },
-  {
-   "Date": "2026-06-19",
-   "Week": 1,
    "Training Day": "Legs",
    "Breakfast": "Protein Oatmeal",
    "Lunch": "Chicken Rice Bowl",
@@ -1461,7 +1461,7 @@ window.PLAN = {
    "Timing Notes": "Hard lower-body day: keep breakfast/lunch carbs; do not skip lunch."
   },
   {
-   "Date": "2026-06-20",
+   "Date": "2026-06-19",
    "Week": 1,
    "Training Day": "Upper",
    "Breakfast": "Egg Turkey Toast Plate",
@@ -1481,7 +1481,7 @@ window.PLAN = {
    "Timing Notes": "Best default: lift after work block, then eat lunch within 1–2 hours."
   },
   {
-   "Date": "2026-06-21",
+   "Date": "2026-06-20",
    "Week": 1,
    "Training Day": "Lower + Core",
    "Breakfast": "Greek Yogurt Protein Bowl",
@@ -1501,7 +1501,7 @@ window.PLAN = {
    "Timing Notes": "Hard lower-body day: keep breakfast/lunch carbs; do not skip lunch."
   },
   {
-   "Date": "2026-06-22",
+   "Date": "2026-06-21",
    "Week": 1,
    "Training Day": "Active Recovery",
    "Breakfast": "Protein Oatmeal",
@@ -1521,7 +1521,7 @@ window.PLAN = {
    "Timing Notes": "Active recovery: long walk 45–60 min; eat meals as planned."
   },
   {
-   "Date": "2026-06-23",
+   "Date": "2026-06-22",
    "Week": 1,
    "Training Day": "Rest",
    "Breakfast": "Greek Yogurt Protein Bowl",
@@ -1541,7 +1541,7 @@ window.PLAN = {
    "Timing Notes": "Keep carbs slightly lower; hit protein; no need for pre/post-workout timing."
   },
   {
-   "Date": "2026-06-24",
+   "Date": "2026-06-23",
    "Week": 2,
    "Training Day": "Push",
    "Breakfast": "Egg Turkey Toast Plate",
@@ -1552,6 +1552,26 @@ window.PLAN = {
    "Approx Calories": null,
    "Protein g": null,
    "Notes": "≈1,940 kcal. Add fruit only if training energy is low.",
+   "Wake / Early Work": "4:00 AM wake; water + coffee/tea",
+   "Meal 1 Time": "8:30 AM pre-workout breakfast",
+   "Gym Window": "9:45–11:00 AM",
+   "Meal 2 Time": "12:00 PM post-workout lunch",
+   "Snack Time": "3:30 PM",
+   "Meal 3 Time": "7:00 PM",
+   "Timing Notes": "Best default: lift after work block, then eat lunch within 1–2 hours."
+  },
+  {
+   "Date": "2026-06-24",
+   "Week": 2,
+   "Training Day": "Pull",
+   "Breakfast": "Greek Yogurt Protein Bowl",
+   "Lunch": "Tuna Greek Yogurt Wrap",
+   "Dinner": "Chicken Rice Bowl",
+   "Snack 1": "Cottage Cheese Fruit Bowl",
+   "Snack 2": null,
+   "Approx Calories": null,
+   "Protein g": null,
+   "Notes": "≈1,915 kcal. Good protein day.",
    "Wake / Early Work": "4:00 AM wake; water + coffee/tea",
    "Meal 1 Time": "8:30 AM pre-workout breakfast",
    "Gym Window": "9:45–11:00 AM",
@@ -1563,26 +1583,6 @@ window.PLAN = {
   {
    "Date": "2026-06-25",
    "Week": 2,
-   "Training Day": "Pull",
-   "Breakfast": "Greek Yogurt Protein Bowl",
-   "Lunch": "Tuna Greek Yogurt Wrap",
-   "Dinner": "Chicken Rice Bowl",
-   "Snack 1": "Cottage Cheese Fruit Bowl",
-   "Snack 2": null,
-   "Approx Calories": null,
-   "Protein g": null,
-   "Notes": "≈1,915 kcal. Good protein day.",
-   "Wake / Early Work": "4:00 AM wake; water + coffee/tea",
-   "Meal 1 Time": "8:30 AM pre-workout breakfast",
-   "Gym Window": "9:45–11:00 AM",
-   "Meal 2 Time": "12:00 PM post-workout lunch",
-   "Snack Time": "3:30 PM",
-   "Meal 3 Time": "7:00 PM",
-   "Timing Notes": "Best default: lift after work block, then eat lunch within 1–2 hours."
-  },
-  {
-   "Date": "2026-06-26",
-   "Week": 2,
    "Training Day": "Legs",
    "Breakfast": "Protein Oatmeal",
    "Lunch": "Chicken Rice Bowl",
@@ -1601,7 +1601,7 @@ window.PLAN = {
    "Timing Notes": "Hard lower-body day: keep breakfast/lunch carbs; do not skip lunch."
   },
   {
-   "Date": "2026-06-27",
+   "Date": "2026-06-26",
    "Week": 2,
    "Training Day": "Upper",
    "Breakfast": "Egg Turkey Toast Plate",
@@ -1621,7 +1621,7 @@ window.PLAN = {
    "Timing Notes": "Best default: lift after work block, then eat lunch within 1–2 hours."
   },
   {
-   "Date": "2026-06-28",
+   "Date": "2026-06-27",
    "Week": 2,
    "Training Day": "Lower + Core",
    "Breakfast": "Greek Yogurt Protein Bowl",
@@ -1641,7 +1641,7 @@ window.PLAN = {
    "Timing Notes": "Hard lower-body day: keep breakfast/lunch carbs; do not skip lunch."
   },
   {
-   "Date": "2026-06-29",
+   "Date": "2026-06-28",
    "Week": 2,
    "Training Day": "Active Recovery",
    "Breakfast": "Protein Oatmeal",
@@ -1661,7 +1661,7 @@ window.PLAN = {
    "Timing Notes": "Active recovery: long walk 45–60 min; eat meals as planned."
   },
   {
-   "Date": "2026-06-30",
+   "Date": "2026-06-29",
    "Week": 2,
    "Training Day": "Rest",
    "Breakfast": "Greek Yogurt Protein Bowl",
@@ -1681,7 +1681,7 @@ window.PLAN = {
    "Timing Notes": "Keep carbs slightly lower; hit protein; no need for pre/post-workout timing."
   },
   {
-   "Date": "2026-07-01",
+   "Date": "2026-06-30",
    "Week": 3,
    "Training Day": "Push",
    "Breakfast": "Egg Turkey Toast Plate",
@@ -1692,6 +1692,26 @@ window.PLAN = {
    "Approx Calories": null,
    "Protein g": null,
    "Notes": "≈1,940 kcal. Add fruit only if training energy is low.",
+   "Wake / Early Work": "4:00 AM wake; water + coffee/tea",
+   "Meal 1 Time": "8:30 AM pre-workout breakfast",
+   "Gym Window": "9:45–11:00 AM",
+   "Meal 2 Time": "12:00 PM post-workout lunch",
+   "Snack Time": "3:30 PM",
+   "Meal 3 Time": "7:00 PM",
+   "Timing Notes": "Best default: lift after work block, then eat lunch within 1–2 hours."
+  },
+  {
+   "Date": "2026-07-01",
+   "Week": 3,
+   "Training Day": "Pull",
+   "Breakfast": "Greek Yogurt Protein Bowl",
+   "Lunch": "Tuna Greek Yogurt Wrap",
+   "Dinner": "Chicken Rice Bowl",
+   "Snack 1": "Cottage Cheese Fruit Bowl",
+   "Snack 2": null,
+   "Approx Calories": null,
+   "Protein g": null,
+   "Notes": "≈1,915 kcal. Good protein day.",
    "Wake / Early Work": "4:00 AM wake; water + coffee/tea",
    "Meal 1 Time": "8:30 AM pre-workout breakfast",
    "Gym Window": "9:45–11:00 AM",
@@ -1703,26 +1723,6 @@ window.PLAN = {
   {
    "Date": "2026-07-02",
    "Week": 3,
-   "Training Day": "Pull",
-   "Breakfast": "Greek Yogurt Protein Bowl",
-   "Lunch": "Tuna Greek Yogurt Wrap",
-   "Dinner": "Chicken Rice Bowl",
-   "Snack 1": "Cottage Cheese Fruit Bowl",
-   "Snack 2": null,
-   "Approx Calories": null,
-   "Protein g": null,
-   "Notes": "≈1,915 kcal. Good protein day.",
-   "Wake / Early Work": "4:00 AM wake; water + coffee/tea",
-   "Meal 1 Time": "8:30 AM pre-workout breakfast",
-   "Gym Window": "9:45–11:00 AM",
-   "Meal 2 Time": "12:00 PM post-workout lunch",
-   "Snack Time": "3:30 PM",
-   "Meal 3 Time": "7:00 PM",
-   "Timing Notes": "Best default: lift after work block, then eat lunch within 1–2 hours."
-  },
-  {
-   "Date": "2026-07-03",
-   "Week": 3,
    "Training Day": "Legs",
    "Breakfast": "Protein Oatmeal",
    "Lunch": "Chicken Rice Bowl",
@@ -1741,7 +1741,7 @@ window.PLAN = {
    "Timing Notes": "Hard lower-body day: keep breakfast/lunch carbs; do not skip lunch."
   },
   {
-   "Date": "2026-07-04",
+   "Date": "2026-07-03",
    "Week": 3,
    "Training Day": "Upper",
    "Breakfast": "Egg Turkey Toast Plate",
@@ -1761,7 +1761,7 @@ window.PLAN = {
    "Timing Notes": "Best default: lift after work block, then eat lunch within 1–2 hours."
   },
   {
-   "Date": "2026-07-05",
+   "Date": "2026-07-04",
    "Week": 3,
    "Training Day": "Lower + Core",
    "Breakfast": "Greek Yogurt Protein Bowl",
@@ -1781,7 +1781,7 @@ window.PLAN = {
    "Timing Notes": "Hard lower-body day: keep breakfast/lunch carbs; do not skip lunch."
   },
   {
-   "Date": "2026-07-06",
+   "Date": "2026-07-05",
    "Week": 3,
    "Training Day": "Active Recovery",
    "Breakfast": "Protein Oatmeal",
@@ -1801,7 +1801,7 @@ window.PLAN = {
    "Timing Notes": "Active recovery: long walk 45–60 min; eat meals as planned."
   },
   {
-   "Date": "2026-07-07",
+   "Date": "2026-07-06",
    "Week": 3,
    "Training Day": "Rest",
    "Breakfast": "Greek Yogurt Protein Bowl",
@@ -1821,7 +1821,7 @@ window.PLAN = {
    "Timing Notes": "Keep carbs slightly lower; hit protein; no need for pre/post-workout timing."
   },
   {
-   "Date": "2026-07-08",
+   "Date": "2026-07-07",
    "Week": 4,
    "Training Day": "Push",
    "Breakfast": "Egg Turkey Toast Plate",
@@ -1832,6 +1832,26 @@ window.PLAN = {
    "Approx Calories": null,
    "Protein g": null,
    "Notes": "≈1,940 kcal. Add fruit only if training energy is low.",
+   "Wake / Early Work": "4:00 AM wake; water + coffee/tea",
+   "Meal 1 Time": "8:30 AM pre-workout breakfast",
+   "Gym Window": "9:45–11:00 AM",
+   "Meal 2 Time": "12:00 PM post-workout lunch",
+   "Snack Time": "3:30 PM",
+   "Meal 3 Time": "7:00 PM",
+   "Timing Notes": "Best default: lift after work block, then eat lunch within 1–2 hours."
+  },
+  {
+   "Date": "2026-07-08",
+   "Week": 4,
+   "Training Day": "Pull",
+   "Breakfast": "Greek Yogurt Protein Bowl",
+   "Lunch": "Tuna Greek Yogurt Wrap",
+   "Dinner": "Chicken Rice Bowl",
+   "Snack 1": "Cottage Cheese Fruit Bowl",
+   "Snack 2": null,
+   "Approx Calories": null,
+   "Protein g": null,
+   "Notes": "≈1,915 kcal. Good protein day.",
    "Wake / Early Work": "4:00 AM wake; water + coffee/tea",
    "Meal 1 Time": "8:30 AM pre-workout breakfast",
    "Gym Window": "9:45–11:00 AM",
@@ -1843,26 +1863,6 @@ window.PLAN = {
   {
    "Date": "2026-07-09",
    "Week": 4,
-   "Training Day": "Pull",
-   "Breakfast": "Greek Yogurt Protein Bowl",
-   "Lunch": "Tuna Greek Yogurt Wrap",
-   "Dinner": "Chicken Rice Bowl",
-   "Snack 1": "Cottage Cheese Fruit Bowl",
-   "Snack 2": null,
-   "Approx Calories": null,
-   "Protein g": null,
-   "Notes": "≈1,915 kcal. Good protein day.",
-   "Wake / Early Work": "4:00 AM wake; water + coffee/tea",
-   "Meal 1 Time": "8:30 AM pre-workout breakfast",
-   "Gym Window": "9:45–11:00 AM",
-   "Meal 2 Time": "12:00 PM post-workout lunch",
-   "Snack Time": "3:30 PM",
-   "Meal 3 Time": "7:00 PM",
-   "Timing Notes": "Best default: lift after work block, then eat lunch within 1–2 hours."
-  },
-  {
-   "Date": "2026-07-10",
-   "Week": 4,
    "Training Day": "Legs",
    "Breakfast": "Protein Oatmeal",
    "Lunch": "Chicken Rice Bowl",
@@ -1881,7 +1881,7 @@ window.PLAN = {
    "Timing Notes": "Hard lower-body day: keep breakfast/lunch carbs; do not skip lunch."
   },
   {
-   "Date": "2026-07-11",
+   "Date": "2026-07-10",
    "Week": 4,
    "Training Day": "Upper",
    "Breakfast": "Egg Turkey Toast Plate",
@@ -1901,7 +1901,7 @@ window.PLAN = {
    "Timing Notes": "Best default: lift after work block, then eat lunch within 1–2 hours."
   },
   {
-   "Date": "2026-07-12",
+   "Date": "2026-07-11",
    "Week": 4,
    "Training Day": "Lower + Core",
    "Breakfast": "Greek Yogurt Protein Bowl",
@@ -1921,7 +1921,7 @@ window.PLAN = {
    "Timing Notes": "Hard lower-body day: keep breakfast/lunch carbs; do not skip lunch."
   },
   {
-   "Date": "2026-07-13",
+   "Date": "2026-07-12",
    "Week": 4,
    "Training Day": "Active Recovery",
    "Breakfast": "Protein Oatmeal",
@@ -1941,7 +1941,7 @@ window.PLAN = {
    "Timing Notes": "Active recovery: long walk 45–60 min; eat meals as planned."
   },
   {
-   "Date": "2026-07-14",
+   "Date": "2026-07-13",
    "Week": 4,
    "Training Day": "Rest",
    "Breakfast": "Greek Yogurt Protein Bowl",
@@ -1961,7 +1961,7 @@ window.PLAN = {
    "Timing Notes": "Keep carbs slightly lower; hit protein; no need for pre/post-workout timing."
   },
   {
-   "Date": "2026-07-15",
+   "Date": "2026-07-14",
    "Week": 5,
    "Training Day": "Push",
    "Breakfast": "Egg Turkey Toast Plate",
@@ -1972,6 +1972,26 @@ window.PLAN = {
    "Approx Calories": null,
    "Protein g": null,
    "Notes": "≈1,940 kcal. Add fruit only if training energy is low.",
+   "Wake / Early Work": "4:00 AM wake; water + coffee/tea",
+   "Meal 1 Time": "8:30 AM pre-workout breakfast",
+   "Gym Window": "9:45–11:00 AM",
+   "Meal 2 Time": "12:00 PM post-workout lunch",
+   "Snack Time": "3:30 PM",
+   "Meal 3 Time": "7:00 PM",
+   "Timing Notes": "Best default: lift after work block, then eat lunch within 1–2 hours."
+  },
+  {
+   "Date": "2026-07-15",
+   "Week": 5,
+   "Training Day": "Pull",
+   "Breakfast": "Greek Yogurt Protein Bowl",
+   "Lunch": "Tuna Greek Yogurt Wrap",
+   "Dinner": "Chicken Rice Bowl",
+   "Snack 1": "Cottage Cheese Fruit Bowl",
+   "Snack 2": null,
+   "Approx Calories": null,
+   "Protein g": null,
+   "Notes": "≈1,915 kcal. Good protein day.",
    "Wake / Early Work": "4:00 AM wake; water + coffee/tea",
    "Meal 1 Time": "8:30 AM pre-workout breakfast",
    "Gym Window": "9:45–11:00 AM",
@@ -1983,26 +2003,6 @@ window.PLAN = {
   {
    "Date": "2026-07-16",
    "Week": 5,
-   "Training Day": "Pull",
-   "Breakfast": "Greek Yogurt Protein Bowl",
-   "Lunch": "Tuna Greek Yogurt Wrap",
-   "Dinner": "Chicken Rice Bowl",
-   "Snack 1": "Cottage Cheese Fruit Bowl",
-   "Snack 2": null,
-   "Approx Calories": null,
-   "Protein g": null,
-   "Notes": "≈1,915 kcal. Good protein day.",
-   "Wake / Early Work": "4:00 AM wake; water + coffee/tea",
-   "Meal 1 Time": "8:30 AM pre-workout breakfast",
-   "Gym Window": "9:45–11:00 AM",
-   "Meal 2 Time": "12:00 PM post-workout lunch",
-   "Snack Time": "3:30 PM",
-   "Meal 3 Time": "7:00 PM",
-   "Timing Notes": "Best default: lift after work block, then eat lunch within 1–2 hours."
-  },
-  {
-   "Date": "2026-07-17",
-   "Week": 5,
    "Training Day": "Legs",
    "Breakfast": "Protein Oatmeal",
    "Lunch": "Chicken Rice Bowl",
@@ -2021,7 +2021,7 @@ window.PLAN = {
    "Timing Notes": "Hard lower-body day: keep breakfast/lunch carbs; do not skip lunch."
   },
   {
-   "Date": "2026-07-18",
+   "Date": "2026-07-17",
    "Week": 5,
    "Training Day": "Upper",
    "Breakfast": "Egg Turkey Toast Plate",
@@ -2041,7 +2041,7 @@ window.PLAN = {
    "Timing Notes": "Best default: lift after work block, then eat lunch within 1–2 hours."
   },
   {
-   "Date": "2026-07-19",
+   "Date": "2026-07-18",
    "Week": 5,
    "Training Day": "Lower + Core",
    "Breakfast": "Greek Yogurt Protein Bowl",
@@ -2061,7 +2061,7 @@ window.PLAN = {
    "Timing Notes": "Hard lower-body day: keep breakfast/lunch carbs; do not skip lunch."
   },
   {
-   "Date": "2026-07-20",
+   "Date": "2026-07-19",
    "Week": 5,
    "Training Day": "Active Recovery",
    "Breakfast": "Protein Oatmeal",
@@ -2081,7 +2081,7 @@ window.PLAN = {
    "Timing Notes": "Active recovery: long walk 45–60 min; eat meals as planned."
   },
   {
-   "Date": "2026-07-21",
+   "Date": "2026-07-20",
    "Week": 5,
    "Training Day": "Rest",
    "Breakfast": "Greek Yogurt Protein Bowl",
@@ -2101,7 +2101,7 @@ window.PLAN = {
    "Timing Notes": "Keep carbs slightly lower; hit protein; no need for pre/post-workout timing."
   },
   {
-   "Date": "2026-07-22",
+   "Date": "2026-07-21",
    "Week": 6,
    "Training Day": "Push",
    "Breakfast": "Egg Turkey Toast Plate",
@@ -2112,6 +2112,26 @@ window.PLAN = {
    "Approx Calories": null,
    "Protein g": null,
    "Notes": "≈1,940 kcal. Add fruit only if training energy is low.",
+   "Wake / Early Work": "4:00 AM wake; water + coffee/tea",
+   "Meal 1 Time": "8:30 AM pre-workout breakfast",
+   "Gym Window": "9:45–11:00 AM",
+   "Meal 2 Time": "12:00 PM post-workout lunch",
+   "Snack Time": "3:30 PM",
+   "Meal 3 Time": "7:00 PM",
+   "Timing Notes": "Best default: lift after work block, then eat lunch within 1–2 hours."
+  },
+  {
+   "Date": "2026-07-22",
+   "Week": 6,
+   "Training Day": "Pull",
+   "Breakfast": "Greek Yogurt Protein Bowl",
+   "Lunch": "Tuna Greek Yogurt Wrap",
+   "Dinner": "Chicken Rice Bowl",
+   "Snack 1": "Cottage Cheese Fruit Bowl",
+   "Snack 2": null,
+   "Approx Calories": null,
+   "Protein g": null,
+   "Notes": "≈1,915 kcal. Good protein day.",
    "Wake / Early Work": "4:00 AM wake; water + coffee/tea",
    "Meal 1 Time": "8:30 AM pre-workout breakfast",
    "Gym Window": "9:45–11:00 AM",
@@ -2123,26 +2143,6 @@ window.PLAN = {
   {
    "Date": "2026-07-23",
    "Week": 6,
-   "Training Day": "Pull",
-   "Breakfast": "Greek Yogurt Protein Bowl",
-   "Lunch": "Tuna Greek Yogurt Wrap",
-   "Dinner": "Chicken Rice Bowl",
-   "Snack 1": "Cottage Cheese Fruit Bowl",
-   "Snack 2": null,
-   "Approx Calories": null,
-   "Protein g": null,
-   "Notes": "≈1,915 kcal. Good protein day.",
-   "Wake / Early Work": "4:00 AM wake; water + coffee/tea",
-   "Meal 1 Time": "8:30 AM pre-workout breakfast",
-   "Gym Window": "9:45–11:00 AM",
-   "Meal 2 Time": "12:00 PM post-workout lunch",
-   "Snack Time": "3:30 PM",
-   "Meal 3 Time": "7:00 PM",
-   "Timing Notes": "Best default: lift after work block, then eat lunch within 1–2 hours."
-  },
-  {
-   "Date": "2026-07-24",
-   "Week": 6,
    "Training Day": "Legs",
    "Breakfast": "Protein Oatmeal",
    "Lunch": "Chicken Rice Bowl",
@@ -2161,7 +2161,7 @@ window.PLAN = {
    "Timing Notes": "Hard lower-body day: keep breakfast/lunch carbs; do not skip lunch."
   },
   {
-   "Date": "2026-07-25",
+   "Date": "2026-07-24",
    "Week": 6,
    "Training Day": "Upper",
    "Breakfast": "Egg Turkey Toast Plate",
@@ -2181,7 +2181,7 @@ window.PLAN = {
    "Timing Notes": "Best default: lift after work block, then eat lunch within 1–2 hours."
   },
   {
-   "Date": "2026-07-26",
+   "Date": "2026-07-25",
    "Week": 6,
    "Training Day": "Lower + Core",
    "Breakfast": "Greek Yogurt Protein Bowl",
@@ -2201,7 +2201,7 @@ window.PLAN = {
    "Timing Notes": "Hard lower-body day: keep breakfast/lunch carbs; do not skip lunch."
   },
   {
-   "Date": "2026-07-27",
+   "Date": "2026-07-26",
    "Week": 6,
    "Training Day": "Active Recovery",
    "Breakfast": "Protein Oatmeal",
@@ -2221,7 +2221,7 @@ window.PLAN = {
    "Timing Notes": "Active recovery: long walk 45–60 min; eat meals as planned."
   },
   {
-   "Date": "2026-07-28",
+   "Date": "2026-07-27",
    "Week": 6,
    "Training Day": "Rest",
    "Breakfast": "Greek Yogurt Protein Bowl",
@@ -2241,7 +2241,7 @@ window.PLAN = {
    "Timing Notes": "Keep carbs slightly lower; hit protein; no need for pre/post-workout timing."
   },
   {
-   "Date": "2026-07-29",
+   "Date": "2026-07-28",
    "Week": 7,
    "Training Day": "Push",
    "Breakfast": "Egg Turkey Toast Plate",
@@ -2252,6 +2252,26 @@ window.PLAN = {
    "Approx Calories": null,
    "Protein g": null,
    "Notes": "≈1,940 kcal. Add fruit only if training energy is low.",
+   "Wake / Early Work": "4:00 AM wake; water + coffee/tea",
+   "Meal 1 Time": "8:30 AM pre-workout breakfast",
+   "Gym Window": "9:45–11:00 AM",
+   "Meal 2 Time": "12:00 PM post-workout lunch",
+   "Snack Time": "3:30 PM",
+   "Meal 3 Time": "7:00 PM",
+   "Timing Notes": "Best default: lift after work block, then eat lunch within 1–2 hours."
+  },
+  {
+   "Date": "2026-07-29",
+   "Week": 7,
+   "Training Day": "Pull",
+   "Breakfast": "Greek Yogurt Protein Bowl",
+   "Lunch": "Tuna Greek Yogurt Wrap",
+   "Dinner": "Chicken Rice Bowl",
+   "Snack 1": "Cottage Cheese Fruit Bowl",
+   "Snack 2": null,
+   "Approx Calories": null,
+   "Protein g": null,
+   "Notes": "≈1,915 kcal. Good protein day.",
    "Wake / Early Work": "4:00 AM wake; water + coffee/tea",
    "Meal 1 Time": "8:30 AM pre-workout breakfast",
    "Gym Window": "9:45–11:00 AM",
@@ -2263,26 +2283,6 @@ window.PLAN = {
   {
    "Date": "2026-07-30",
    "Week": 7,
-   "Training Day": "Pull",
-   "Breakfast": "Greek Yogurt Protein Bowl",
-   "Lunch": "Tuna Greek Yogurt Wrap",
-   "Dinner": "Chicken Rice Bowl",
-   "Snack 1": "Cottage Cheese Fruit Bowl",
-   "Snack 2": null,
-   "Approx Calories": null,
-   "Protein g": null,
-   "Notes": "≈1,915 kcal. Good protein day.",
-   "Wake / Early Work": "4:00 AM wake; water + coffee/tea",
-   "Meal 1 Time": "8:30 AM pre-workout breakfast",
-   "Gym Window": "9:45–11:00 AM",
-   "Meal 2 Time": "12:00 PM post-workout lunch",
-   "Snack Time": "3:30 PM",
-   "Meal 3 Time": "7:00 PM",
-   "Timing Notes": "Best default: lift after work block, then eat lunch within 1–2 hours."
-  },
-  {
-   "Date": "2026-07-31",
-   "Week": 7,
    "Training Day": "Legs",
    "Breakfast": "Protein Oatmeal",
    "Lunch": "Chicken Rice Bowl",
@@ -2301,7 +2301,7 @@ window.PLAN = {
    "Timing Notes": "Hard lower-body day: keep breakfast/lunch carbs; do not skip lunch."
   },
   {
-   "Date": "2026-08-01",
+   "Date": "2026-07-31",
    "Week": 7,
    "Training Day": "Upper",
    "Breakfast": "Egg Turkey Toast Plate",
@@ -2321,7 +2321,7 @@ window.PLAN = {
    "Timing Notes": "Best default: lift after work block, then eat lunch within 1–2 hours."
   },
   {
-   "Date": "2026-08-02",
+   "Date": "2026-08-01",
    "Week": 7,
    "Training Day": "Lower + Core",
    "Breakfast": "Greek Yogurt Protein Bowl",
@@ -2341,7 +2341,7 @@ window.PLAN = {
    "Timing Notes": "Hard lower-body day: keep breakfast/lunch carbs; do not skip lunch."
   },
   {
-   "Date": "2026-08-03",
+   "Date": "2026-08-02",
    "Week": 7,
    "Training Day": "Active Recovery",
    "Breakfast": "Protein Oatmeal",
@@ -2361,7 +2361,7 @@ window.PLAN = {
    "Timing Notes": "Active recovery: long walk 45–60 min; eat meals as planned."
   },
   {
-   "Date": "2026-08-04",
+   "Date": "2026-08-03",
    "Week": 7,
    "Training Day": "Rest",
    "Breakfast": "Greek Yogurt Protein Bowl",
@@ -2381,7 +2381,7 @@ window.PLAN = {
    "Timing Notes": "Keep carbs slightly lower; hit protein; no need for pre/post-workout timing."
   },
   {
-   "Date": "2026-08-05",
+   "Date": "2026-08-04",
    "Week": 8,
    "Training Day": "Push",
    "Breakfast": "Egg Turkey Toast Plate",
@@ -2401,7 +2401,7 @@ window.PLAN = {
    "Timing Notes": "Best default: lift after work block, then eat lunch within 1–2 hours."
   },
   {
-   "Date": "2026-08-06",
+   "Date": "2026-08-05",
    "Week": 8,
    "Training Day": "Pull",
    "Breakfast": "Greek Yogurt Protein Bowl",
@@ -2421,7 +2421,7 @@ window.PLAN = {
    "Timing Notes": "Best default: lift after work block, then eat lunch within 1–2 hours."
   },
   {
-   "Date": "2026-08-07",
+   "Date": "2026-08-06",
    "Week": 8,
    "Training Day": "Legs",
    "Breakfast": "Protein Oatmeal",
@@ -2441,7 +2441,7 @@ window.PLAN = {
    "Timing Notes": "Hard lower-body day: keep breakfast/lunch carbs; do not skip lunch."
   },
   {
-   "Date": "2026-08-08",
+   "Date": "2026-08-07",
    "Week": 8,
    "Training Day": "Upper",
    "Breakfast": "Egg Turkey Toast Plate",
@@ -2461,7 +2461,7 @@ window.PLAN = {
    "Timing Notes": "Best default: lift after work block, then eat lunch within 1–2 hours."
   },
   {
-   "Date": "2026-08-09",
+   "Date": "2026-08-08",
    "Week": 8,
    "Training Day": "Lower + Core",
    "Breakfast": "Greek Yogurt Protein Bowl",
@@ -2481,7 +2481,7 @@ window.PLAN = {
    "Timing Notes": "Hard lower-body day: keep breakfast/lunch carbs; do not skip lunch."
   },
   {
-   "Date": "2026-08-10",
+   "Date": "2026-08-09",
    "Week": 8,
    "Training Day": "Active Recovery",
    "Breakfast": "Protein Oatmeal",
@@ -2501,7 +2501,7 @@ window.PLAN = {
    "Timing Notes": "Active recovery: long walk 45–60 min; eat meals as planned."
   },
   {
-   "Date": "2026-08-11",
+   "Date": "2026-08-10",
    "Week": 8,
    "Training Day": "Rest",
    "Breakfast": "Greek Yogurt Protein Bowl",
@@ -2823,283 +2823,283 @@ window.PLAN = {
  ],
  "progressTracker": [
   {
+   "date": "2026-06-16",
+   "day": "Tuesday",
+   "targetKg": 67
+  },
+  {
    "date": "2026-06-17",
    "day": "Wednesday",
-   "targetKg": 67
+   "targetKg": 66.93
   },
   {
    "date": "2026-06-18",
    "day": "Thursday",
-   "targetKg": 66.93
+   "targetKg": 66.85
   },
   {
    "date": "2026-06-19",
    "day": "Friday",
-   "targetKg": 66.85
+   "targetKg": 66.78
   },
   {
    "date": "2026-06-20",
    "day": "Saturday",
-   "targetKg": 66.78
+   "targetKg": 66.71
   },
   {
    "date": "2026-06-21",
    "day": "Sunday",
-   "targetKg": 66.71
+   "targetKg": 66.64
   },
   {
    "date": "2026-06-22",
    "day": "Monday",
-   "targetKg": 66.64
+   "targetKg": 66.56
   },
   {
    "date": "2026-06-23",
    "day": "Tuesday",
-   "targetKg": 66.56
+   "targetKg": 66.49
   },
   {
    "date": "2026-06-24",
    "day": "Wednesday",
-   "targetKg": 66.49
+   "targetKg": 66.42
   },
   {
    "date": "2026-06-25",
    "day": "Thursday",
-   "targetKg": 66.42
+   "targetKg": 66.35
   },
   {
    "date": "2026-06-26",
    "day": "Friday",
-   "targetKg": 66.35
+   "targetKg": 66.27
   },
   {
    "date": "2026-06-27",
    "day": "Saturday",
-   "targetKg": 66.27
+   "targetKg": 66.2
   },
   {
    "date": "2026-06-28",
    "day": "Sunday",
-   "targetKg": 66.2
+   "targetKg": 66.13
   },
   {
    "date": "2026-06-29",
    "day": "Monday",
-   "targetKg": 66.13
+   "targetKg": 66.05
   },
   {
    "date": "2026-06-30",
    "day": "Tuesday",
-   "targetKg": 66.05
+   "targetKg": 65.98
   },
   {
    "date": "2026-07-01",
    "day": "Wednesday",
-   "targetKg": 65.98
+   "targetKg": 65.91
   },
   {
    "date": "2026-07-02",
    "day": "Thursday",
-   "targetKg": 65.91
+   "targetKg": 65.84
   },
   {
    "date": "2026-07-03",
    "day": "Friday",
-   "targetKg": 65.84
+   "targetKg": 65.76
   },
   {
    "date": "2026-07-04",
    "day": "Saturday",
-   "targetKg": 65.76
+   "targetKg": 65.69
   },
   {
    "date": "2026-07-05",
    "day": "Sunday",
-   "targetKg": 65.69
+   "targetKg": 65.62
   },
   {
    "date": "2026-07-06",
    "day": "Monday",
-   "targetKg": 65.62
+   "targetKg": 65.55
   },
   {
    "date": "2026-07-07",
    "day": "Tuesday",
-   "targetKg": 65.55
+   "targetKg": 65.47
   },
   {
    "date": "2026-07-08",
    "day": "Wednesday",
-   "targetKg": 65.47
+   "targetKg": 65.4
   },
   {
    "date": "2026-07-09",
    "day": "Thursday",
-   "targetKg": 65.4
+   "targetKg": 65.33
   },
   {
    "date": "2026-07-10",
    "day": "Friday",
-   "targetKg": 65.33
+   "targetKg": 65.25
   },
   {
    "date": "2026-07-11",
    "day": "Saturday",
-   "targetKg": 65.25
+   "targetKg": 65.18
   },
   {
    "date": "2026-07-12",
    "day": "Sunday",
-   "targetKg": 65.18
+   "targetKg": 65.11
   },
   {
    "date": "2026-07-13",
    "day": "Monday",
-   "targetKg": 65.11
+   "targetKg": 65.04
   },
   {
    "date": "2026-07-14",
    "day": "Tuesday",
-   "targetKg": 65.04
+   "targetKg": 64.96
   },
   {
    "date": "2026-07-15",
    "day": "Wednesday",
-   "targetKg": 64.96
+   "targetKg": 64.89
   },
   {
    "date": "2026-07-16",
    "day": "Thursday",
-   "targetKg": 64.89
+   "targetKg": 64.82
   },
   {
    "date": "2026-07-17",
    "day": "Friday",
-   "targetKg": 64.82
+   "targetKg": 64.75
   },
   {
    "date": "2026-07-18",
    "day": "Saturday",
-   "targetKg": 64.75
+   "targetKg": 64.67
   },
   {
    "date": "2026-07-19",
    "day": "Sunday",
-   "targetKg": 64.67
+   "targetKg": 64.6
   },
   {
    "date": "2026-07-20",
    "day": "Monday",
-   "targetKg": 64.6
+   "targetKg": 64.53
   },
   {
    "date": "2026-07-21",
    "day": "Tuesday",
-   "targetKg": 64.53
+   "targetKg": 64.45
   },
   {
    "date": "2026-07-22",
    "day": "Wednesday",
-   "targetKg": 64.45
+   "targetKg": 64.38
   },
   {
    "date": "2026-07-23",
    "day": "Thursday",
-   "targetKg": 64.38
+   "targetKg": 64.31
   },
   {
    "date": "2026-07-24",
    "day": "Friday",
-   "targetKg": 64.31
+   "targetKg": 64.24
   },
   {
    "date": "2026-07-25",
    "day": "Saturday",
-   "targetKg": 64.24
+   "targetKg": 64.16
   },
   {
    "date": "2026-07-26",
    "day": "Sunday",
-   "targetKg": 64.16
+   "targetKg": 64.09
   },
   {
    "date": "2026-07-27",
    "day": "Monday",
-   "targetKg": 64.09
+   "targetKg": 64.02
   },
   {
    "date": "2026-07-28",
    "day": "Tuesday",
-   "targetKg": 64.02
+   "targetKg": 63.95
   },
   {
    "date": "2026-07-29",
    "day": "Wednesday",
-   "targetKg": 63.95
+   "targetKg": 63.87
   },
   {
    "date": "2026-07-30",
    "day": "Thursday",
-   "targetKg": 63.87
+   "targetKg": 63.8
   },
   {
    "date": "2026-07-31",
    "day": "Friday",
-   "targetKg": 63.8
+   "targetKg": 63.73
   },
   {
    "date": "2026-08-01",
    "day": "Saturday",
-   "targetKg": 63.73
+   "targetKg": 63.65
   },
   {
    "date": "2026-08-02",
    "day": "Sunday",
-   "targetKg": 63.65
+   "targetKg": 63.58
   },
   {
    "date": "2026-08-03",
    "day": "Monday",
-   "targetKg": 63.58
+   "targetKg": 63.51
   },
   {
    "date": "2026-08-04",
    "day": "Tuesday",
-   "targetKg": 63.51
+   "targetKg": 63.44
   },
   {
    "date": "2026-08-05",
    "day": "Wednesday",
-   "targetKg": 63.44
+   "targetKg": 63.36
   },
   {
    "date": "2026-08-06",
    "day": "Thursday",
-   "targetKg": 63.36
+   "targetKg": 63.29
   },
   {
    "date": "2026-08-07",
    "day": "Friday",
-   "targetKg": 63.29
+   "targetKg": 63.22
   },
   {
    "date": "2026-08-08",
    "day": "Saturday",
-   "targetKg": 63.22
+   "targetKg": 63.15
   },
   {
    "date": "2026-08-09",
    "day": "Sunday",
-   "targetKg": 63.15
+   "targetKg": 63.07
   },
   {
    "date": "2026-08-10",
    "day": "Monday",
-   "targetKg": 63.07
-  },
-  {
-   "date": "2026-08-11",
-   "day": "Tuesday",
    "targetKg": 63
   }
  ],
