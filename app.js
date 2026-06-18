@@ -533,7 +533,11 @@ async function geminiMacros(desc) {
     },
   };
   const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-  if (!res.ok) throw new Error("api-" + res.status);
+  if (!res.ok) {
+    let detail = "";
+    try { detail = (await res.json())?.error?.message || ""; } catch {}
+    throw new Error("api-" + res.status + (detail ? ": " + detail : ""));
+  }
   const data = await res.json();
   const txt = data?.candidates?.[0]?.content?.parts?.[0]?.text;
   if (!txt) throw new Error("no-output");
@@ -544,8 +548,10 @@ window.openCustomMeal = (date, slot) => {
   const hasKey = !!getGemKey();
   openModal(`<h2 style="margin-top:0">Ate something else?</h2>
     <p class="muted" style="font-size:.86rem">Describe what you actually had for <b>${esc(slot)}</b> — an AI estimates the macros (approximate) and swaps it in. Your <b>Eaten</b> tally uses the new numbers.</p>
-    ${hasKey ? "" : `<div class="note-box" style="margin-bottom:12px">First time only: paste a free <b>Google Gemini</b> API key — <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" class="shop-link">get one free ↗</a> (no credit card). Stored only in this browser.
-      <label class="field" style="margin-top:8px">Gemini API key<input id="cm-key" type="password" placeholder="AIza…"></label></div>`}
+    <div class="note-box" style="margin-bottom:12px">${hasKey
+      ? `Gemini key saved on this device. Leave the key box blank to keep it, or paste a new one to replace it.`
+      : `First time only: paste a free <b>Google Gemini</b> API key — <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" class="shop-link">get one free ↗</a> (no credit card). Stored only in this browser. <b>Tip:</b> use the copy button on the key page — don't type the shortened <code>…O4Qw</code> version.`}
+      <label class="field" style="margin-top:8px">Gemini API key${hasKey ? " <span class='muted'>(blank = keep saved)</span>" : ""}<input id="cm-key" type="password" placeholder="${hasKey ? "key saved — paste to replace" : "AIza…"}"></label></div>
     <label class="field" style="margin-bottom:10px">What did you eat?<input id="cm-name" placeholder="e.g. Chicken burrito bowl"></label>
     <label class="field" style="margin-bottom:10px">Restaurant <span class="muted">(optional)</span><input id="cm-rest" placeholder="e.g. Chipotle"></label>
     <label class="field" style="margin-bottom:12px">Portion / details <span class="muted">(optional)</span><input id="cm-notes" placeholder="e.g. double chicken, no rice, guac"></label>
@@ -569,7 +575,7 @@ window.estimateCustomMeal = async (date, slot) => {
   } catch (e) {
     go.disabled = false; msg.style.color = "var(--danger)";
     msg.textContent = /no-key/.test(e.message) ? "Add your Gemini key above."
-      : /api-4/.test(e.message) ? "Key rejected or out of quota — double-check the key."
+      : /^api-/.test(e.message) ? e.message.replace(/^api-(\d+):?\s*/, "API $1 — ").slice(0, 220)
       : "Couldn't estimate (network/API issue). Try again.";
   }
 };
