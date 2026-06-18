@@ -516,10 +516,11 @@ window.resetSwaps = () => { overrides = {}; saveJSON(LS_SWAP, overrides); render
 /* ---------- custom meal: AI macro estimate via Google Gemini (free) ---------- */
 const LS_GEMKEY = "wp_gemini_key"; // stored only in this browser, never synced
 const getGemKey = () => localStorage.getItem(LS_GEMKEY) || "";
+// Free-tier quota has shifted between models — try newest first, fall through on 429/404.
+const GEMINI_MODELS = ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-2.0-flash", "gemini-2.0-flash-lite"];
 async function geminiMacros(desc) {
   const key = getGemKey();
   if (!key) throw new Error("no-key");
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(key)}`;
   const body = {
     contents: [{ parts: [{ text: `Estimate the nutrition for one serving of this meal as actually eaten. Give realistic integer estimates.\n\n${desc}` }] }],
     generationConfig: {
@@ -532,17 +533,26 @@ async function geminiMacros(desc) {
       },
     },
   };
-  const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-  if (!res.ok) {
+  let lastErr = "all-models-failed";
+  for (const model of GEMINI_MODELS) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`;
+    const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    if (res.ok) {
+      const data = await res.json();
+      const txt = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!txt) { lastErr = "no-output"; continue; }
+      const j = JSON.parse(txt);
+      console.log("[macros] used model:", model);
+      return { cal: Math.round(j.calories), pro: Math.round(j.protein), carbs: Math.round(j.carbs), fat: Math.round(j.fat) };
+    }
     let detail = "";
     try { detail = (await res.json())?.error?.message || ""; } catch {}
-    throw new Error("api-" + res.status + (detail ? ": " + detail : ""));
+    // Bad key is fatal for every model — stop early.
+    if (res.status === 400 && /api[_ ]key/i.test(detail)) throw new Error("api-400: " + detail);
+    lastErr = "api-" + res.status + (detail ? ": " + detail : "");
+    // 429 / 404 / 403: try the next model
   }
-  const data = await res.json();
-  const txt = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-  if (!txt) throw new Error("no-output");
-  const j = JSON.parse(txt);
-  return { cal: Math.round(j.calories), pro: Math.round(j.protein), carbs: Math.round(j.carbs), fat: Math.round(j.fat) };
+  throw new Error(lastErr);
 }
 window.openCustomMeal = (date, slot) => {
   const hasKey = !!getGemKey();
