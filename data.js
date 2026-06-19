@@ -1273,7 +1273,7 @@ window.PLAN = {
    "Calories": 500,
    "Protein g": 40,
    "Type": "Breakfast",
-   "Ingredients": "300g nonfat Greek yogurt; 40g oats/granola; berries; 1 tbsp peanut butter",
+   "Ingredients": "1¼ cups nonfat Greek yogurt; ½ cup oats/granola; ½ cup berries; 1 tbsp peanut butter",
    "How to make": "Mix yogurt + berries; add oats/granola and peanut butter.",
    "Best use": "Any day",
    "Notes": "Use less peanut butter if weight stalls."
@@ -1283,7 +1283,7 @@ window.PLAN = {
    "Calories": 455,
    "Protein g": 46,
    "Type": "Breakfast",
-   "Ingredients": "2 eggs; 150g egg whites; 2 slices whole wheat toast; turkey slices; spinach/salsa",
+   "Ingredients": "2 eggs; ⅔ cup egg whites (~5 whites); 2 slices whole-wheat toast; 2–3 deli turkey slices; spinach/salsa",
    "How to make": "Scramble eggs/egg whites with spinach; toast bread; add turkey slices.",
    "Best use": "High-protein morning",
    "Notes": "Good when appetite is high."
@@ -1293,7 +1293,7 @@ window.PLAN = {
    "Calories": 625,
    "Protein g": 57,
    "Type": "Lunch/Dinner",
-   "Ingredients": "180g cooked chicken breast; 1 cup cooked rice; frozen vegetables; salsa; 1 tsp olive oil",
+   "Ingredients": "1¼ cups diced cooked chicken (~6 oz); 1 cup cooked rice; 1 cup frozen vegetables; salsa; 1 tsp olive oil",
    "How to make": "Cook chicken in bulk; microwave rice/veg; combine with salsa and measured oil.",
    "Best use": "Meal prep staple",
    "Notes": "Cheapest reliable main meal."
@@ -1303,7 +1303,7 @@ window.PLAN = {
    "Calories": 640,
    "Protein g": 50,
    "Type": "Lunch/Dinner",
-   "Ingredients": "170g 93% ground turkey; 2 oz dry pasta; marinara; vegetables; parmesan optional",
+   "Ingredients": "¾ cup (6 oz) raw 93% ground turkey; 2 oz dry pasta (~½ cup); ½ cup marinara; ½ cup vegetables; parmesan optional",
    "How to make": "Brown turkey; boil pasta; mix with marinara and vegetables.",
    "Best use": "Post-workout dinner",
    "Notes": "Keep pasta portion measured."
@@ -1313,7 +1313,7 @@ window.PLAN = {
    "Calories": 530,
    "Protein g": 42,
    "Type": "Lunch/Dinner",
-   "Ingredients": "1 large whole-wheat tortilla; 1 tuna can; Greek yogurt; pickles/cucumber; lettuce; fruit",
+   "Ingredients": "1 large whole-wheat tortilla; 1 can tuna; 2 tbsp Greek yogurt; pickles/cucumber; lettuce; 1 fruit",
    "How to make": "Mix tuna with Greek yogurt and seasoning; wrap with vegetables; add fruit.",
    "Best use": "Quick lunch",
    "Notes": "Cheap and no heavy cooking."
@@ -1323,7 +1323,7 @@ window.PLAN = {
    "Calories": 660,
    "Protein g": 46,
    "Type": "Lunch/Dinner",
-   "Ingredients": "5 oz salmon/fish; 300g potatoes; broccoli; 1 tsp olive oil",
+   "Ingredients": "5 oz salmon/fish (palm-size); 2 cups diced potato (~1 large); 1 cup broccoli; 1 tsp olive oil",
    "How to make": "Bake or pan-cook salmon; boil/air-fry potatoes; steam broccoli.",
    "Best use": "1–2x/week",
    "Notes": "More expensive but great nutrition."
@@ -1333,7 +1333,7 @@ window.PLAN = {
    "Calories": 630,
    "Protein g": 45,
    "Type": "Lunch/Dinner",
-   "Ingredients": "170g lean beef; 300g potatoes; peppers/onions; Greek-yogurt sauce",
+   "Ingredients": "6 oz lean beef (¾ cup if ground); 2 cups diced potato (~1 large); ½ cup peppers/onions; Greek-yogurt sauce",
    "How to make": "Cook beef with vegetables; serve over potatoes; add yogurt sauce.",
    "Best use": "Leg days",
    "Notes": "Use turkey if beef is expensive."
@@ -1343,7 +1343,7 @@ window.PLAN = {
    "Calories": 560,
    "Protein g": 50,
    "Type": "Lunch/Dinner",
-   "Ingredients": "150g chicken; salad kit or spinach; whole-wheat wrap; Greek yogurt/salsa sauce",
+   "Ingredients": "1 cup diced cooked chicken (~5 oz); salad kit or 2 cups spinach; whole-wheat wrap; Greek yogurt/salsa sauce",
    "How to make": "Wrap chicken and salad; use Greek yogurt-based sauce.",
    "Best use": "Light dinner",
    "Notes": "Very convenient."
@@ -1353,7 +1353,7 @@ window.PLAN = {
    "Calories": 260,
    "Protein g": 28,
    "Type": "Snack",
-   "Ingredients": "1 cup cottage cheese; berries or apple; cinnamon",
+   "Ingredients": "1 cup cottage cheese; ½ cup berries or 1 apple; cinnamon",
    "How to make": "Mix and eat cold.",
    "Best use": "Evening snack",
    "Notes": "High protein, low effort."
@@ -1373,7 +1373,7 @@ window.PLAN = {
    "Calories": 220,
    "Protein g": 20,
    "Type": "Snack",
-   "Ingredients": "200g Greek yogurt; 1 apple",
+   "Ingredients": "¾ cup Greek yogurt; 1 apple",
    "How to make": "Eat as snack.",
    "Best use": "Between meals",
    "Notes": "Good sweet craving control."

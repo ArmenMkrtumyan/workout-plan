@@ -240,6 +240,7 @@ views.today = () => {
       <div class="label">${esc(fmtDate(iso))} · ${skipped ? "skipped" : "Week " + wk + "/8"}</div>
       <button class="arrow" onclick="navDay(1)" ${iso >= planEndShifted() ? "disabled" : ""} aria-label="Next day">›</button>
       ${isToday ? "" : `<button class="btn small" onclick="jumpToday()">Jump to today</button>`}
+      ${skipped ? "" : `<button class="btn small" onclick="toggleSkip('${esc(iso)}')">🛌 Skip day</button>`}
     </div>`;
 
   // Workout — skip-aware. Skipping pushes the lifting schedule forward; meals are untouched.
@@ -276,8 +277,7 @@ views.today = () => {
       h += `<p class="muted" style="margin:8px 0 0">${esc(day.Notes || "")}</p>
         <p class="note-box" style="margin-top:12px">🚶 <b>Today:</b> ${esc(day.Cardio)} · ${esc(day["Core/Mobility"])}. Focus on steps and recovery — no heavy lifting.</p>`;
     }
-    h += `</div>
-      <div style="margin:-6px 0 16px;text-align:right"><button class="btn small ghost" onclick="toggleSkip('${esc(iso)}')">Can't train? Skip this day →</button></div>`;
+    h += `</div>`;
   }
 
   // Meals (always shown — meals don't shift)
