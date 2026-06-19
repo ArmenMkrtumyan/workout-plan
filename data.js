@@ -901,19 +901,19 @@ window.PLAN = {
   {
    "Template": "Legs A",
    "Order": 1,
-   "Exercise": "Hack Squat or Leg Press",
+   "Exercise": "Hack Squat",
    "Weeks 1–2": "3 x 8 @ RPE 6–7",
    "Weeks 3–4": "4 x 6–8 @ RPE 7–8",
    "Weeks 5–6": "4 x 6–8 @ RPE 8",
    "Weeks 7–8": "3 x 6–8",
    "Rest": "2–3 min",
    "Technique cue": "Consistent depth; control the descent; safe to fail solo",
-   "Substitute if busy": "Smith-machine squat or pendulum squat"
+   "Substitute if busy": "Leg press, Smith-machine squat, or pendulum squat"
   },
   {
    "Template": "Legs A",
    "Order": 2,
-   "Exercise": "45– Back Extension (Hyperextension)",
+   "Exercise": "45° Back Extension (Hyperextension)",
    "Weeks 1–2": "3 x 8–10",
    "Weeks 3–4": "3–4 x 8–10",
    "Weeks 5–6": "4 x 8–10",
@@ -932,7 +932,7 @@ window.PLAN = {
    "Weeks 7–8": "3 x 10–12",
    "Rest": "90 sec",
    "Technique cue": "Full range; no knee cave",
-   "Substitute if busy": "Hack squat"
+   "Substitute if busy": "Pendulum squat or belt squat"
   },
   {
    "Template": "Legs A",
