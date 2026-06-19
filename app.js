@@ -169,24 +169,38 @@ const fmtDate = (iso) => {
   return d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
 };
 const todayISO = () => new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD local
-function planDayFor(iso) {
-  const cal = P.gymCalendar;
-  let row = cal.find((r) => r.Date === iso);
-  if (row) return row;
-  // clamp to plan range
-  if (iso < cal[0].Date) return cal[0];
-  if (iso > cal[cal.length - 1].Date) return cal[cal.length - 1];
-  return cal[0];
+/* ---------- workout skip: pushes the LIFTING schedule forward; meals stay put ---------- */
+const LS_SKIPS = "wp_skips_v1";
+let skips = loadJSON(LS_SKIPS);            // { "2026-06-19": true }
+const isSkipped = (iso) => !!skips[iso];
+const skipCount = () => Object.keys(skips).length;
+function daysFromStart(iso) {
+  const a = new Date(P.gymCalendar[0].Date + "T00:00:00"), b = new Date(iso + "T00:00:00");
+  return Math.round((b - a) / 86400000);
 }
-function mealRowFor(iso) {
+// program index of the workout that lands on a (non-skipped) date, after prior skips
+function workoutIndex(iso) {
+  let idx = daysFromStart(iso);
+  for (const s in skips) if (s < iso) idx--;
+  return Math.max(0, Math.min(P.gymCalendar.length - 1, idx));
+}
+window.toggleSkip = (iso) => {
+  if (skips[iso]) delete skips[iso]; else skips[iso] = true;
+  saveJSON(LS_SKIPS, skips);
+  render();
+};
+
+function planDayFor(iso) {                 // workout for a date — null if that day is skipped
+  if (isSkipped(iso)) return null;
+  return P.gymCalendar[workoutIndex(iso)];
+}
+function mealRowFor(iso) {                  // meals are anchored to the calendar date (never shifted)
   return P.mealCalendar.find((r) => r.Date === iso) || P.mealCalendar[0];
 }
 function currentWeek() {
   const t = todayISO();
-  const row = P.gymCalendar.find((r) => r.Date === t);
-  if (row) return row.Week;
   if (t < P.gymCalendar[0].Date) return 1;
-  return P.gymCalendar[P.gymCalendar.length - 1].Week;
+  return P.gymCalendar[workoutIndex(t)].Week;
 }
 function weekColKey(week) {
   if (week <= 2) return "Weeks 1–2";
@@ -203,51 +217,70 @@ const views = {};
 /* ---------- TODAY (with day navigation) ---------- */
 const PLAN_START = P.gymCalendar[0].Date;
 const PLAN_END = P.gymCalendar[P.gymCalendar.length - 1].Date;
-const clampDate = (iso) => (iso < PLAN_START ? PLAN_START : iso > PLAN_END ? PLAN_END : iso);
-let selDate = clampDate(todayISO());
 const shiftISO = (iso, days) => { const d = new Date(iso + "T00:00:00"); d.setDate(d.getDate() + days); return d.toLocaleDateString("en-CA"); };
+const planEndShifted = () => shiftISO(PLAN_END, skipCount()); // skips push the finish line out
+const clampDate = (iso) => (iso < PLAN_START ? PLAN_START : iso > planEndShifted() ? planEndShifted() : iso);
+let selDate = clampDate(todayISO());
 window.navDay = (delta) => { selDate = clampDate(shiftISO(selDate, delta)); render(); };
 window.jumpToday = () => { selDate = clampDate(todayISO()); render(); };
 
 views.today = () => {
   const iso = selDate;
-  const day = planDayFor(iso);
-  const meal = mealRowFor(day.Date);
+  const skipped = isSkipped(iso);
+  const day = skipped ? null : planDayFor(iso);   // workout (shifts with skips); null if skipped
+  const meal = mealRowFor(iso);                   // meals stay anchored to the calendar date
   const tot = dayTotals(meal);
-  const wk = day.Week;
+  const wk = day ? day.Week : currentWeek();
   const isToday = iso === todayISO();
+  const realDow = new Date(iso + "T00:00:00").toLocaleDateString(undefined, { weekday: "long" });
 
   let h = `<h1>${isToday ? "Today" : "Day view"}</h1>`;
   h += `<div class="daynav">
       <button class="arrow" onclick="navDay(-1)" ${iso <= PLAN_START ? "disabled" : ""} aria-label="Previous day">‹</button>
-      <div class="label">${esc(fmtDate(day.Date))} · Week ${wk}/8</div>
-      <button class="arrow" onclick="navDay(1)" ${iso >= PLAN_END ? "disabled" : ""} aria-label="Next day">›</button>
+      <div class="label">${esc(fmtDate(iso))} · ${skipped ? "skipped" : "Week " + wk + "/8"}</div>
+      <button class="arrow" onclick="navDay(1)" ${iso >= planEndShifted() ? "disabled" : ""} aria-label="Next day">›</button>
       ${isToday ? "" : `<button class="btn small" onclick="jumpToday()">Jump to today</button>`}
     </div>`;
 
-  // Workout — shown inline (this week's prescription)
-  const ex = exercisesFor(day["Workout Template"]);
-  const colKey = weekColKey(wk);
-  const intensity = (P.gymCalendar.find((r) => r.Week === wk) || {}).Intensity || "";
-  h += `<div class="card">
+  // Workout — skip-aware. Skipping pushes the lifting schedule forward; meals are untouched.
+  if (skipped) {
+    const next = planDayFor(shiftISO(iso, 1));
+    h += `<div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h3 style="margin:0">🛌 Workout skipped</h3>
+        <span class="pill grey">${esc(realDow)}</span>
+      </div>
+      <p class="muted" style="margin:8px 0 12px">No lifting today — the schedule slid forward a day, so you don't lose this session.${next ? ` Next up: <b>${esc(next.Focus)}</b> tomorrow.` : ""}</p>
+      <div class="slot-actions">
+        <button class="btn" onclick="toggleSkip('${esc(iso)}')">↩︎ Un-skip this day</button>
+        ${next ? `<button class="btn primary" onclick="navDay(1)">Tomorrow's workout →</button>` : ""}
+      </div>
+    </div>`;
+  } else {
+    const ex = exercisesFor(day["Workout Template"]);
+    const colKey = weekColKey(wk);
+    const intensity = (P.gymCalendar.find((r) => r.Week === wk) || {}).Intensity || "";
+    h += `<div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center">
         <h3 style="margin:0">🏋️ ${esc(day.Focus)}${day.Notes ? ` <span class="muted" style="font-weight:400;font-size:.88rem">· ${esc(day.Notes)}</span>` : ""}</h3>
-        <span class="pill ${day.Focus === "Rest" ? "grey" : "green"}">${esc(day.Day)}</span>
+        <span class="pill ${day.Focus === "Rest" ? "grey" : "green"}">${esc(realDow)}</span>
       </div>`;
-  if (ex.length) {
-    h += `<p class="muted" style="font-size:.85rem;margin:8px 0 12px">💪 <b>Effort (all sets):</b> ${esc(intensity)} &nbsp;·&nbsp; 🚶 ${esc(day.Cardio)}</p>`;
-    h += `<div class="table-wrap"><table><thead><tr><th>#</th><th>Exercise</th><th>This week</th><th>Weight (lb · kg)</th><th>Rest</th></tr></thead><tbody>`;
-    for (const e of ex) h += exRowCompact(e, colKey);
-    h += `</tbody></table></div>
-      <p class="muted" style="font-size:.78rem;margin:8px 0 0">Weights (lb) are starting suggestions — tap to edit to what you actually lift. They save and carry to next week. DB moves = per dumbbell.</p>
-      <div style="margin-top:10px"><button class="btn small ghost" onclick="openWorkout('${esc(day["Workout Template"])}','${esc(day.Date)}',true)">Show full 8-week progression</button></div>`;
-  } else {
-    h += `<p class="muted" style="margin:8px 0 0">${esc(day.Notes || "")}</p>
-      <p class="note-box" style="margin-top:12px">🚶 <b>Today:</b> ${esc(day.Cardio)} · ${esc(day["Core/Mobility"])}. Focus on steps and recovery — no heavy lifting.</p>`;
+    if (ex.length) {
+      h += `<p class="muted" style="font-size:.85rem;margin:8px 0 12px">💪 <b>Effort (all sets):</b> ${esc(intensity)} &nbsp;·&nbsp; 🚶 ${esc(day.Cardio)}</p>`;
+      h += `<div class="table-wrap"><table><thead><tr><th>#</th><th>Exercise</th><th>This week</th><th>Weight (lb · kg)</th><th>Rest</th></tr></thead><tbody>`;
+      for (const e of ex) h += exRowCompact(e, colKey);
+      h += `</tbody></table></div>
+        <p class="muted" style="font-size:.78rem;margin:8px 0 0">Weights (lb) are starting suggestions — tap to edit to what you actually lift. They save and carry to next week. DB moves = per dumbbell.</p>
+        <div style="margin-top:10px"><button class="btn small ghost" onclick="openWorkout('${esc(day["Workout Template"])}','${esc(day.Date)}',true)">Show full 8-week progression</button></div>`;
+    } else {
+      h += `<p class="muted" style="margin:8px 0 0">${esc(day.Notes || "")}</p>
+        <p class="note-box" style="margin-top:12px">🚶 <b>Today:</b> ${esc(day.Cardio)} · ${esc(day["Core/Mobility"])}. Focus on steps and recovery — no heavy lifting.</p>`;
+    }
+    h += `</div>
+      <div style="margin:-6px 0 16px;text-align:right"><button class="btn small ghost" onclick="toggleSkip('${esc(iso)}')">Can't train? Skip this day →</button></div>`;
   }
-  h += `</div>`;
 
-  // Meals
+  // Meals (always shown — meals don't shift)
   h += `<div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center">
         <h3 style="margin:0">🍽️ Meals</h3>
@@ -257,14 +290,15 @@ views.today = () => {
       ${consumedLine(meal)}
     </div>`;
 
-  // Timing
+  // Timing (keyed to the calendar date)
+  const gymLabel = (!day || day.Focus === "Rest" || day.Focus === "Active Recovery") ? "Activity" : "Gym";
   h += `<h2>⏱️ Today's timing</h2><div class="card"><div class="grid auto">
-      ${timingChip("Wake", meal["Wake / Early Work"], day.Date)}
-      ${timingChip("Meal 1", meal["Meal 1 Time"], day.Date)}
-      ${timingChip(day.Focus === "Rest" || day.Focus === "Active Recovery" ? "Activity" : "Gym", meal["Gym Window"], day.Date)}
-      ${timingChip("Meal 2", meal["Meal 2 Time"], day.Date)}
-      ${timingChip("Snack", meal["Snack Time"], day.Date)}
-      ${timingChip("Meal 3", meal["Meal 3 Time"], day.Date)}
+      ${timingChip("Wake", meal["Wake / Early Work"], iso)}
+      ${timingChip("Meal 1", meal["Meal 1 Time"], iso)}
+      ${timingChip(gymLabel, meal["Gym Window"], iso)}
+      ${timingChip("Meal 2", meal["Meal 2 Time"], iso)}
+      ${timingChip("Snack", meal["Snack Time"], iso)}
+      ${timingChip("Meal 3", meal["Meal 3 Time"], iso)}
     </div>
     <p class="note-box" style="margin-top:14px">${esc(meal["Timing Notes"] || "")}</p></div>`;
 
