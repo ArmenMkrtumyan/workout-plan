@@ -356,13 +356,16 @@ views.today = () => {
 
   // Quick log — auto-saves the moment you type each field (no Save button needed)
   const pr = progress[iso] || {};
-  h += `<h2>📈 Quick log</h2>
-    <p class="muted" style="margin:-8px 0 12px;font-size:.86rem">Weigh yourself first thing in the morning, before eating or drinking. Saves automatically. <b>Calories & protein are counted from the meals you mark Done above</b> — no need to type them.</p>
+  h += `<h2>📈 Daily log</h2>
+    <p class="muted" style="margin:-8px 0 12px;font-size:.86rem">Weigh yourself first thing in the morning, before eating or drinking. Everything here <b>saves automatically</b>. <b>Calories & protein are counted from the meals you mark Done above</b>, and training is logged from your workout weights — no need to type those.</p>
     <div class="card">
       <div class="form-grid">
         <label class="field">Weight (kg)<input type="number" step="0.1" id="qlw" value="${pr.weight ?? ""}" onchange="quickLog('${iso}')"></label>
         <label class="field">Steps<input type="number" id="qls" value="${pr.steps ?? ""}" onchange="quickLog('${iso}')"></label>
+        <label class="field">Cardio (min)<input type="number" id="qlcardio" value="${pr.cardio ?? ""}" onchange="quickLog('${iso}')"></label>
+        <label class="field">Sleep (hrs)<input type="number" step="0.5" id="qlsleep" value="${pr.sleep ?? ""}" onchange="quickLog('${iso}')"></label>
       </div>
+      <label class="field" style="margin-top:12px">Notes<textarea id="qlnotes" rows="2" onchange="quickLog('${iso}')">${esc(pr.notes || "")}</textarea></label>
       <span id="qlmsg" class="muted" style="font-size:.84rem">Auto-saves as you type ✓</span>
     </div>`;
   return h;
@@ -376,9 +379,14 @@ function timingChip(label, val, date) {
 window.quickLog = (iso) => {
   const p = progress[iso] || { date: iso };
   p.weight = numOrNull($("#qlw").value); p.steps = numOrNull($("#qls").value);
+  p.cardio = numOrNull($("#qlcardio").value); p.sleep = numOrNull($("#qlsleep").value);
+  p.notes = $("#qlnotes").value;
   progress[iso] = p; saveJSON(LS_PROG, progress);
   $("#qlmsg").textContent = "Saved ✓";
 };
+// "Did you train that day?" — derived from logged workout weights (no manual toggle).
+// Falls back to any legacy manual "Trained? Yes" so older entries still count.
+const didTrain = (date) => !!(weightLog[date] && Object.keys(weightLog[date]).length) || progress[date]?.trained === "Yes";
 const numOrNull = (v) => (v === "" || v == null ? null : Number(v));
 
 /* ---------- DASHBOARD ---------- */
@@ -1024,10 +1032,9 @@ function weeklyReports() {
     const mealPct = totalMeals ? Math.round((doneMeals / totalMeals) * 100) : null;
     const proClass = avgPro == null ? "" : avgPro >= proLo - 10 ? "ok" : "warn";
 
-    // training
+    // training (auto-detected from logged workout weights)
     const liftDates = dates.filter((d) => { const day = P.gymCalendar.find((x) => x.Date === d); return day && !/Rest|Active Recovery/i.test(day.Focus); });
-    const trainedYes = dates.filter((d) => progress[d]?.trained === "Yes").length;
-    const anyTrained = dates.some((d) => progress[d]?.trained);
+    const trainedYes = dates.filter((d) => didTrain(d)).length;
     const skippedN = dates.filter(isSkipped).length;
 
     const sub = (txt, cls) => `<div class="wk-sub ${cls}">${txt}</div>`;
@@ -1038,8 +1045,8 @@ function weeklyReports() {
         avgCal != null ? sub(`${avgPro} g protein · ${fullDays} full day${fullDays > 1 ? "s" : ""}`, proClass) : `<div class="wk-sub">no full day logged</div>`}</div>`,
       `<div class="wk-metric"><div class="wk-label">Meals logged</div><div class="wk-val">${doneMeals}/${totalMeals}</div>${
         mealPct != null ? sub(`${mealPct}% complete`, mealPct >= 80 ? "ok" : mealPct >= 50 ? "" : "warn") : ""}</div>`,
-      `<div class="wk-metric"><div class="wk-label">Training</div><div class="wk-val">${anyTrained ? trainedYes + "/" + liftDates.length : "—"}</div>` +
-        `<div class="wk-sub">${anyTrained ? "lift days done" : "log “Trained?” below"}${skippedN ? ` · ${skippedN} skipped` : ""}</div></div>`,
+      `<div class="wk-metric"><div class="wk-label">Training</div><div class="wk-val">${trainedYes}/${liftDates.length}</div>` +
+        `<div class="wk-sub">lift days done${skippedN ? ` · ${skippedN} skipped` : ""}</div></div>`,
     ].join("");
 
     // actionable note
@@ -1067,9 +1074,7 @@ function weeklyReports() {
 }
 
 views.progress = () => {
-  const iso = todayISO();
-  const pr = progress[iso] || {};
-  let h = `<h1>Progress</h1><p class="subtitle">Log your morning weight. The chart shows your actual weight vs the target band — small daily swings are normal.</p>`;
+  let h = `<h1>Progress</h1><p class="subtitle">Your weight trend, weekly reports, and full history. Add your daily entries on the <b>Today</b> tab.</p>`;
 
   h += `<div class="chart-wrap"><canvas id="wchart" height="320"></canvas>
     <div class="muted" style="font-size:.8rem;margin-top:8px;text-align:center">
@@ -1079,34 +1084,6 @@ views.progress = () => {
   </div>`;
 
   h += weeklyReports();
-
-  // today's full log form. Calories & protein are computed from meals marked Done — not typed.
-  const eaten = dayConsumed(mealRowFor(iso));
-  h += `<h2>Log — ${esc(fmtDate(iso))}</h2><div class="card">
-    <p class="muted" style="margin:0 0 12px;font-size:.84rem">🍽️ <b>Calories & protein are added automatically</b> from the meals you tick <b>Done</b> (use <b>✎ Other</b> on the Meals tab for off-plan food). Just log your weight and steps here.</p>
-    <div class="form-grid">
-      ${field("weight", "Weight (kg)", pr.weight, "number", "0.1")}
-      <label class="field">Calories <span class="muted" style="font-weight:400;font-size:.74rem">· auto from meals</span>
-        <input type="number" value="${eaten.doneCount ? eaten.cal : ""}" placeholder="mark meals Done" disabled></label>
-      <label class="field">Protein (g) <span class="muted" style="font-weight:400;font-size:.74rem">· auto</span>
-        <input type="number" value="${eaten.doneCount ? eaten.pro : ""}" placeholder="—" disabled></label>
-      ${field("steps", "Steps", pr.steps, "number")}
-      ${field("cardio", "Cardio (min)", pr.cardio, "number")}
-      ${field("sleep", "Sleep (hrs)", pr.sleep, "number", "0.5")}
-      <label class="field">Trained?
-        <select id="pf_trained"><option value="">—</option>
-          <option ${pr.trained === "Yes" ? "selected" : ""}>Yes</option>
-          <option ${pr.trained === "No" ? "selected" : ""}>No</option></select></label>
-      <label class="field">Meal timing followed?
-        <select id="pf_timing"><option value="">—</option>
-          <option ${pr.timing === "Yes" ? "selected" : ""}>Yes</option>
-          <option ${pr.timing === "Partly" ? "selected" : ""}>Partly</option>
-          <option ${pr.timing === "No" ? "selected" : ""}>No</option></select></label>
-    </div>
-    <label class="field" style="margin-top:12px">Notes<textarea id="pf_notes" rows="2">${esc(pr.notes || "")}</textarea></label>
-    <button class="btn primary" style="margin-top:14px" onclick="saveProgress('${iso}')">Save</button>
-    <span id="pmsg" class="muted" style="margin-left:10px"></span>
-  </div>`;
 
   // history table
   const logged = Object.values(progress).filter((p) => p.weight != null).sort((a, b) => b.date.localeCompare(a.date));
@@ -1124,27 +1101,11 @@ views.progress = () => {
       h += `<tr><td>${esc(fmtDate(p.date))}</td><td class="num"><b>${esc(p.weight)}</b></td>
         <td class="num">${tgt ?? "—"}</td><td class="num" style="color:${delta > 0 ? "var(--warn)" : "var(--accent)"}">${delta > 0 ? "+" : ""}${delta}</td>
         <td class="num">${cal ?? "—"}</td><td class="num">${pro ?? "—"}</td>
-        <td class="num">${p.steps ?? "—"}</td><td>${esc(p.trained || "—")}</td></tr>`;
+        <td class="num">${p.steps ?? "—"}</td><td>${didTrain(p.date) ? "Yes" : "—"}</td></tr>`;
     }
     h += `</tbody></table></div>`;
   }
   return h;
-};
-function field(id, label, val, type = "number", step) {
-  return `<label class="field">${label}<input id="pf_${id}" type="${type}" ${step ? `step="${step}"` : ""} value="${val ?? ""}"></label>`;
-}
-window.saveProgress = (iso) => {
-  const g = (id) => $("#pf_" + id).value;
-  // calories & protein are derived from meals marked Done, so they're not collected here
-  progress[iso] = {
-    date: iso,
-    weight: numOrNull(g("weight")),
-    steps: numOrNull(g("steps")), cardio: numOrNull(g("cardio")), sleep: numOrNull(g("sleep")),
-    trained: g("trained"), timing: g("timing"), notes: g("notes"),
-  };
-  saveJSON(LS_PROG, progress);
-  $("#pmsg").textContent = "Saved ✓";
-  drawChart();
 };
 
 /* ---------- canvas chart: actual vs target band ---------- */
