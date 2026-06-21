@@ -303,19 +303,18 @@ views.today = () => {
     </div>
     <p class="note-box" style="margin-top:14px">${esc(meal["Timing Notes"] || "")}</p></div>`;
 
-  // Quick log
+  // Quick log — auto-saves the moment you type each field (no Save button needed)
   const pr = progress[iso] || {};
   h += `<h2>📈 Quick log</h2>
-    <p class="muted" style="margin:-8px 0 12px;font-size:.86rem">Weigh yourself first thing in the morning, before eating or drinking. Fill in calories, protein and steps at the end of the day. The full daily log lives in the <b>Progress</b> tab.</p>
+    <p class="muted" style="margin:-8px 0 12px;font-size:.86rem">Weigh yourself first thing in the morning, before eating or drinking. Each field <b>saves automatically</b> as you type it. The full daily log lives in the <b>Progress</b> tab.</p>
     <div class="card">
       <div class="form-grid">
-        <label class="field">Weight (kg)<input type="number" step="0.1" id="qlw" value="${pr.weight ?? ""}"></label>
-        <label class="field">Calories<input type="number" id="qlc" value="${pr.calories ?? ""}"></label>
-        <label class="field">Protein (g)<input type="number" id="qlp" value="${pr.protein ?? ""}"></label>
-        <label class="field">Steps<input type="number" id="qls" value="${pr.steps ?? ""}"></label>
+        <label class="field">Weight (kg)<input type="number" step="0.1" id="qlw" value="${pr.weight ?? ""}" onchange="quickLog('${iso}')"></label>
+        <label class="field">Calories<input type="number" id="qlc" value="${pr.calories ?? ""}" onchange="quickLog('${iso}')"></label>
+        <label class="field">Protein (g)<input type="number" id="qlp" value="${pr.protein ?? ""}" onchange="quickLog('${iso}')"></label>
+        <label class="field">Steps<input type="number" id="qls" value="${pr.steps ?? ""}" onchange="quickLog('${iso}')"></label>
       </div>
-      <button class="btn primary" style="margin-top:14px" onclick="quickLog('${iso}')">Save today's log</button>
-      <span id="qlmsg" class="muted" style="margin-left:10px"></span>
+      <span id="qlmsg" class="muted" style="font-size:.84rem">Auto-saves as you type ✓</span>
     </div>`;
   return h;
 };
