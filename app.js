@@ -580,13 +580,13 @@ function fileToB64(file, maxDim = 1024) {
     reader.readAsDataURL(file);
   });
 }
-async function geminiMacros({ desc, img }) {
+async function geminiMacros({ desc, imgs = [] }) {
   const key = getGemKey();
   if (!key) throw new Error("no-key");
   const parts = [];
-  if (img) parts.push({ inline_data: { mime_type: "image/jpeg", data: img } });
-  parts.push({ text: img
-    ? `A photo of a meal (and maybe a menu or label) is attached. Identify the dish and estimate the nutrition for one typical serving as eaten. Use any of this extra context: ${desc || "(none)"}.`
+  for (const b64 of imgs) parts.push({ inline_data: { mime_type: "image/jpeg", data: b64 } });
+  parts.push({ text: imgs.length
+    ? `${imgs.length > 1 ? `${imgs.length} photos` : "A photo"} of a meal (and maybe a menu or label) ${imgs.length > 1 ? "are" : "is"} attached — they show the same dish. Identify the dish and estimate the nutrition for one typical serving as eaten. Use any of this extra context: ${desc || "(none)"}.`
     : `Estimate the nutrition for one serving of this meal as actually eaten. Give realistic integer estimates.\n\n${desc}` });
   const body = {
     contents: [{ parts }],
@@ -619,23 +619,39 @@ async function geminiMacros({ desc, img }) {
   }
   throw new Error(lastErr);
 }
-// image pasted from the clipboard while the custom-meal modal is open
-let pastedImage = null;
+// custom-meal photos: collected from the file picker AND clipboard pastes (any number)
+let cmImages = [];        // File[] currently attached
+let cmPreviewURLs = [];   // object URLs shown in the preview strip (revoked on re-render)
+function renderCmPreviews() {
+  const wrap = document.getElementById("cm-previews");
+  if (!wrap) return;
+  cmPreviewURLs.forEach((u) => URL.revokeObjectURL(u));
+  cmPreviewURLs = cmImages.map((f) => URL.createObjectURL(f));
+  wrap.innerHTML = cmImages
+    .map((f, i) => `<div class="cm-thumb"><img src="${cmPreviewURLs[i]}" alt=""><button type="button" class="cm-thumb-x" title="Remove photo" onclick="cmRemoveImage(${i})">✕</button></div>`)
+    .join("");
+  const ind = document.getElementById("cm-pasted");
+  if (ind) {
+    ind.style.color = cmImages.length ? "var(--accent)" : "var(--muted)";
+    ind.textContent = cmImages.length ? `${cmImages.length} photo${cmImages.length > 1 ? "s" : ""} attached ✓` : "";
+  }
+}
+function resetCmImages() { cmImages = []; cmPreviewURLs.forEach((u) => URL.revokeObjectURL(u)); cmPreviewURLs = []; }
+window.cmRemoveImage = (i) => { cmImages.splice(i, 1); renderCmPreviews(); };
+window.cmAddFiles = (list) => {
+  for (const f of (list || [])) if (f && f.type && f.type.startsWith("image/")) cmImages.push(f);
+  renderCmPreviews();
+};
 window.addEventListener("paste", (e) => {
   if (!document.getElementById("cm-go")) return; // only when the custom-meal modal is open
   const items = (e.clipboardData && e.clipboardData.items) || [];
-  for (const it of items) {
-    if (it.type && it.type.startsWith("image/")) {
-      const f = it.getAsFile();
-      if (f) { pastedImage = f; e.preventDefault();
-        const ind = document.getElementById("cm-pasted"); if (ind) { ind.style.color = "var(--accent)"; ind.textContent = "📋 Image pasted ✓ — ready to estimate"; } }
-      break;
-    }
-  }
+  const files = [];
+  for (const it of items) if (it.type && it.type.startsWith("image/")) { const f = it.getAsFile(); if (f) files.push(f); }
+  if (files.length) { e.preventDefault(); window.cmAddFiles(files); }
 });
 window.openCustomMeal = (date, slot) => {
   const hasKey = !!getGemKey();
-  pastedImage = null;
+  resetCmImages();
   openModal(`<h2 style="margin-top:0">Ate something else?</h2>
     <p class="muted" style="font-size:.86rem">Type what you had <b>or add a photo</b> for <b>${esc(slot)}</b> — the AI identifies it, estimates the macros, and swaps it in (marked Done). Your <b>Eaten</b> tally uses the new numbers.</p>
     <div class="note-box" style="margin-bottom:12px">${hasKey
@@ -643,8 +659,9 @@ window.openCustomMeal = (date, slot) => {
       : `First time only: paste a free <b>Google Gemini</b> API key — <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" class="shop-link">get one free ↗</a> (no credit card). Stored only in this browser.`}
       <label class="field" style="margin-top:8px">Gemini API key${hasKey ? " <span class='muted'>(blank = keep saved)</span>" : ""}<input id="cm-key" type="password" placeholder="${hasKey ? "key saved — paste to replace" : "AIza…"}"></label></div>
     <label class="field" style="margin-bottom:10px">What did you eat? <span class="muted">(or add a photo below)</span><input id="cm-name" placeholder="e.g. Chicken burrito bowl"></label>
-    <label class="field" style="margin-bottom:4px">📷 Photo of the dish or menu <span class="muted">(optional — upload, or paste with ⌘V / Ctrl+V)</span><input id="cm-photo" type="file" accept="image/*" capture="environment"></label>
-    <div id="cm-pasted" class="muted" style="font-size:.8rem;margin-bottom:10px"></div>
+    <label class="field" style="margin-bottom:4px">📷 Photos of the dish or menu <span class="muted">(optional — add several; upload or paste with ⌘V / Ctrl+V)</span><input id="cm-photo" type="file" accept="image/*" capture="environment" multiple onchange="cmAddFiles(this.files); this.value=''"></label>
+    <div id="cm-pasted" class="muted" style="font-size:.8rem;margin-bottom:6px"></div>
+    <div id="cm-previews" class="cm-previews"></div>
     <label class="field" style="margin-bottom:10px">Restaurant <span class="muted">(optional)</span><input id="cm-rest" placeholder="e.g. Chipotle"></label>
     <label class="field" style="margin-bottom:12px">Portion / details <span class="muted">(optional)</span><input id="cm-notes" placeholder="e.g. double chicken, no rice, guac"></label>
     <div id="cm-msg" style="font-size:.84rem;min-height:1.1em;margin-bottom:10px"></div>
@@ -656,22 +673,21 @@ window.estimateCustomMeal = async (date, slot) => {
   if (!getGemKey()) { msg.style.color = "var(--danger)"; msg.textContent = "Paste your Gemini API key first."; return; }
   const name = ($("#cm-name").value || "").trim();
   const rest = ($("#cm-rest").value || "").trim(), notes = ($("#cm-notes").value || "").trim();
-  const photoEl = $("#cm-photo");
-  const file = (photoEl && photoEl.files && photoEl.files[0]) || pastedImage; // upload OR pasted image
-  if (!name && !file) { msg.style.color = "var(--danger)"; msg.textContent = "Type what you ate, or add/paste a photo."; return; }
+  const files = cmImages.slice(); // uploaded + pasted photos
+  if (!name && !files.length) { msg.style.color = "var(--danger)"; msg.textContent = "Type what you ate, or add/paste a photo."; return; }
   go.disabled = true; msg.style.color = "var(--muted)";
   try {
-    let img = null;
-    if (file) { msg.textContent = "Reading photo…"; img = await fileToB64(file); }
+    let imgs = [];
+    if (files.length) { msg.textContent = files.length > 1 ? `Reading ${files.length} photos…` : "Reading photo…"; imgs = await Promise.all(files.map((f) => fileToB64(f))); }
     msg.textContent = "Estimating…";
     const desc = (name ? `Meal: ${name}.` : "") + (rest ? ` Restaurant: ${rest}.` : "") + (notes ? ` Details: ${notes}.` : "");
-    const m = await geminiMacros({ desc, img });
+    const m = await geminiMacros({ desc, imgs });
     const finalName = name || m.name || "Custom meal";
     customMeals[customKey(date, slot)] = { name: rest ? `${finalName} · ${rest}` : finalName, restaurant: rest, cal: m.cal, pro: m.pro, carbs: m.carbs, fat: m.fat };
     saveJSON(LS_CUSTOM, customMeals);
     // logging a custom meal means you ate it — mark it Done automatically
     mealDone[date] ||= {}; mealDone[date][slot] = true; saveJSON(LS_DONE, mealDone);
-    pastedImage = null;
+    resetCmImages();
     closeModal(); const y = window.scrollY; render(); window.scrollTo(0, y);
   } catch (e) {
     go.disabled = false; msg.style.color = "var(--danger)";
