@@ -552,18 +552,43 @@ const LS_GEMKEY = "wp_gemini_key"; // stored only in this browser, never synced
 const getGemKey = () => localStorage.getItem(LS_GEMKEY) || "";
 // Free-tier quota has shifted between models — try newest first, fall through on 429/404.
 const GEMINI_MODELS = ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-2.0-flash", "gemini-2.0-flash-lite"];
-async function geminiMacros(desc) {
+// downscale an image File to a base64 JPEG (keeps tokens/latency low; image is never stored)
+function fileToB64(file, maxDim = 1024) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = reject;
+      img.onload = () => {
+        const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+        const w = Math.round(img.width * scale), h = Math.round(img.height * scale);
+        const c = document.createElement("canvas"); c.width = w; c.height = h;
+        c.getContext("2d").drawImage(img, 0, 0, w, h);
+        resolve(c.toDataURL("image/jpeg", 0.8).split(",")[1]);
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+async function geminiMacros({ desc, img }) {
   const key = getGemKey();
   if (!key) throw new Error("no-key");
+  const parts = [];
+  if (img) parts.push({ inline_data: { mime_type: "image/jpeg", data: img } });
+  parts.push({ text: img
+    ? `A photo of a meal (and maybe a menu or label) is attached. Identify the dish and estimate the nutrition for one typical serving as eaten. Use any of this extra context: ${desc || "(none)"}.`
+    : `Estimate the nutrition for one serving of this meal as actually eaten. Give realistic integer estimates.\n\n${desc}` });
   const body = {
-    contents: [{ parts: [{ text: `Estimate the nutrition for one serving of this meal as actually eaten. Give realistic integer estimates.\n\n${desc}` }] }],
+    contents: [{ parts }],
     generationConfig: {
       temperature: 0.2,
       responseMimeType: "application/json",
       responseSchema: {
         type: "object",
-        properties: { calories: { type: "integer" }, protein: { type: "integer" }, carbs: { type: "integer" }, fat: { type: "integer" } },
-        required: ["calories", "protein", "carbs", "fat"],
+        properties: { name: { type: "string" }, calories: { type: "integer" }, protein: { type: "integer" }, carbs: { type: "integer" }, fat: { type: "integer" } },
+        required: ["name", "calories", "protein", "carbs", "fat"],
       },
     },
   };
@@ -577,26 +602,41 @@ async function geminiMacros(desc) {
       if (!txt) { lastErr = "no-output"; continue; }
       const j = JSON.parse(txt);
       console.log("[macros] used model:", model);
-      return { cal: Math.round(j.calories), pro: Math.round(j.protein), carbs: Math.round(j.carbs), fat: Math.round(j.fat) };
+      return { name: j.name, cal: Math.round(j.calories), pro: Math.round(j.protein), carbs: Math.round(j.carbs), fat: Math.round(j.fat) };
     }
     let detail = "";
     try { detail = (await res.json())?.error?.message || ""; } catch {}
-    // Bad key is fatal for every model — stop early.
     if (res.status === 400 && /api[_ ]key/i.test(detail)) throw new Error("api-400: " + detail);
     lastErr = "api-" + res.status + (detail ? ": " + detail : "");
-    // 429 / 404 / 403: try the next model
   }
   throw new Error(lastErr);
 }
+// image pasted from the clipboard while the custom-meal modal is open
+let pastedImage = null;
+window.addEventListener("paste", (e) => {
+  if (!document.getElementById("cm-go")) return; // only when the custom-meal modal is open
+  const items = (e.clipboardData && e.clipboardData.items) || [];
+  for (const it of items) {
+    if (it.type && it.type.startsWith("image/")) {
+      const f = it.getAsFile();
+      if (f) { pastedImage = f; e.preventDefault();
+        const ind = document.getElementById("cm-pasted"); if (ind) { ind.style.color = "var(--accent)"; ind.textContent = "📋 Image pasted ✓ — ready to estimate"; } }
+      break;
+    }
+  }
+});
 window.openCustomMeal = (date, slot) => {
   const hasKey = !!getGemKey();
+  pastedImage = null;
   openModal(`<h2 style="margin-top:0">Ate something else?</h2>
-    <p class="muted" style="font-size:.86rem">Describe what you actually had for <b>${esc(slot)}</b> — an AI estimates the macros (approximate) and swaps it in. Your <b>Eaten</b> tally uses the new numbers.</p>
+    <p class="muted" style="font-size:.86rem">Type what you had <b>or add a photo</b> for <b>${esc(slot)}</b> — the AI identifies it, estimates the macros, and swaps it in (marked Done). Your <b>Eaten</b> tally uses the new numbers.</p>
     <div class="note-box" style="margin-bottom:12px">${hasKey
       ? `Gemini key saved on this device. Leave the key box blank to keep it, or paste a new one to replace it.`
-      : `First time only: paste a free <b>Google Gemini</b> API key — <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" class="shop-link">get one free ↗</a> (no credit card). Stored only in this browser. <b>Tip:</b> use the copy button on the key page — don't type the shortened <code>…O4Qw</code> version.`}
+      : `First time only: paste a free <b>Google Gemini</b> API key — <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" class="shop-link">get one free ↗</a> (no credit card). Stored only in this browser.`}
       <label class="field" style="margin-top:8px">Gemini API key${hasKey ? " <span class='muted'>(blank = keep saved)</span>" : ""}<input id="cm-key" type="password" placeholder="${hasKey ? "key saved — paste to replace" : "AIza…"}"></label></div>
-    <label class="field" style="margin-bottom:10px">What did you eat?<input id="cm-name" placeholder="e.g. Chicken burrito bowl"></label>
+    <label class="field" style="margin-bottom:10px">What did you eat? <span class="muted">(or add a photo below)</span><input id="cm-name" placeholder="e.g. Chicken burrito bowl"></label>
+    <label class="field" style="margin-bottom:4px">📷 Photo of the dish or menu <span class="muted">(optional — upload, or paste with ⌘V / Ctrl+V)</span><input id="cm-photo" type="file" accept="image/*" capture="environment"></label>
+    <div id="cm-pasted" class="muted" style="font-size:.8rem;margin-bottom:10px"></div>
     <label class="field" style="margin-bottom:10px">Restaurant <span class="muted">(optional)</span><input id="cm-rest" placeholder="e.g. Chipotle"></label>
     <label class="field" style="margin-bottom:12px">Portion / details <span class="muted">(optional)</span><input id="cm-notes" placeholder="e.g. double chicken, no rice, guac"></label>
     <div id="cm-msg" style="font-size:.84rem;min-height:1.1em;margin-bottom:10px"></div>
@@ -607,14 +647,23 @@ window.estimateCustomMeal = async (date, slot) => {
   if (keyEl && keyEl.value.trim()) localStorage.setItem(LS_GEMKEY, keyEl.value.trim());
   if (!getGemKey()) { msg.style.color = "var(--danger)"; msg.textContent = "Paste your Gemini API key first."; return; }
   const name = ($("#cm-name").value || "").trim();
-  if (!name) { msg.style.color = "var(--danger)"; msg.textContent = "Tell me what you ate."; return; }
   const rest = ($("#cm-rest").value || "").trim(), notes = ($("#cm-notes").value || "").trim();
-  const desc = `Meal: ${name}.` + (rest ? ` Restaurant: ${rest}.` : "") + (notes ? ` Details: ${notes}.` : "");
-  go.disabled = true; msg.style.color = "var(--muted)"; msg.textContent = "Estimating…";
+  const photoEl = $("#cm-photo");
+  const file = (photoEl && photoEl.files && photoEl.files[0]) || pastedImage; // upload OR pasted image
+  if (!name && !file) { msg.style.color = "var(--danger)"; msg.textContent = "Type what you ate, or add/paste a photo."; return; }
+  go.disabled = true; msg.style.color = "var(--muted)";
   try {
-    const m = await geminiMacros(desc);
-    customMeals[customKey(date, slot)] = { name: rest ? `${name} · ${rest}` : name, restaurant: rest, cal: m.cal, pro: m.pro, carbs: m.carbs, fat: m.fat };
+    let img = null;
+    if (file) { msg.textContent = "Reading photo…"; img = await fileToB64(file); }
+    msg.textContent = "Estimating…";
+    const desc = (name ? `Meal: ${name}.` : "") + (rest ? ` Restaurant: ${rest}.` : "") + (notes ? ` Details: ${notes}.` : "");
+    const m = await geminiMacros({ desc, img });
+    const finalName = name || m.name || "Custom meal";
+    customMeals[customKey(date, slot)] = { name: rest ? `${finalName} · ${rest}` : finalName, restaurant: rest, cal: m.cal, pro: m.pro, carbs: m.carbs, fat: m.fat };
     saveJSON(LS_CUSTOM, customMeals);
+    // logging a custom meal means you ate it — mark it Done automatically
+    mealDone[date] ||= {}; mealDone[date][slot] = true; saveJSON(LS_DONE, mealDone);
+    pastedImage = null;
     closeModal(); const y = window.scrollY; render(); window.scrollTo(0, y);
   } catch (e) {
     go.disabled = false; msg.style.color = "var(--danger)";
