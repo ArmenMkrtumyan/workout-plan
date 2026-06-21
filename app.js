@@ -31,7 +31,8 @@ const saveJSON = (k, v) => { localStorage.setItem(k, JSON.stringify(v)); if (win
 window.reloadFromStorage = () => {
   overrides = loadJSON(LS_SWAP); progress = loadJSON(LS_PROG); mealDone = loadJSON(LS_DONE);
   timingDone = loadJSON(LS_TIMING); weights = loadJSON(LS_WEIGHT); bought = loadJSON(LS_BOUGHT);
-  actualPrice = loadJSON(LS_ACTUAL); render();
+  actualPrice = loadJSON(LS_ACTUAL); customMeals = loadJSON(LS_CUSTOM); skips = loadJSON(LS_SKIPS);
+  render();
 };
 let overrides = loadJSON(LS_SWAP); // { "2026-06-15": { "Breakfast": "Protein Oatmeal" } }
 let progress = loadJSON(LS_PROG);  // { "2026-06-15": { weight, calories, protein, steps, cardio, trained, sleep, timing, notes } }
