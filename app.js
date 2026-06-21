@@ -357,12 +357,10 @@ views.today = () => {
   // Quick log — auto-saves the moment you type each field (no Save button needed)
   const pr = progress[iso] || {};
   h += `<h2>📈 Quick log</h2>
-    <p class="muted" style="margin:-8px 0 12px;font-size:.86rem">Weigh yourself first thing in the morning, before eating or drinking. Each field <b>saves automatically</b> as you type it. The full daily log lives in the <b>Progress</b> tab.</p>
+    <p class="muted" style="margin:-8px 0 12px;font-size:.86rem">Weigh yourself first thing in the morning, before eating or drinking. Saves automatically. <b>Calories & protein are counted from the meals you mark Done above</b> — no need to type them.</p>
     <div class="card">
       <div class="form-grid">
         <label class="field">Weight (kg)<input type="number" step="0.1" id="qlw" value="${pr.weight ?? ""}" onchange="quickLog('${iso}')"></label>
-        <label class="field">Calories<input type="number" id="qlc" value="${pr.calories ?? ""}" onchange="quickLog('${iso}')"></label>
-        <label class="field">Protein (g)<input type="number" id="qlp" value="${pr.protein ?? ""}" onchange="quickLog('${iso}')"></label>
         <label class="field">Steps<input type="number" id="qls" value="${pr.steps ?? ""}" onchange="quickLog('${iso}')"></label>
       </div>
       <span id="qlmsg" class="muted" style="font-size:.84rem">Auto-saves as you type ✓</span>
@@ -377,8 +375,7 @@ function timingChip(label, val, date) {
 }
 window.quickLog = (iso) => {
   const p = progress[iso] || { date: iso };
-  p.weight = numOrNull($("#qlw").value); p.calories = numOrNull($("#qlc").value);
-  p.protein = numOrNull($("#qlp").value); p.steps = numOrNull($("#qls").value);
+  p.weight = numOrNull($("#qlw").value); p.steps = numOrNull($("#qls").value);
   progress[iso] = p; saveJSON(LS_PROG, progress);
   $("#qlmsg").textContent = "Saved ✓";
 };
@@ -1083,12 +1080,16 @@ views.progress = () => {
 
   h += weeklyReports();
 
-  // today's full log form
+  // today's full log form. Calories & protein are computed from meals marked Done — not typed.
+  const eaten = dayConsumed(mealRowFor(iso));
   h += `<h2>Log — ${esc(fmtDate(iso))}</h2><div class="card">
+    <p class="muted" style="margin:0 0 12px;font-size:.84rem">🍽️ <b>Calories & protein are added automatically</b> from the meals you tick <b>Done</b> (use <b>✎ Other</b> on the Meals tab for off-plan food). Just log your weight and steps here.</p>
     <div class="form-grid">
       ${field("weight", "Weight (kg)", pr.weight, "number", "0.1")}
-      ${field("calories", "Calories", pr.calories, "number")}
-      ${field("protein", "Protein (g)", pr.protein, "number")}
+      <label class="field">Calories <span class="muted" style="font-weight:400;font-size:.74rem">· auto from meals</span>
+        <input type="number" value="${eaten.doneCount ? eaten.cal : ""}" placeholder="mark meals Done" disabled></label>
+      <label class="field">Protein (g) <span class="muted" style="font-weight:400;font-size:.74rem">· auto</span>
+        <input type="number" value="${eaten.doneCount ? eaten.pro : ""}" placeholder="—" disabled></label>
       ${field("steps", "Steps", pr.steps, "number")}
       ${field("cardio", "Cardio (min)", pr.cardio, "number")}
       ${field("sleep", "Sleep (hrs)", pr.sleep, "number", "0.5")}
@@ -1110,15 +1111,19 @@ views.progress = () => {
   // history table
   const logged = Object.values(progress).filter((p) => p.weight != null).sort((a, b) => b.date.localeCompare(a.date));
   if (logged.length) {
-    h += `<h2>History</h2><div class="table-wrap"><table><thead><tr>
+    h += `<h2>History</h2><p class="muted" style="font-size:.82rem;margin:-6px 0 12px">Cals & protein are the totals from meals you marked <b>Done</b> that day.</p>
+      <div class="table-wrap"><table><thead><tr>
       <th>Date</th><th>Weight</th><th>Target</th><th>Δ</th><th>Cals</th><th>Protein</th><th>Steps</th><th>Trained</th></tr></thead><tbody>`;
     for (const p of logged) {
       const t = P.progressTracker.find((x) => x.date === p.date);
       const tgt = t ? t.targetKg : null;
       const delta = tgt != null && p.weight != null ? (p.weight - tgt).toFixed(1) : "";
+      const c = dayConsumed(mealRowFor(p.date));
+      const cal = c.doneCount ? c.cal : (p.calories ?? null);
+      const pro = c.doneCount ? c.pro : (p.protein ?? null);
       h += `<tr><td>${esc(fmtDate(p.date))}</td><td class="num"><b>${esc(p.weight)}</b></td>
         <td class="num">${tgt ?? "—"}</td><td class="num" style="color:${delta > 0 ? "var(--warn)" : "var(--accent)"}">${delta > 0 ? "+" : ""}${delta}</td>
-        <td class="num">${p.calories ?? "—"}</td><td class="num">${p.protein ?? "—"}</td>
+        <td class="num">${cal ?? "—"}</td><td class="num">${pro ?? "—"}</td>
         <td class="num">${p.steps ?? "—"}</td><td>${esc(p.trained || "—")}</td></tr>`;
     }
     h += `</tbody></table></div>`;
@@ -1130,9 +1135,10 @@ function field(id, label, val, type = "number", step) {
 }
 window.saveProgress = (iso) => {
   const g = (id) => $("#pf_" + id).value;
+  // calories & protein are derived from meals marked Done, so they're not collected here
   progress[iso] = {
     date: iso,
-    weight: numOrNull(g("weight")), calories: numOrNull(g("calories")), protein: numOrNull(g("protein")),
+    weight: numOrNull(g("weight")),
     steps: numOrNull(g("steps")), cardio: numOrNull(g("cardio")), sleep: numOrNull(g("sleep")),
     trained: g("trained"), timing: g("timing"), notes: g("notes"),
   };
