@@ -21,29 +21,40 @@ function itemMacro(name) {
   return { cal: r["Calories"] || 0, pro: r["Protein g"] || 0 };
 }
 
-/* ---------- persistent state (localStorage) ---------- */
-const LS_SWAP = "wp_meal_overrides_v1";
-const LS_PROG = "wp_progress_v1";
-const LS_DONE = "wp_meal_done_v1";
+/* ===========================================================
+   PERSISTENT STATE — single source of truth
+   Every synced store is declared once in STORES below; it is then
+   loaded on startup, re-loaded after a cloud pull, AND synced to
+   Firebase automatically (firebase-sync.js reads window.WP_SYNCED_KEYS).
+   ➤ To add a new synced store: add ONE line to STORES — nothing else.
+   (The Gemini API key is intentionally device-local — not in STORES.)
+   =========================================================== */
 const loadJSON = (k) => { try { return JSON.parse(localStorage.getItem(k)) || {}; } catch { return {}; } };
 const saveJSON = (k, v) => { localStorage.setItem(k, JSON.stringify(v)); if (window.onDataChanged) window.onDataChanged(); };
-// Re-read all persisted state from localStorage and re-render (called after a cloud pull).
-window.reloadFromStorage = () => {
-  overrides = loadJSON(LS_SWAP); progress = loadJSON(LS_PROG); mealDone = loadJSON(LS_DONE);
-  timingDone = loadJSON(LS_TIMING); weights = loadJSON(LS_WEIGHT); bought = loadJSON(LS_BOUGHT);
-  actualPrice = loadJSON(LS_ACTUAL); customMeals = loadJSON(LS_CUSTOM); skips = loadJSON(LS_SKIPS);
-  render();
-};
-let overrides = loadJSON(LS_SWAP); // { "2026-06-15": { "Breakfast": "Protein Oatmeal" } }
-let progress = loadJSON(LS_PROG);  // { "2026-06-15": { weight, calories, protein, steps, cardio, trained, sleep, timing, notes } }
-let mealDone = loadJSON(LS_DONE);  // { "2026-06-15": { "Breakfast": true } }
-const isDone = (date, slot) => !!(mealDone[date] && mealDone[date][slot]);
-window.toggleMeal = (date, slot) => toggleFlag(mealDone, LS_DONE, date, slot);
 
-const LS_TIMING = "wp_timing_done_v1";
-let timingDone = loadJSON(LS_TIMING); // { "2026-06-15": { "Meal 1": true } }
-const isTimingDone = (date, label) => !!(timingDone[date] && timingDone[date][label]);
-window.toggleTiming = (date, label) => toggleFlag(timingDone, LS_TIMING, date, label);
+// localStorage keys
+const LS_SWAP = "wp_meal_overrides_v1", LS_PROG = "wp_progress_v1", LS_DONE = "wp_meal_done_v1",
+      LS_TIMING = "wp_timing_done_v1", LS_WEIGHT = "wp_weights_v1", LS_BOUGHT = "wp_bought_v1",
+      LS_ACTUAL = "wp_actual_price_v1", LS_CUSTOM = "wp_custom_meals_v1", LS_SKIPS = "wp_skips_v1";
+const LS_GEMKEY = "wp_gemini_key"; // device-local secret — never synced
+
+// in-memory copies (assigned by STORES.load on startup and after every cloud pull)
+let overrides, progress, mealDone, timingDone, weights, bought, actualPrice, customMeals, skips;
+
+const STORES = [
+  { key: LS_SWAP,   load: () => (overrides   = loadJSON(LS_SWAP)) },   // meal swaps        { date: { slot: recipeName } }
+  { key: LS_PROG,   load: () => (progress    = loadJSON(LS_PROG)) },   // daily log         { date: { weight, calories, … } }
+  { key: LS_DONE,   load: () => (mealDone    = loadJSON(LS_DONE)) },   // meal check-offs   { date: { slot: true } }
+  { key: LS_TIMING, load: () => (timingDone  = loadJSON(LS_TIMING)) }, // timing check-offs { date: { label: true } }
+  { key: LS_WEIGHT, load: () => (weights     = loadJSON(LS_WEIGHT)) }, // working weights   { "Push A#1": 105 }
+  { key: LS_BOUGHT, load: () => (bought      = loadJSON(LS_BOUGHT)) }, // grocery got-it    { item: true }
+  { key: LS_ACTUAL, load: () => (actualPrice = loadJSON(LS_ACTUAL)) }, // prices paid       { item: 4.29 }
+  { key: LS_CUSTOM, load: () => (customMeals = loadJSON(LS_CUSTOM)) }, // AI custom meals   { "date__slot": {name,cal,…} }
+  { key: LS_SKIPS,  load: () => (skips       = loadJSON(LS_SKIPS)) },  // skipped workouts  { date: true }
+];
+STORES.forEach((s) => s.load());                   // initial load
+window.WP_SYNCED_KEYS = STORES.map((s) => s.key);   // firebase-sync.js syncs exactly these
+window.reloadFromStorage = () => { STORES.forEach((s) => s.load()); render(); }; // after a cloud pull
 
 // shared toggle for any { date: { key: true } } store; re-renders without losing scroll
 function toggleFlag(store, lsKey, date, key) {
@@ -53,6 +64,10 @@ function toggleFlag(store, lsKey, date, key) {
   saveJSON(lsKey, store);
   const y = window.scrollY; render(); window.scrollTo(0, y);
 }
+const isDone = (date, slot) => !!(mealDone[date] && mealDone[date][slot]);
+window.toggleMeal = (date, slot) => toggleFlag(mealDone, LS_DONE, date, slot);
+const isTimingDone = (date, label) => !!(timingDone[date] && timingDone[date][label]);
+window.toggleTiming = (date, label) => toggleFlag(timingDone, LS_TIMING, date, label);
 
 /* ---------- per-exercise working weights (lb) ---------- */
 // Starting suggestions for a returning lifter ~150 lb at week-1 effort (RPE 6–7).
@@ -67,8 +82,6 @@ const SUGGESTED = {
   "Arms (Optional / Sat)#1": 50, "Arms (Optional / Sat)#2": 75, "Arms (Optional / Sat)#3": 30,
   "Arms (Optional / Sat)#4": 30, "Arms (Optional / Sat)#5": 10, "Arms (Optional / Sat)#6": 15, "Arms (Optional / Sat)#7": null,
 };
-const LS_WEIGHT = "wp_weights_v1";
-let weights = loadJSON(LS_WEIGHT); // { "Push A#1": 105 }  (user-confirmed actual weights)
 const exKey = (e) => `${e.Template}#${e.Order}`;
 window.setWeight = (k, val, el) => {
   const n = parseFloat(val);
@@ -117,8 +130,6 @@ function mealFor(dayRow, slot) {
 }
 
 /* ---------- custom meals (AI-estimated, "I ate something else") ---------- */
-const LS_CUSTOM = "wp_custom_meals_v1";
-let customMeals = loadJSON(LS_CUSTOM);            // { "2026-06-18__Dinner": {name,cal,pro,carbs,fat,restaurant} }
 const customKey = (date, slot) => `${date}__${slot}`;
 const getCustom = (date, slot) => customMeals[customKey(date, slot)];
 window.clearCustomMeal = (date, slot) => {
@@ -171,8 +182,6 @@ const fmtDate = (iso) => {
 };
 const todayISO = () => new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD local
 /* ---------- workout skip: pushes the LIFTING schedule forward; meals stay put ---------- */
-const LS_SKIPS = "wp_skips_v1";
-let skips = loadJSON(LS_SKIPS);            // { "2026-06-19": true }
 const isSkipped = (iso) => !!skips[iso];
 const skipCount = () => Object.keys(skips).length;
 function daysFromStart(iso) {
@@ -548,8 +557,7 @@ window.applySwap = (date, slot, name) => {
 window.resetSwaps = () => { overrides = {}; saveJSON(LS_SWAP, overrides); render(); };
 
 /* ---------- custom meal: AI macro estimate via Google Gemini (free) ---------- */
-const LS_GEMKEY = "wp_gemini_key"; // stored only in this browser, never synced
-const getGemKey = () => localStorage.getItem(LS_GEMKEY) || "";
+const getGemKey = () => localStorage.getItem(LS_GEMKEY) || ""; // LS_GEMKEY declared in PERSISTENT STATE (device-local)
 // Free-tier quota has shifted between models — try newest first, fall through on 429/404.
 const GEMINI_MODELS = ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-2.0-flash", "gemini-2.0-flash-lite"];
 // downscale an image File to a base64 JPEG (keeps tokens/latency low; image is never stored)
@@ -754,10 +762,6 @@ const confLinks = (item) => CONFIRMED[item]
   : null;
 
 /* ---------- weekly shopping checklist (got-it + actual price you paid) ---------- */
-const LS_BOUGHT = "wp_bought_v1";
-const LS_ACTUAL = "wp_actual_price_v1";
-let bought = loadJSON(LS_BOUGHT);      // { "Eggs": true }
-let actualPrice = loadJSON(LS_ACTUAL); // { "Eggs": 4.29 }
 const jsq = (s) => String(s).replace(/\\/g, "\\\\").replace(/'/g, "\\'");
 const round2 = (n) => Math.round(n * 100) / 100;
 window.toggleBought = (item) => {

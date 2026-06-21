@@ -23,10 +23,10 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 setPersistence(auth, browserLocalPersistence).catch(() => {});
 
-const KEYS = [
-  "wp_meal_overrides_v1", "wp_progress_v1", "wp_meal_done_v1", "wp_timing_done_v1",
-  "wp_weights_v1", "wp_bought_v1", "wp_actual_price_v1", "wp_custom_meals_v1", "wp_skips_v1",
-];
+// app.js owns the list of synced stores (see its PERSISTENT STATE section) and
+// exposes it as window.WP_SYNCED_KEYS, so the two files can never drift apart.
+// app.js is a plain <script> loaded before this module, so it's already defined.
+const KEYS = window.WP_SYNCED_KEYS;
 const DOC = doc(db, "shared", "data"); // one shared doc for the single user
 
 let ready = false;
