@@ -35,18 +35,20 @@ const saveJSON = (k, v) => { localStorage.setItem(k, JSON.stringify(v)); if (win
 // localStorage keys
 const LS_SWAP = "wp_meal_overrides_v1", LS_PROG = "wp_progress_v1", LS_DONE = "wp_meal_done_v1",
       LS_TIMING = "wp_timing_done_v1", LS_WEIGHT = "wp_weights_v1", LS_BOUGHT = "wp_bought_v1",
-      LS_ACTUAL = "wp_actual_price_v1", LS_CUSTOM = "wp_custom_meals_v1", LS_SKIPS = "wp_skips_v1";
+      LS_ACTUAL = "wp_actual_price_v1", LS_CUSTOM = "wp_custom_meals_v1", LS_SKIPS = "wp_skips_v1",
+      LS_WLOG = "wp_weight_log_v1";
 const LS_GEMKEY = "wp_gemini_key"; // device-local secret — never synced
 
 // in-memory copies (assigned by STORES.load on startup and after every cloud pull)
-let overrides, progress, mealDone, timingDone, weights, bought, actualPrice, customMeals, skips;
+let overrides, progress, mealDone, timingDone, weights, bought, actualPrice, customMeals, skips, weightLog;
 
 const STORES = [
   { key: LS_SWAP,   load: () => (overrides   = loadJSON(LS_SWAP)) },   // meal swaps        { date: { slot: recipeName } }
   { key: LS_PROG,   load: () => (progress    = loadJSON(LS_PROG)) },   // daily log         { date: { weight, calories, … } }
   { key: LS_DONE,   load: () => (mealDone    = loadJSON(LS_DONE)) },   // meal check-offs   { date: { slot: true } }
   { key: LS_TIMING, load: () => (timingDone  = loadJSON(LS_TIMING)) }, // timing check-offs { date: { label: true } }
-  { key: LS_WEIGHT, load: () => (weights     = loadJSON(LS_WEIGHT)) }, // working weights   { "Push A#1": 105 }
+  { key: LS_WEIGHT, load: () => (weights     = loadJSON(LS_WEIGHT)) }, // baseline weights  { "Push A#1": 105 }  (the standard going forward)
+  { key: LS_WLOG,   load: () => (weightLog   = loadJSON(LS_WLOG)) },   // per-day actuals   { date: { "Push A#1": 100 } }
   { key: LS_BOUGHT, load: () => (bought      = loadJSON(LS_BOUGHT)) }, // grocery got-it    { item: true }
   { key: LS_ACTUAL, load: () => (actualPrice = loadJSON(LS_ACTUAL)) }, // prices paid       { item: 4.29 }
   { key: LS_CUSTOM, load: () => (customMeals = loadJSON(LS_CUSTOM)) }, // AI custom meals   { "date__slot": {name,cal,…} }
@@ -83,11 +85,34 @@ const SUGGESTED = {
   "Arms (Optional / Sat)#4": 30, "Arms (Optional / Sat)#5": 10, "Arms (Optional / Sat)#6": 15, "Arms (Optional / Sat)#7": null,
 };
 const exKey = (e) => `${e.Template}#${e.Order}`;
+// Weight model: weights[k] is the BASELINE (your standard for this lift going forward).
+// weightLog[date][k] is what you ACTUALLY lifted on a specific day. A dated cell shows
+// the day's actual if present, else the baseline, else the suggestion. The "apply to
+// future" button copies a day's values into the baseline so future days follow them.
+const resolveWeight = (k, date) => {
+  const logged = date && weightLog[date] ? weightLog[date][k] : undefined;
+  if (logged != null) return { val: logged, set: true, dayLogged: true };
+  if (weights[k] != null) return { val: weights[k], set: true, dayLogged: false };
+  if (SUGGESTED[k] != null) return { val: SUGGESTED[k], set: false, dayLogged: false };
+  return { val: null, set: false, dayLogged: false };
+};
+// edit the baseline (undated template view)
 window.setWeight = (k, val, el) => {
   const n = parseFloat(val);
   if (val === "" || isNaN(n)) { delete weights[k]; if (el) { el.classList.remove("set"); el.classList.add("sug"); } }
   else { weights[k] = n; if (el) { el.classList.add("set"); el.classList.remove("sug"); } }
   saveJSON(LS_WEIGHT, weights);
+};
+// edit what you actually lifted on a specific day (does not touch other days)
+window.setDayWeight = (date, k, val, el) => {
+  const n = parseFloat(val);
+  weightLog[date] ||= {};
+  if (val === "" || isNaN(n)) {
+    delete weightLog[date][k];
+    if (!Object.keys(weightLog[date]).length) delete weightLog[date];
+  } else weightLog[date][k] = n;
+  if (el) { const stillSet = (val !== "" && !isNaN(n)) || weights[k] != null; el.classList.toggle("set", stillSet); el.classList.toggle("sug", !stillSet); }
+  saveJSON(LS_WLOG, weightLog);
 };
 const LB_TO_KG = 0.453592;
 // live-update the kg readout next to a weight input as the user types
@@ -97,24 +122,38 @@ window.kgSync = (input) => {
   const v = parseFloat(input.value);
   el.textContent = isNaN(v) ? "" : (v * LB_TO_KG).toFixed(1) + " kg";
 };
-function weightCell(e) {
+function weightCell(e, date) {
   const k = exKey(e);
-  const sug = SUGGESTED[k];
-  const cur = weights[k];
-  if (sug == null && cur == null) return `<span class="muted">BW</span>`;
-  const val = cur != null ? cur : sug;
-  const set = cur != null;
-  const kg = (val * LB_TO_KG).toFixed(1);
-  return `<input class="wt ${set ? "set" : "sug"}" type="number" inputmode="decimal" step="2.5" value="${val}"
-    oninput="window.kgSync(this)" onchange="setWeight('${k}',this.value,this)" aria-label="Working weight in pounds"> <span class="muted" style="font-size:.72rem">lb</span>
+  const r = resolveWeight(k, date);
+  if (r.val == null) return `<span class="muted">BW</span>`;
+  const kg = (r.val * LB_TO_KG).toFixed(1);
+  const onchange = date ? `setDayWeight('${date}','${k}',this.value,this)` : `setWeight('${k}',this.value,this)`;
+  return `<input class="wt ${r.set ? "set" : "sug"}" type="number" inputmode="decimal" step="2.5" value="${r.val}"
+    oninput="window.kgSync(this)" onchange="${onchange}" aria-label="Working weight in pounds"> <span class="muted" style="font-size:.72rem">lb</span>
     <div class="wt-kg muted" style="font-size:.72rem">${kg} kg</div>`;
 }
-// shared compact exercise row (this week's prescription + editable weight)
-function exRowCompact(e, colKey) {
+// Copy a day's shown weights into the baseline → every future workout follows them.
+window.applyWeightsForward = (template, date) => {
+  const ex = exercisesFor(template).filter((e) => resolveWeight(exKey(e), date).val != null);
+  if (!ex.length) { toast("No weights to apply on this day."); return; }
+  if (!confirm("Make this day's weights your new standard for all future workouts? You can still tweak any day later.")) return;
+  let changed = 0;
+  for (const e of ex) {
+    const k = exKey(e), v = resolveWeight(k, date).val;
+    if (weights[k] !== v) changed++;
+    weights[k] = v;
+  }
+  saveJSON(LS_WEIGHT, weights);
+  toast(changed ? `✓ Updated ${changed} exercise${changed > 1 ? "s" : ""} for all future workouts.` : "Future workouts already match this day ✓");
+  const y = window.scrollY; render(); window.scrollTo(0, y);
+};
+// shared compact exercise row (this week's prescription + editable weight). Pass a date
+// to log per-day actuals; omit it (template view) to edit the baseline directly.
+function exRowCompact(e, colKey, date) {
   return `<tr><td class="num">${esc(e.Order)}</td><td><b>${esc(e.Exercise)}</b>
     <div class="muted" style="font-size:.78rem">${esc(e["Technique cue"])} · alt: ${esc(e["Substitute if busy"])}</div></td>
     <td class="num"><b>${esc(e[colKey])}</b></td>
-    <td class="num">${weightCell(e)}</td>
+    <td class="num">${weightCell(e, date)}</td>
     <td class="num">${esc(e.Rest)}</td></tr>`;
 }
 
@@ -279,10 +318,13 @@ views.today = () => {
     if (ex.length) {
       h += `<p class="muted" style="font-size:.85rem;margin:8px 0 12px">💪 <b>Effort (all sets):</b> ${esc(intensity)} &nbsp;·&nbsp; 🚶 ${esc(day.Cardio)}</p>`;
       h += `<div class="table-wrap"><table><thead><tr><th>#</th><th>Exercise</th><th>This week</th><th>Weight (lb · kg)</th><th>Rest</th></tr></thead><tbody>`;
-      for (const e of ex) h += exRowCompact(e, colKey);
+      for (const e of ex) h += exRowCompact(e, colKey, iso);
       h += `</tbody></table></div>
-        <p class="muted" style="font-size:.78rem;margin:8px 0 0">Weights (lb) are starting suggestions — tap to edit to what you actually lift. They save and carry to next week. DB moves = per dumbbell.</p>
-        <div style="margin-top:10px"><button class="btn small ghost" onclick="openWorkout('${esc(day["Workout Template"])}','${esc(day.Date)}',true)">Show full 8-week progression</button></div>`;
+        <p class="muted" style="font-size:.78rem;margin:8px 0 0">Edit each weight (lb) to what you actually lifted today — it's saved for this day. DB moves = per dumbbell.</p>
+        <div class="slot-actions" style="margin-top:12px">
+          <button class="btn primary small" onclick="applyWeightsForward('${esc(day["Workout Template"])}','${esc(iso)}')">⬆️ Apply today's weights to all future workouts</button>
+          <button class="btn small ghost" onclick="openWorkout('${esc(day["Workout Template"])}','${esc(day.Date)}',true)">Show full 8-week progression</button>
+        </div>`;
     } else {
       h += `<p class="muted" style="margin:8px 0 0">${esc(day.Notes || "")}</p>
         <p class="note-box" style="margin-top:12px">🚶 <b>Today:</b> ${esc(day.Cardio)} · ${esc(day["Core/Mobility"])}. Focus on steps and recovery — no heavy lifting.</p>`;
@@ -458,9 +500,12 @@ window.openWorkout = (template, date, full = false) => {
     // compact: only this week's prescription + editable weight
     h += `<div class="table-wrap"><table><thead><tr>
       <th>#</th><th>Exercise</th><th>This week</th><th>Weight (lb · kg)</th><th>Rest</th></tr></thead><tbody>`;
-    for (const e of ex) h += exRowCompact(e, colKey);
-    h += `</tbody></table></div>
-      <p class="muted" style="font-size:.78rem;margin:8px 0 0">Weights (lb) are starting suggestions — edit to what you actually lift; they save and carry forward. DB moves = per dumbbell.</p>`;
+    for (const e of ex) h += exRowCompact(e, colKey, date);
+    h += `</tbody></table></div>`;
+    h += date
+      ? `<p class="muted" style="font-size:.78rem;margin:8px 0 0">Edit each weight (lb) to what you actually lifted this day — saved for this day only. DB moves = per dumbbell.</p>
+         <div style="margin-top:12px"><button class="btn primary small" onclick="applyWeightsForward('${esc(template)}',${dateArg})">⬆️ Apply this day's weights to all future workouts</button></div>`
+      : `<p class="muted" style="font-size:.78rem;margin:8px 0 0">Weights (lb) are starting suggestions — edit to set your baseline; it carries to every day. DB moves = per dumbbell.</p>`;
   }
   openModal(h);
 };
@@ -1207,6 +1252,14 @@ function render() {
 function openModal(html) { $("#modalBody").innerHTML = html; $("#modal").hidden = false; }
 function closeModal() { $("#modal").hidden = true; }
 window.openModal = openModal; window.closeModal = closeModal;
+
+// transient bottom-of-screen confirmation message
+function toast(msg) {
+  let t = document.getElementById("toast");
+  if (!t) { t = document.createElement("div"); t.id = "toast"; t.className = "toast"; document.body.appendChild(t); }
+  t.textContent = msg; t.classList.add("show");
+  clearTimeout(t._tmo); t._tmo = setTimeout(() => t.classList.remove("show"), 2800);
+}
 
 window.addEventListener("hashchange", render);
 window.addEventListener("resize", () => { if (location.hash.replace("#", "") === "progress") drawChart(); });
