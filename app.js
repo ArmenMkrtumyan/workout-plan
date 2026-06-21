@@ -930,6 +930,100 @@ views.spendings = () => {
 };
 
 /* ---------- PROGRESS (chart + log) ---------- */
+/* ---------- weekly reports: auto-generated from logged data ---------- */
+const parseRange = (s) => { const m = String(s).replace(/,/g, "").match(/(\d+)\s*[–-]\s*(\d+)/); return m ? [+m[1], +m[2]] : null; };
+const fmtK = (n) => Math.round(n).toLocaleString();
+const dayMon = (iso) => fmtDate(iso).replace(/^\w+,\s*/, ""); // "Jun 16" without weekday
+function weekDateGroups() {
+  const g = {};
+  for (const d of P.gymCalendar) (g[d.Week] ||= []).push(d.Date);
+  return g;
+}
+function weeklyReports() {
+  const today = todayISO();
+  const groups = weekDateGroups();
+  const calT = parseRange(P.meta.Calories) || [1900, 2050];
+  const proLo = (parseRange(P.meta.Protein) || [150, 170])[0];
+  const weeks = Object.keys(groups).map(Number).sort((a, b) => a - b).filter((w) => groups[w][0] <= today);
+  if (!weeks.length) return "";
+
+  // overall summary line
+  const logged = Object.values(progress).filter((p) => p.weight != null).sort((a, b) => a.date.localeCompare(b.date));
+  const startKg = P.meta["Current kg"], targetKg = P.meta["Target kg"];
+  const latestKg = logged.length ? logged[logged.length - 1].weight : null;
+  let summary = "";
+  if (latestKg != null) {
+    const lost = startKg - latestKg, toGo = (latestKg - targetKg).toFixed(1);
+    summary = `<div class="note-box" style="margin-bottom:14px">📊 Latest <b>${latestKg} kg</b> · ${lost >= 0 ? "down" : "up"} <b>${Math.abs(lost).toFixed(1)} kg</b> from ${startKg} · goal ${targetKg} kg ${+toGo > 0 ? `(${toGo} kg to go)` : "— reached! 🎉"}</div>`;
+  }
+
+  let h = `<h2>Weekly reports</h2><p class="muted" style="font-size:.84rem;margin:-6px 0 12px">Auto-generated from what you've logged — body weight, meals marked <b>Done</b>, and your daily log. Newest week first.</p>${summary}`;
+
+  for (const w of [...weeks].reverse()) {
+    const dates = groups[w].filter((d) => d <= today);
+
+    // body weight
+    const wlog = dates.map((d) => progress[d]?.weight).filter((kg) => kg != null);
+    const lastW = wlog.length ? wlog[wlog.length - 1] : null;
+    const tgtEnd = P.progressTracker.find((x) => x.date === dates[dates.length - 1])?.targetKg;
+    const wDelta = (lastW != null && tgtEnd != null) ? +(lastW - tgtEnd).toFixed(1) : null;
+    const wClass = wDelta == null ? "" : wDelta <= 0.2 ? "ok" : wDelta <= 1.2 ? "" : "warn";
+
+    // nutrition (from meals marked Done). Avg intake uses only fully-logged days,
+    // so a half-checked day can't masquerade as under-eating.
+    let sumCal = 0, sumPro = 0, fullDays = 0, doneMeals = 0, totalMeals = 0;
+    for (const d of dates) {
+      const c = dayConsumed(mealRowFor(d));
+      doneMeals += c.doneCount; totalMeals += c.totalCount;
+      if (c.totalCount && c.doneCount === c.totalCount) { sumCal += c.cal; sumPro += c.pro; fullDays++; }
+    }
+    const avgCal = fullDays ? Math.round(sumCal / fullDays) : null;
+    const avgPro = fullDays ? Math.round(sumPro / fullDays) : null;
+    const mealPct = totalMeals ? Math.round((doneMeals / totalMeals) * 100) : null;
+    const proClass = avgPro == null ? "" : avgPro >= proLo - 10 ? "ok" : "warn";
+
+    // training
+    const liftDates = dates.filter((d) => { const day = P.gymCalendar.find((x) => x.Date === d); return day && !/Rest|Active Recovery/i.test(day.Focus); });
+    const trainedYes = dates.filter((d) => progress[d]?.trained === "Yes").length;
+    const anyTrained = dates.some((d) => progress[d]?.trained);
+    const skippedN = dates.filter(isSkipped).length;
+
+    const sub = (txt, cls) => `<div class="wk-sub ${cls}">${txt}</div>`;
+    const metrics = [
+      `<div class="wk-metric"><div class="wk-label">Body weight</div><div class="wk-val">${lastW != null ? lastW + " kg" : "—"}</div>${
+        lastW != null && wDelta != null ? sub(`target ${tgtEnd} · ${wDelta > 0 ? "+" : ""}${wDelta}`, wClass) : `<div class="wk-sub">not logged</div>`}</div>`,
+      `<div class="wk-metric"><div class="wk-label">Avg intake</div><div class="wk-val">${avgCal != null ? fmtK(avgCal) + " kcal" : "—"}</div>${
+        avgCal != null ? sub(`${avgPro} g protein · ${fullDays} full day${fullDays > 1 ? "s" : ""}`, proClass) : `<div class="wk-sub">no full day logged</div>`}</div>`,
+      `<div class="wk-metric"><div class="wk-label">Meals logged</div><div class="wk-val">${doneMeals}/${totalMeals}</div>${
+        mealPct != null ? sub(`${mealPct}% complete`, mealPct >= 80 ? "ok" : mealPct >= 50 ? "" : "warn") : ""}</div>`,
+      `<div class="wk-metric"><div class="wk-label">Training</div><div class="wk-val">${anyTrained ? trainedYes + "/" + liftDates.length : "—"}</div>` +
+        `<div class="wk-sub">${anyTrained ? "lift days done" : "log “Trained?” below"}${skippedN ? ` · ${skippedN} skipped` : ""}</div></div>`,
+    ].join("");
+
+    // actionable note
+    const flags = [];
+    if (avgCal != null && avgCal > calT[1] + 100) flags.push(`intake ~${fmtK(avgCal - calT[1])} kcal over the daily ceiling`);
+    if (avgCal != null && avgCal < calT[0] - 150) flags.push(`intake under target — don't under-eat`);
+    if (avgPro != null && avgPro < proLo) flags.push(`protein under ${proLo} g`);
+    if (wDelta != null && wDelta > 1.2) flags.push(`weight ${wDelta} kg above the target line`);
+    if (mealPct != null && totalMeals && mealPct < 50) flags.push(`only ${mealPct}% of meals logged`);
+    const hasData = avgCal != null || lastW != null;
+    const note = flags.length ? `<div class="wk-note">💡 ${flags.join(" · ")}</div>`
+      : hasData ? `<div class="wk-note ok">Nicely on plan this week 👏</div>` : "";
+
+    // overall pill
+    const pill = !hasData ? `<span class="pill grey">In progress</span>`
+      : (wClass !== "warn" && proClass !== "warn" && !flags.length) ? `<span class="pill green">On track</span>`
+      : `<span class="pill warn">Check in</span>`;
+
+    h += `<div class="card wk-card">
+      <div class="wk-head"><h3 style="margin:0">Week ${w} <span class="muted" style="font-weight:500">· ${esc(dayMon(groups[w][0]))} – ${esc(dayMon(groups[w][6]))}</span></h3>${pill}</div>
+      <div class="wk-grid">${metrics}</div>${note}
+    </div>`;
+  }
+  return h;
+}
+
 views.progress = () => {
   const iso = todayISO();
   const pr = progress[iso] || {};
@@ -941,6 +1035,8 @@ views.progress = () => {
       <span style="color:var(--accent2)">●</span> 7-day average &nbsp;
       <span style="color:var(--muted)">▬</span> target line &nbsp; shaded = ±1.0 kg target band</div>
   </div>`;
+
+  h += weeklyReports();
 
   // today's full log form
   h += `<h2>Log — ${esc(fmtDate(iso))}</h2><div class="card">
