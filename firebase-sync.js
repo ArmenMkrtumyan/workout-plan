@@ -105,7 +105,7 @@ onAuthStateChanged(auth, async (user) => {
 
 /* ---------- status badge only (no login UI) ---------- */
 function el(html) { const t = document.createElement("template"); t.innerHTML = html.trim(); return t.content.firstElementChild; }
-const badge = el(`<button id="fb-badge" title="Cloud sync status">☁︎ …</button>`);
+const badge = el(`<button id="fb-badge" title="Sync status — tap to push THIS device's data to the cloud">☁︎ …</button>`);
 document.head.append(el(`<style>
   #fb-badge{margin-left:8px;border:1px solid var(--line);background:var(--panel);color:var(--muted);
     font:600 .76rem -apple-system,sans-serif;padding:5px 10px;border-radius:999px;cursor:pointer}
@@ -115,6 +115,14 @@ function setBadge(txt) { badge.textContent = "☁︎ " + txt; }
 function mount() {
   const topbar = document.querySelector(".topbar");
   if (topbar) topbar.append(badge);
-  badge.onclick = () => { if (!auth.currentUser) signInAnonymously(auth).catch(() => {}); };
+  // Tap when signed out -> retry login. Tap when connected -> force this device's data
+  // up to the cloud so it wins on every other device (fixes two devices that disagree).
+  badge.onclick = () => {
+    if (!auth.currentUser) { setBadge("connecting…"); signInAnonymously(auth).catch(() => setBadge("offline — tap to retry")); return; }
+    if (!ready) return;
+    if (confirm("Push THIS device's data to the cloud now? It becomes the version every other device loads.")) {
+      localStorage.setItem(PENDING_KEY, "1"); pushNow();
+    }
+  };
 }
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mount); else mount();
