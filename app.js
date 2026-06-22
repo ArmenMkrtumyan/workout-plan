@@ -935,6 +935,70 @@ const ORDERS = [
 const monthKey = (iso) => iso.slice(0, 7);
 const monthName = (key) => new Date(key + "-01T00:00:00").toLocaleDateString(undefined, { month: "long", year: "numeric" });
 
+/* ---------- receipt photos (device-local) ----------
+   Receipt images are large; the cloud sync packs all state into ONE Firestore
+   doc capped at 1 MB, so receipts are kept on THIS device only (like the Gemini
+   key) — never in the synced blob, so they can't break sync. */
+const LS_RECEIPTS = "wp_receipts_v1";
+let receipts = (() => { try { return JSON.parse(localStorage.getItem(LS_RECEIPTS)) || []; } catch { return []; } })(); // [{id, addedAt, img}]
+function saveReceipts() {
+  try { localStorage.setItem(LS_RECEIPTS, JSON.stringify(receipts)); return true; }
+  catch { toast("Storage full — remove a receipt and try again."); return false; }
+}
+// downscale an image File to a JPEG data URL (kept legible for receipt text, but small)
+function fileToDataURL(file, maxDim = 1400, q = 0.7) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = reject;
+      img.onload = () => {
+        const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+        const w = Math.round(img.width * scale), h = Math.round(img.height * scale);
+        const c = document.createElement("canvas"); c.width = w; c.height = h;
+        c.getContext("2d").drawImage(img, 0, 0, w, h);
+        resolve(c.toDataURL("image/jpeg", q));
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+const rerenderKeepScroll = () => { const y = window.scrollY; render(); window.scrollTo(0, y); };
+window.addReceiptFiles = async (list) => {
+  const files = [...(list || [])].filter((f) => f && f.type && f.type.startsWith("image/"));
+  if (!files.length) return;
+  let added = 0;
+  for (const f of files) {
+    try {
+      const img = await fileToDataURL(f);
+      receipts.unshift({ id: "r" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), addedAt: todayISO(), img });
+      added++;
+    } catch { toast("Couldn't read that image."); }
+  }
+  if (added && saveReceipts()) { toast(added > 1 ? `${added} receipts added ✓` : "Receipt added ✓"); rerenderKeepScroll(); }
+};
+window.removeReceipt = (id) => {
+  if (!confirm("Remove this receipt photo?")) return;
+  receipts = receipts.filter((r) => r.id !== id);
+  saveReceipts(); closeModal(); rerenderKeepScroll();
+};
+window.viewReceipt = (id) => {
+  const r = receipts.find((x) => x.id === id); if (!r) return;
+  openModal(`<h2 style="margin-top:0">Receipt <span class="muted" style="font-weight:500;font-size:.9rem">· added ${esc(fmtDate(r.addedAt))}</span></h2>
+    <img src="${r.img}" alt="receipt" style="max-width:100%;border-radius:10px;border:1px solid var(--line);display:block">
+    <div style="margin-top:14px"><button class="btn small" onclick="removeReceipt('${esc(r.id)}')">🗑 Remove receipt</button></div>`);
+};
+// paste a receipt while the Spendings tab is open
+window.addEventListener("paste", (e) => {
+  if (!document.getElementById("rcpt-drop")) return; // only on the Spendings tab
+  const items = (e.clipboardData && e.clipboardData.items) || [];
+  const files = [];
+  for (const it of items) if (it.type && it.type.startsWith("image/")) { const f = it.getAsFile(); if (f) files.push(f); }
+  if (files.length) { e.preventDefault(); window.addReceiptFiles(files); }
+});
+
 views.spendings = () => {
   const totalSpent = ORDERS.reduce((s, o) => s + o.total, 0);
   const totalSaved = ORDERS.reduce((s, o) => s + o.discount, 0);
@@ -975,6 +1039,22 @@ views.spendings = () => {
       </tbody></table>
     </div>`;
   }
+  h += `<h2>🧾 Receipts</h2>
+    <div class="card">
+      <p class="muted" style="margin:0 0 12px;font-size:.86rem">Keep photos of your shopping receipts here. <b>Paste</b> (⌘V / Ctrl+V) or tap to upload — several at once is fine. Saved on <b>this device</b>.</p>
+      <label id="rcpt-drop" class="rcpt-drop">
+        <input type="file" accept="image/*" multiple style="display:none" onchange="addReceiptFiles(this.files); this.value=''">
+        <span>📋 Paste a receipt here, or <u>tap to upload</u></span>
+      </label>
+      ${receipts.length
+        ? `<div class="rcpt-grid">${receipts.map((r) => `
+            <div class="rcpt-thumb">
+              <img src="${r.img}" alt="receipt" onclick="viewReceipt('${esc(r.id)}')">
+              <button class="rcpt-x" title="Remove" onclick="removeReceipt('${esc(r.id)}')">✕</button>
+              <div class="rcpt-date">${esc(dayMon(r.addedAt))}</div>
+            </div>`).join("")}</div>`
+        : `<p class="muted" style="margin:12px 0 0;font-size:.84rem">No receipts yet.</p>`}
+    </div>`;
   h += `<p class="note-box">📊 Each order logged here builds your true monthly grocery spend. Charts + month-by-month tables are the next step — and a button to log new orders yourself.</p>`;
   return h;
 };
