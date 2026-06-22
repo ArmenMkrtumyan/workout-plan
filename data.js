@@ -1069,14 +1069,14 @@ window.PLAN = {
   {
    "Template": "Lower B",
    "Order": 1,
-   "Exercise": "Barbell or Machine Hip Thrust (heavy)",
-   "Weeks 1–2": "3 x 5 @ RPE 6–7",
-   "Weeks 3–4": "3 x 5 @ RPE 7–8",
-   "Weeks 5–6": "4 x 4–5 @ RPE 8",
-   "Weeks 7–8": "3 x 4–5",
+   "Exercise": "Heavy Leg Press",
+   "Weeks 1–2": "3 x 6 @ RPE 6–7",
+   "Weeks 3–4": "3 x 6 @ RPE 7–8",
+   "Weeks 5–6": "4 x 5–6 @ RPE 8",
+   "Weeks 7–8": "3 x 5–6",
    "Rest": "2–3 min",
-   "Technique cue": "Drive through heels; ribs down; pause hard at top",
-   "Substitute if busy": "Glute bridge machine or hip-thrust machine"
+   "Technique cue": "Feet mid-platform; deep but controlled; drive through heels; don't slam-lock knees",
+   "Substitute if busy": "Hack squat"
   },
   {
    "Template": "Lower B",
@@ -1105,14 +1105,14 @@ window.PLAN = {
   {
    "Template": "Lower B",
    "Order": 4,
-   "Exercise": "Cable Pull-Through",
-   "Weeks 1–2": "3 x 10",
-   "Weeks 3–4": "3 x 8–10",
-   "Weeks 5–6": "4 x 8–10",
-   "Weeks 7–8": "3 x 10",
-   "Rest": "90 sec",
-   "Technique cue": "Hinge at hips; finish with glute squeeze, not lower back",
-   "Substitute if busy": "45– back extension"
+   "Exercise": "Cable/Machine Glute Kickback",
+   "Weeks 1–2": "3 x 12/side",
+   "Weeks 3–4": "3 x 10–12/side",
+   "Weeks 5–6": "4 x 10–12/side",
+   "Weeks 7–8": "3 x 12/side",
+   "Rest": "60 sec",
+   "Technique cue": "Squeeze glute at top; no lower-back arch; control the return",
+   "Substitute if busy": "Hip abduction machine"
   },
   {
    "Template": "Lower B",
@@ -1141,14 +1141,14 @@ window.PLAN = {
   {
    "Template": "Lower B",
    "Order": 7,
-   "Exercise": "Core Circuit: Cable Crunch, Side Plank, Dead Bug",
-   "Weeks 1–2": "2 rounds",
-   "Weeks 3–4": "3 rounds",
-   "Weeks 5–6": "3–4 rounds",
-   "Weeks 7–8": "3 rounds",
+   "Exercise": "Hanging Leg Raise",
+   "Weeks 1–2": "3 x 10",
+   "Weeks 3–4": "3 x 10–12",
+   "Weeks 5–6": "3–4 x 10–12",
+   "Weeks 7–8": "3 x 12",
    "Rest": "45 sec",
-   "Technique cue": "Control breathing",
-   "Substitute if busy": "Ab machine"
+   "Technique cue": "No swinging; curl pelvis toward ribs; lower slow",
+   "Substitute if busy": "Captain's chair knee raise"
   },
   {
    "Template": "Arms (Optional / Sat)",

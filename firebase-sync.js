@@ -29,6 +29,9 @@ setPersistence(auth, browserLocalPersistence).catch(() => {});
 const KEYS = window.WP_SYNCED_KEYS;
 const DOC = doc(db, "shared", "data"); // one shared doc for the single user
 
+const PENDING_KEY = "wp_sync_pending"; // device-local flag: a change is waiting to reach
+                                       // the cloud. Survives reloads so it can't be lost.
+
 let ready = false;
 let applyingRemote = false;
 let pushTimer = null;
@@ -42,30 +45,52 @@ function applyPayload(p) {
   if (window.reloadFromStorage) window.reloadFromStorage();
 }
 
-// local change -> cloud (debounced)
+// push the current local snapshot to the cloud now (no debounce). Clears the pending
+// flag only on success, so a failed/offline push is retried on the next flush.
+async function pushNow() {
+  if (!ready || applyingRemote) return;
+  clearTimeout(pushTimer); pushTimer = null;
+  setBadge("saving…");
+  try {
+    await setDoc(DOC, { payload: JSON.stringify(snapshotPayload()), updatedAt: serverTimestamp() }, { merge: true });
+    localStorage.removeItem(PENDING_KEY);
+    setBadge("synced");
+  } catch { setBadge("offline"); } // PENDING_KEY stays set -> retried later
+}
+
+// local change -> cloud (debounced). Mark pending FIRST (and persist it) so a change
+// made before sync is ready, or right before the tab closes, is never silently dropped.
 window.onDataChanged = () => {
-  if (applyingRemote || !ready) return;
+  if (applyingRemote) return;
+  localStorage.setItem(PENDING_KEY, "1");
+  if (!ready) return; // flushed once auth/initial-load completes (see below)
   clearTimeout(pushTimer);
   setBadge("saving…");
-  pushTimer = setTimeout(async () => {
-    try {
-      await setDoc(DOC, { payload: JSON.stringify(snapshotPayload()), updatedAt: serverTimestamp() }, { merge: true });
-      setBadge("synced");
-    } catch { setBadge("offline"); }
-  }, 800);
+  pushTimer = setTimeout(pushNow, 800);
 };
+
+// flush a pending change immediately when the tab is hidden/closed, so a change made
+// inside the 800ms debounce window isn't lost on navigation away.
+function flushPending() { if (localStorage.getItem(PENDING_KEY) && ready && !applyingRemote) pushNow(); }
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") flushPending(); });
+window.addEventListener("pagehide", flushPending);
 
 onAuthStateChanged(auth, async (user) => {
   if (!user) { ready = false; setBadge("connecting…"); signInAnonymously(auth).catch(() => setBadge("offline — tap to retry")); return; }
   setBadge("syncing…");
   try {
     const snap = await getDoc(DOC);
-    if (snap.exists() && snap.data().payload) {
+    const hasLocalPending = !!localStorage.getItem(PENDING_KEY);
+    if (snap.exists() && snap.data().payload && !hasLocalPending) {
+      // no unsynced local edits -> adopt the cloud copy
       applyingRemote = true; applyPayload(JSON.parse(snap.data().payload)); applyingRemote = false;
     } else {
+      // first ever write, OR this device has unsynced local changes that must win
       await setDoc(DOC, { payload: JSON.stringify(snapshotPayload()), updatedAt: serverTimestamp() });
+      localStorage.removeItem(PENDING_KEY);
     }
     ready = true;
+    if (localStorage.getItem(PENDING_KEY)) pushNow(); // flush anything queued while connecting
   } catch { setBadge("offline"); }
   onSnapshot(DOC, (snap) => {
     if (!snap.exists() || snap.metadata.hasPendingWrites) return; // skip our own writes
