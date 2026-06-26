@@ -1069,30 +1069,18 @@ window.PLAN = {
   {
    "Template": "Arms + Shoulders",
    "Order": 1,
-   "Exercise": "Seated DB Shoulder Press",
+   "Exercise": "Close-Grip Bench or Assisted Dip",
    "Weeks 1–2": "3 x 8–10",
    "Weeks 3–4": "3–4 x 8–10",
    "Weeks 5–6": "4 x 6–10 @ RPE 8",
    "Weeks 7–8": "3 x 8–10",
    "Rest": "2 min",
-   "Technique cue": "Press in a slight arc; don't over-arch lower back",
-   "Substitute if busy": "Machine shoulder press"
-  },
-  {
-   "Template": "Arms + Shoulders",
-   "Order": 2,
-   "Exercise": "Close-Grip Bench or Assisted Dip",
-   "Weeks 1–2": "3 x 8–10",
-   "Weeks 3–4": "3 x 8–10",
-   "Weeks 5–6": "4 x 6–10 @ RPE 8",
-   "Weeks 7–8": "3 x 8–10",
-   "Rest": "90 sec",
    "Technique cue": "Elbows tucked; keep wrists stacked over elbows",
    "Substitute if busy": "Machine dip"
   },
   {
    "Template": "Arms + Shoulders",
-   "Order": 3,
+   "Order": 2,
    "Exercise": "EZ-Bar Curl",
    "Weeks 1–2": "3 x 10",
    "Weeks 3–4": "3 x 8–10",
@@ -1104,7 +1092,7 @@ window.PLAN = {
   },
   {
    "Template": "Arms + Shoulders",
-   "Order": 4,
+   "Order": 3,
    "Exercise": "Cable Lateral Raise",
    "Weeks 1–2": "3 x 12–15",
    "Weeks 3–4": "3 x 12–15",
@@ -1116,7 +1104,7 @@ window.PLAN = {
   },
   {
    "Template": "Arms + Shoulders",
-   "Order": 5,
+   "Order": 4,
    "Exercise": "Overhead Cable Triceps Extension",
    "Weeks 1–2": "3 x 12",
    "Weeks 3–4": "3 x 10–12",
@@ -1128,7 +1116,7 @@ window.PLAN = {
   },
   {
    "Template": "Arms + Shoulders",
-   "Order": 6,
+   "Order": 5,
    "Exercise": "Incline DB Curl",
    "Weeks 1–2": "3 x 10–12",
    "Weeks 3–4": "3 x 10–12",
@@ -1137,6 +1125,18 @@ window.PLAN = {
    "Rest": "60 sec",
    "Technique cue": "Let arms hang behind body for full stretch",
    "Substitute if busy": "Hammer curl"
+  },
+  {
+   "Template": "Arms + Shoulders",
+   "Order": 6,
+   "Exercise": "EZ-Bar Skull Crusher",
+   "Weeks 1–2": "3 x 10–12",
+   "Weeks 3–4": "3 x 10–12",
+   "Weeks 5–6": "4 x 8–12",
+   "Weeks 7–8": "3 x 10–12",
+   "Rest": "60 sec",
+   "Technique cue": "Lower to forehead; keep upper arms still",
+   "Substitute if busy": "Rope pushdown"
   },
   {
    "Template": "Arms + Shoulders",
