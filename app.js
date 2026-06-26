@@ -1262,27 +1262,7 @@ function drawLine(ctx, series, vals, xAt, yAt, color, w, dots) {
   if (dots) vals.forEach((v, i) => { if (v != null) { ctx.beginPath(); ctx.arc(xAt(i), yAt(v), 3, 0, 7); ctx.fill(); } });
 }
 
-/* ---------- GUIDES (timing + rules) ---------- */
-views.guides = () => {
-  let h = `<h1>Guides</h1><p class="subtitle">Meal timing, fat-loss adjustments, and practical dorm/Boston notes.</p>`;
-  for (const sec of [...P.timingSections, ...P.rulesSections]) {
-    if (!sec.rows.length) continue;
-    h += `<h2>${esc(sec.title)}</h2>`;
-    const first = sec.rows[0];
-    // table if first row looks like a header (>=3 cols & short cells), else definition list
-    const isTable = first.length >= 3 && first.every((c) => typeof c === "string" && c.length < 24);
-    if (isTable) {
-      h += `<div class="table-wrap"><table><thead><tr>${first.map((c) => `<th>${esc(c)}</th>`).join("")}</tr></thead><tbody>`;
-      for (const r of sec.rows.slice(1)) h += `<tr>${first.map((_, i) => `<td>${esc(r[i] ?? "")}</td>`).join("")}</tr>`;
-      h += `</tbody></table></div>`;
-    } else {
-      h += `<div class="card"><ul class="list-clean">`;
-      for (const r of sec.rows) h += `<li><span class="n">•</span><span>${r.map((c, i) => (i === 0 ? `<b>${esc(c)}:</b> ` : esc(c))).join("")}</span></li>`;
-      h += `</ul></div>`;
-    }
-  }
-  return h;
-};
+/* Guides view removed — meal-timing/rules tab no longer shown. */
 
 /* ===========================================================
    ROUTER + MODAL
