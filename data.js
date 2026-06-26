@@ -1458,7 +1458,7 @@ window.PLAN = {
    "Meal 2 Time": "12:15 PM post-workout lunch",
    "Snack Time": "3:45 PM",
    "Meal 3 Time": "7:00 PM",
-   "Timing Notes": "Hard lower-body day: keep breakfast/lunch carbs; do not skip lunch."
+   "Timing Notes": "Arms/shoulders day: protein around the session matters most; carbs can be a bit lower than leg day."
   },
   {
    "Date": "2026-06-19",
@@ -1483,7 +1483,7 @@ window.PLAN = {
   {
    "Date": "2026-06-20",
    "Week": 1,
-   "Training Day": "Lower + Core",
+   "Training Day": "Arms + Shoulders",
    "Breakfast": "Greek Yogurt Protein Bowl",
    "Lunch": "Chicken Rice Bowl",
    "Dinner": "Salmon Potato Plate",
@@ -1498,7 +1498,7 @@ window.PLAN = {
    "Meal 2 Time": "12:15 PM post-workout lunch",
    "Snack Time": "3:45 PM",
    "Meal 3 Time": "7:00 PM",
-   "Timing Notes": "Hard lower-body day: keep breakfast/lunch carbs; do not skip lunch."
+   "Timing Notes": "Arms/shoulders day: protein around the session matters most; carbs can be a bit lower than leg day."
   },
   {
    "Date": "2026-06-21",
@@ -1598,7 +1598,7 @@ window.PLAN = {
    "Meal 2 Time": "12:15 PM post-workout lunch",
    "Snack Time": "3:45 PM",
    "Meal 3 Time": "7:00 PM",
-   "Timing Notes": "Hard lower-body day: keep breakfast/lunch carbs; do not skip lunch."
+   "Timing Notes": "Arms/shoulders day: protein around the session matters most; carbs can be a bit lower than leg day."
   },
   {
    "Date": "2026-06-26",
@@ -1623,7 +1623,7 @@ window.PLAN = {
   {
    "Date": "2026-06-27",
    "Week": 2,
-   "Training Day": "Lower + Core",
+   "Training Day": "Arms + Shoulders",
    "Breakfast": "Greek Yogurt Protein Bowl",
    "Lunch": "Chicken Rice Bowl",
    "Dinner": "Salmon Potato Plate",
@@ -1638,7 +1638,7 @@ window.PLAN = {
    "Meal 2 Time": "12:15 PM post-workout lunch",
    "Snack Time": "3:45 PM",
    "Meal 3 Time": "7:00 PM",
-   "Timing Notes": "Hard lower-body day: keep breakfast/lunch carbs; do not skip lunch."
+   "Timing Notes": "Arms/shoulders day: protein around the session matters most; carbs can be a bit lower than leg day."
   },
   {
    "Date": "2026-06-28",
@@ -1738,7 +1738,7 @@ window.PLAN = {
    "Meal 2 Time": "12:15 PM post-workout lunch",
    "Snack Time": "3:45 PM",
    "Meal 3 Time": "7:00 PM",
-   "Timing Notes": "Hard lower-body day: keep breakfast/lunch carbs; do not skip lunch."
+   "Timing Notes": "Arms/shoulders day: protein around the session matters most; carbs can be a bit lower than leg day."
   },
   {
    "Date": "2026-07-03",
@@ -1763,7 +1763,7 @@ window.PLAN = {
   {
    "Date": "2026-07-04",
    "Week": 3,
-   "Training Day": "Lower + Core",
+   "Training Day": "Arms + Shoulders",
    "Breakfast": "Greek Yogurt Protein Bowl",
    "Lunch": "Chicken Rice Bowl",
    "Dinner": "Salmon Potato Plate",
@@ -1778,7 +1778,7 @@ window.PLAN = {
    "Meal 2 Time": "12:15 PM post-workout lunch",
    "Snack Time": "3:45 PM",
    "Meal 3 Time": "7:00 PM",
-   "Timing Notes": "Hard lower-body day: keep breakfast/lunch carbs; do not skip lunch."
+   "Timing Notes": "Arms/shoulders day: protein around the session matters most; carbs can be a bit lower than leg day."
   },
   {
    "Date": "2026-07-05",
@@ -1878,7 +1878,7 @@ window.PLAN = {
    "Meal 2 Time": "12:15 PM post-workout lunch",
    "Snack Time": "3:45 PM",
    "Meal 3 Time": "7:00 PM",
-   "Timing Notes": "Hard lower-body day: keep breakfast/lunch carbs; do not skip lunch."
+   "Timing Notes": "Arms/shoulders day: protein around the session matters most; carbs can be a bit lower than leg day."
   },
   {
    "Date": "2026-07-10",
@@ -1903,7 +1903,7 @@ window.PLAN = {
   {
    "Date": "2026-07-11",
    "Week": 4,
-   "Training Day": "Lower + Core",
+   "Training Day": "Arms + Shoulders",
    "Breakfast": "Greek Yogurt Protein Bowl",
    "Lunch": "Chicken Rice Bowl",
    "Dinner": "Salmon Potato Plate",
@@ -1918,7 +1918,7 @@ window.PLAN = {
    "Meal 2 Time": "12:15 PM post-workout lunch",
    "Snack Time": "3:45 PM",
    "Meal 3 Time": "7:00 PM",
-   "Timing Notes": "Hard lower-body day: keep breakfast/lunch carbs; do not skip lunch."
+   "Timing Notes": "Arms/shoulders day: protein around the session matters most; carbs can be a bit lower than leg day."
   },
   {
    "Date": "2026-07-12",
@@ -2018,7 +2018,7 @@ window.PLAN = {
    "Meal 2 Time": "12:15 PM post-workout lunch",
    "Snack Time": "3:45 PM",
    "Meal 3 Time": "7:00 PM",
-   "Timing Notes": "Hard lower-body day: keep breakfast/lunch carbs; do not skip lunch."
+   "Timing Notes": "Arms/shoulders day: protein around the session matters most; carbs can be a bit lower than leg day."
   },
   {
    "Date": "2026-07-17",
@@ -2043,7 +2043,7 @@ window.PLAN = {
   {
    "Date": "2026-07-18",
    "Week": 5,
-   "Training Day": "Lower + Core",
+   "Training Day": "Arms + Shoulders",
    "Breakfast": "Greek Yogurt Protein Bowl",
    "Lunch": "Chicken Rice Bowl",
    "Dinner": "Salmon Potato Plate",
@@ -2058,7 +2058,7 @@ window.PLAN = {
    "Meal 2 Time": "12:15 PM post-workout lunch",
    "Snack Time": "3:45 PM",
    "Meal 3 Time": "7:00 PM",
-   "Timing Notes": "Hard lower-body day: keep breakfast/lunch carbs; do not skip lunch."
+   "Timing Notes": "Arms/shoulders day: protein around the session matters most; carbs can be a bit lower than leg day."
   },
   {
    "Date": "2026-07-19",
@@ -2158,7 +2158,7 @@ window.PLAN = {
    "Meal 2 Time": "12:15 PM post-workout lunch",
    "Snack Time": "3:45 PM",
    "Meal 3 Time": "7:00 PM",
-   "Timing Notes": "Hard lower-body day: keep breakfast/lunch carbs; do not skip lunch."
+   "Timing Notes": "Arms/shoulders day: protein around the session matters most; carbs can be a bit lower than leg day."
   },
   {
    "Date": "2026-07-24",
@@ -2183,7 +2183,7 @@ window.PLAN = {
   {
    "Date": "2026-07-25",
    "Week": 6,
-   "Training Day": "Lower + Core",
+   "Training Day": "Arms + Shoulders",
    "Breakfast": "Greek Yogurt Protein Bowl",
    "Lunch": "Chicken Rice Bowl",
    "Dinner": "Salmon Potato Plate",
@@ -2198,7 +2198,7 @@ window.PLAN = {
    "Meal 2 Time": "12:15 PM post-workout lunch",
    "Snack Time": "3:45 PM",
    "Meal 3 Time": "7:00 PM",
-   "Timing Notes": "Hard lower-body day: keep breakfast/lunch carbs; do not skip lunch."
+   "Timing Notes": "Arms/shoulders day: protein around the session matters most; carbs can be a bit lower than leg day."
   },
   {
    "Date": "2026-07-26",
@@ -2298,7 +2298,7 @@ window.PLAN = {
    "Meal 2 Time": "12:15 PM post-workout lunch",
    "Snack Time": "3:45 PM",
    "Meal 3 Time": "7:00 PM",
-   "Timing Notes": "Hard lower-body day: keep breakfast/lunch carbs; do not skip lunch."
+   "Timing Notes": "Arms/shoulders day: protein around the session matters most; carbs can be a bit lower than leg day."
   },
   {
    "Date": "2026-07-31",
@@ -2323,7 +2323,7 @@ window.PLAN = {
   {
    "Date": "2026-08-01",
    "Week": 7,
-   "Training Day": "Lower + Core",
+   "Training Day": "Arms + Shoulders",
    "Breakfast": "Greek Yogurt Protein Bowl",
    "Lunch": "Chicken Rice Bowl",
    "Dinner": "Salmon Potato Plate",
@@ -2338,7 +2338,7 @@ window.PLAN = {
    "Meal 2 Time": "12:15 PM post-workout lunch",
    "Snack Time": "3:45 PM",
    "Meal 3 Time": "7:00 PM",
-   "Timing Notes": "Hard lower-body day: keep breakfast/lunch carbs; do not skip lunch."
+   "Timing Notes": "Arms/shoulders day: protein around the session matters most; carbs can be a bit lower than leg day."
   },
   {
    "Date": "2026-08-02",
@@ -2438,7 +2438,7 @@ window.PLAN = {
    "Meal 2 Time": "12:15 PM post-workout lunch",
    "Snack Time": "3:45 PM",
    "Meal 3 Time": "7:00 PM",
-   "Timing Notes": "Hard lower-body day: keep breakfast/lunch carbs; do not skip lunch."
+   "Timing Notes": "Arms/shoulders day: protein around the session matters most; carbs can be a bit lower than leg day."
   },
   {
    "Date": "2026-08-07",
@@ -2463,7 +2463,7 @@ window.PLAN = {
   {
    "Date": "2026-08-08",
    "Week": 8,
-   "Training Day": "Lower + Core",
+   "Training Day": "Arms + Shoulders",
    "Breakfast": "Greek Yogurt Protein Bowl",
    "Lunch": "Chicken Rice Bowl",
    "Dinner": "Salmon Potato Plate",
@@ -2478,7 +2478,7 @@ window.PLAN = {
    "Meal 2 Time": "12:15 PM post-workout lunch",
    "Snack Time": "3:45 PM",
    "Meal 3 Time": "7:00 PM",
-   "Timing Notes": "Hard lower-body day: keep breakfast/lunch carbs; do not skip lunch."
+   "Timing Notes": "Arms/shoulders day: protein around the session matters most; carbs can be a bit lower than leg day."
   },
   {
    "Date": "2026-08-09",
