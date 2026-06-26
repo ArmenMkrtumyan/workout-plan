@@ -160,12 +160,12 @@ window.PLAN = {
    "Date": "2026-06-20",
    "Week": 1,
    "Day": "Saturday",
-   "Focus": "Lower + Core",
-   "Workout Template": "Lower B",
+   "Focus": "Arms + Shoulders",
+   "Workout Template": "Arms + Shoulders",
    "Cardio": "Optional 15 min easy walk",
-   "Core/Mobility": "Core circuit",
+   "Core/Mobility": "Wrist/elbow warm-up; light face pulls",
    "Intensity": "RPE 6–7; leave 2–3 reps in reserve",
-   "Notes": "Posterior chain + unilateral legs"
+   "Notes": "Biceps/triceps/shoulders"
   },
   {
    "Date": "2026-06-21",
@@ -237,12 +237,12 @@ window.PLAN = {
    "Date": "2026-06-27",
    "Week": 2,
    "Day": "Saturday",
-   "Focus": "Lower + Core",
-   "Workout Template": "Lower B",
+   "Focus": "Arms + Shoulders",
+   "Workout Template": "Arms + Shoulders",
    "Cardio": "Optional 15 min easy walk",
-   "Core/Mobility": "Core circuit",
+   "Core/Mobility": "Wrist/elbow warm-up; light face pulls",
    "Intensity": "RPE 6–7; leave 2–3 reps in reserve",
-   "Notes": "Posterior chain + unilateral legs"
+   "Notes": "Biceps/triceps/shoulders"
   },
   {
    "Date": "2026-06-28",
@@ -314,12 +314,12 @@ window.PLAN = {
    "Date": "2026-07-04",
    "Week": 3,
    "Day": "Saturday",
-   "Focus": "Lower + Core",
-   "Workout Template": "Lower B",
+   "Focus": "Arms + Shoulders",
+   "Workout Template": "Arms + Shoulders",
    "Cardio": "20–30 min easy walk",
-   "Core/Mobility": "Core circuit",
+   "Core/Mobility": "Wrist/elbow warm-up; light face pulls",
    "Intensity": "RPE 7–8; add reps or small weight",
-   "Notes": "Posterior chain + unilateral legs"
+   "Notes": "Biceps/triceps/shoulders"
   },
   {
    "Date": "2026-07-05",
@@ -391,12 +391,12 @@ window.PLAN = {
    "Date": "2026-07-11",
    "Week": 4,
    "Day": "Saturday",
-   "Focus": "Lower + Core",
-   "Workout Template": "Lower B",
+   "Focus": "Arms + Shoulders",
+   "Workout Template": "Arms + Shoulders",
    "Cardio": "20–30 min easy walk",
-   "Core/Mobility": "Core circuit",
+   "Core/Mobility": "Wrist/elbow warm-up; light face pulls",
    "Intensity": "RPE 7–8; add reps or small weight",
-   "Notes": "Posterior chain + unilateral legs"
+   "Notes": "Biceps/triceps/shoulders"
   },
   {
    "Date": "2026-07-12",
@@ -468,12 +468,12 @@ window.PLAN = {
    "Date": "2026-07-18",
    "Week": 5,
    "Day": "Saturday",
-   "Focus": "Lower + Core",
-   "Workout Template": "Lower B",
+   "Focus": "Arms + Shoulders",
+   "Workout Template": "Arms + Shoulders",
    "Cardio": "20–30 min easy walk",
-   "Core/Mobility": "Core circuit",
+   "Core/Mobility": "Wrist/elbow warm-up; light face pulls",
    "Intensity": "RPE 8; last set can be hard but clean",
-   "Notes": "Posterior chain + unilateral legs"
+   "Notes": "Biceps/triceps/shoulders"
   },
   {
    "Date": "2026-07-19",
@@ -545,12 +545,12 @@ window.PLAN = {
    "Date": "2026-07-25",
    "Week": 6,
    "Day": "Saturday",
-   "Focus": "Lower + Core",
-   "Workout Template": "Lower B",
+   "Focus": "Arms + Shoulders",
+   "Workout Template": "Arms + Shoulders",
    "Cardio": "20–30 min easy walk",
-   "Core/Mobility": "Core circuit",
+   "Core/Mobility": "Wrist/elbow warm-up; light face pulls",
    "Intensity": "RPE 8; last set can be hard but clean",
-   "Notes": "Posterior chain + unilateral legs"
+   "Notes": "Biceps/triceps/shoulders"
   },
   {
    "Date": "2026-07-26",
@@ -622,12 +622,12 @@ window.PLAN = {
    "Date": "2026-08-01",
    "Week": 7,
    "Day": "Saturday",
-   "Focus": "Lower + Core",
-   "Workout Template": "Lower B",
+   "Focus": "Arms + Shoulders",
+   "Workout Template": "Arms + Shoulders",
    "Cardio": "30–35 min incline walk",
-   "Core/Mobility": "Core circuit",
+   "Core/Mobility": "Wrist/elbow warm-up; light face pulls",
    "Intensity": "Maintain weights; do not chase failure",
-   "Notes": "Posterior chain + unilateral legs"
+   "Notes": "Biceps/triceps/shoulders"
   },
   {
    "Date": "2026-08-02",
@@ -699,12 +699,12 @@ window.PLAN = {
    "Date": "2026-08-08",
    "Week": 8,
    "Day": "Saturday",
-   "Focus": "Lower + Core",
-   "Workout Template": "Lower B",
+   "Focus": "Arms + Shoulders",
+   "Workout Template": "Arms + Shoulders",
    "Cardio": "30–35 min incline walk",
-   "Core/Mobility": "Core circuit",
+   "Core/Mobility": "Wrist/elbow warm-up; light face pulls",
    "Intensity": "Maintain weights; do not chase failure",
-   "Notes": "Posterior chain + unilateral legs"
+   "Notes": "Biceps/triceps/shoulders"
   },
   {
    "Date": "2026-08-09",
@@ -1067,88 +1067,88 @@ window.PLAN = {
    "Substitute if busy": "DB curl + dips"
   },
   {
-   "Template": "Lower B",
+   "Template": "Arms + Shoulders",
    "Order": 1,
-   "Exercise": "Heavy Leg Press",
-   "Weeks 1–2": "3 x 6 @ RPE 6–7",
-   "Weeks 3–4": "3 x 6 @ RPE 7–8",
-   "Weeks 5–6": "4 x 5–6 @ RPE 8",
-   "Weeks 7–8": "3 x 5–6",
-   "Rest": "2–3 min",
-   "Technique cue": "Feet mid-platform; deep but controlled; drive through heels; don't slam-lock knees",
-   "Substitute if busy": "Hack squat"
-  },
-  {
-   "Template": "Lower B",
-   "Order": 2,
-   "Exercise": "Front Squat or Goblet Squat",
-   "Weeks 1–2": "3 x 8",
-   "Weeks 3–4": "3–4 x 8",
-   "Weeks 5–6": "4 x 6–8",
-   "Weeks 7–8": "3 x 8",
+   "Exercise": "Seated DB Shoulder Press",
+   "Weeks 1–2": "3 x 8–10",
+   "Weeks 3–4": "3–4 x 8–10",
+   "Weeks 5–6": "4 x 6–10 @ RPE 8",
+   "Weeks 7–8": "3 x 8–10",
    "Rest": "2 min",
-   "Technique cue": "Stay upright",
-   "Substitute if busy": "Hack squat"
+   "Technique cue": "Press in a slight arc; don't over-arch lower back",
+   "Substitute if busy": "Machine shoulder press"
   },
   {
-   "Template": "Lower B",
-   "Order": 3,
-   "Exercise": "Bulgarian Split Squat",
-   "Weeks 1–2": "2 x 8/side",
-   "Weeks 3–4": "3 x 8–10/side",
-   "Weeks 5–6": "3 x 10/side",
-   "Weeks 7–8": "2–3 x 8/side",
+   "Template": "Arms + Shoulders",
+   "Order": 2,
+   "Exercise": "Close-Grip Bench or Assisted Dip",
+   "Weeks 1–2": "3 x 8–10",
+   "Weeks 3–4": "3 x 8–10",
+   "Weeks 5–6": "4 x 6–10 @ RPE 8",
+   "Weeks 7–8": "3 x 8–10",
    "Rest": "90 sec",
-   "Technique cue": "Slow down; balance first",
-   "Substitute if busy": "Walking lunges"
+   "Technique cue": "Elbows tucked; keep wrists stacked over elbows",
+   "Substitute if busy": "Machine dip"
   },
   {
-   "Template": "Lower B",
-   "Order": 4,
-   "Exercise": "Cable/Machine Glute Kickback",
-   "Weeks 1–2": "3 x 12/side",
-   "Weeks 3–4": "3 x 10–12/side",
-   "Weeks 5–6": "4 x 10–12/side",
-   "Weeks 7–8": "3 x 12/side",
-   "Rest": "60 sec",
-   "Technique cue": "Squeeze glute at top; no lower-back arch; control the return",
-   "Substitute if busy": "Hip abduction machine"
-  },
-  {
-   "Template": "Lower B",
-   "Order": 5,
-   "Exercise": "Seated Leg Curl",
-   "Weeks 1–2": "3 x 12",
-   "Weeks 3–4": "3 x 12–15",
-   "Weeks 5–6": "4 x 10–15",
-   "Weeks 7–8": "3 x 12",
-   "Rest": "60 sec",
-   "Technique cue": "Do not rush",
-   "Substitute if busy": "Lying leg curl"
-  },
-  {
-   "Template": "Lower B",
-   "Order": 6,
-   "Exercise": "Calf Raise",
-   "Weeks 1–2": "3 x 15",
-   "Weeks 3–4": "4 x 12–15",
-   "Weeks 5–6": "4 x 12–15",
-   "Weeks 7–8": "3–4 x 15",
-   "Rest": "45 sec",
-   "Technique cue": "Full stretch",
-   "Substitute if busy": "Leg-press calf raise"
-  },
-  {
-   "Template": "Lower B",
-   "Order": 7,
-   "Exercise": "Hanging Leg Raise",
+   "Template": "Arms + Shoulders",
+   "Order": 3,
+   "Exercise": "EZ-Bar Curl",
    "Weeks 1–2": "3 x 10",
+   "Weeks 3–4": "3 x 8–10",
+   "Weeks 5–6": "4 x 8–10",
+   "Weeks 7–8": "3 x 10",
+   "Rest": "60 sec",
+   "Technique cue": "No hip swing; control the lowering",
+   "Substitute if busy": "Cable curl"
+  },
+  {
+   "Template": "Arms + Shoulders",
+   "Order": 4,
+   "Exercise": "Cable Lateral Raise",
+   "Weeks 1–2": "3 x 12–15",
+   "Weeks 3–4": "3 x 12–15",
+   "Weeks 5–6": "4 x 12–20",
+   "Weeks 7–8": "3 x 15",
+   "Rest": "45–60 sec",
+   "Technique cue": "Lead with elbows; stop before traps take over",
+   "Substitute if busy": "DB lateral raise"
+  },
+  {
+   "Template": "Arms + Shoulders",
+   "Order": 5,
+   "Exercise": "Overhead Cable Triceps Extension",
+   "Weeks 1–2": "3 x 12",
    "Weeks 3–4": "3 x 10–12",
-   "Weeks 5–6": "3–4 x 10–12",
+   "Weeks 5–6": "4 x 10–12",
    "Weeks 7–8": "3 x 12",
+   "Rest": "60 sec",
+   "Technique cue": "Keep elbows in; full stretch overhead",
+   "Substitute if busy": "Rope pushdown"
+  },
+  {
+   "Template": "Arms + Shoulders",
+   "Order": 6,
+   "Exercise": "Incline DB Curl",
+   "Weeks 1–2": "3 x 10–12",
+   "Weeks 3–4": "3 x 10–12",
+   "Weeks 5–6": "4 x 8–12",
+   "Weeks 7–8": "3 x 10–12",
+   "Rest": "60 sec",
+   "Technique cue": "Let arms hang behind body for full stretch",
+   "Substitute if busy": "Hammer curl"
+  },
+  {
+   "Template": "Arms + Shoulders",
+   "Order": 7,
+   "Exercise": "Rear-Delt Fly or Face Pull",
+   "Weeks 1–2": "3 x 15",
+   "Weeks 3–4": "3 x 15–20",
+   "Weeks 5–6": "4 x 15–20",
+   "Weeks 7–8": "3 x 15",
    "Rest": "45 sec",
-   "Technique cue": "No swinging; curl pelvis toward ribs; lower slow",
-   "Substitute if busy": "Captain's chair knee raise"
+   "Technique cue": "Small controlled reps; squeeze rear delts",
+   "Substitute if busy": "Reverse pec deck"
   },
   {
    "Template": "Arms (Optional / Sat)",

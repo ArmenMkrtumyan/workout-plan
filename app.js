@@ -80,7 +80,7 @@ const SUGGESTED = {
   "Pull A#1": 90, "Pull A#2": 50, "Pull A#3": 90, "Pull A#4": 25, "Pull A#5": 25, "Pull A#6": 20, "Pull A#7": 20,
   "Legs A#1": 90, "Legs A#2": 25, "Legs A#3": 200, "Legs A#4": 70, "Legs A#5": 80, "Legs A#6": 120, "Legs A#7": null,
   "Upper Mixed#1": 75, "Upper Mixed#2": 90, "Upper Mixed#3": 45, "Upper Mixed#4": 25, "Upper Mixed#5": 10, "Upper Mixed#6": 25, "Upper Mixed#7": 30,
-  "Lower B#1": 230, "Lower B#2": 60, "Lower B#3": 20, "Lower B#4": 25, "Lower B#5": 70, "Lower B#6": 120, "Lower B#7": null,
+  "Arms + Shoulders#1": 45, "Arms + Shoulders#2": 75, "Arms + Shoulders#3": 50, "Arms + Shoulders#4": 10, "Arms + Shoulders#5": 25, "Arms + Shoulders#6": 20, "Arms + Shoulders#7": 15,
   "Arms (Optional / Sat)#1": 50, "Arms (Optional / Sat)#2": 75, "Arms (Optional / Sat)#3": 30,
   "Arms (Optional / Sat)#4": 30, "Arms (Optional / Sat)#5": 10, "Arms (Optional / Sat)#6": 15, "Arms (Optional / Sat)#7": null,
 };
