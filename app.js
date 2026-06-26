@@ -342,17 +342,17 @@ views.today = () => {
       ${consumedLine(meal)}
     </div>`;
 
-  // Timing (keyed to the calendar date)
-  const gymLabel = (!day || day.Focus === "Rest" || day.Focus === "Active Recovery") ? "Activity" : "Gym";
-  h += `<h2>⏱️ Today's timing</h2><div class="card"><div class="grid auto">
-      ${timingChip("Wake", meal["Wake / Early Work"], iso)}
-      ${timingChip("Meal 1", meal["Meal 1 Time"], iso)}
-      ${timingChip(gymLabel, meal["Gym Window"], iso)}
-      ${timingChip("Meal 2", meal["Meal 2 Time"], iso)}
-      ${timingChip("Snack", meal["Snack Time"], iso)}
-      ${timingChip("Meal 3", meal["Meal 3 Time"], iso)}
-    </div>
-    <p class="note-box" style="margin-top:14px">${esc(meal["Timing Notes"] || "")}</p></div>`;
+  // Timing section hidden from Today for now (kept here to restore later).
+  // const gymLabel = (!day || day.Focus === "Rest" || day.Focus === "Active Recovery") ? "Activity" : "Gym";
+  // h += `<h2>⏱️ Today's timing</h2><div class="card"><div class="grid auto">
+  //     ${timingChip("Wake", meal["Wake / Early Work"], iso)}
+  //     ${timingChip("Meal 1", meal["Meal 1 Time"], iso)}
+  //     ${timingChip(gymLabel, meal["Gym Window"], iso)}
+  //     ${timingChip("Meal 2", meal["Meal 2 Time"], iso)}
+  //     ${timingChip("Snack", meal["Snack Time"], iso)}
+  //     ${timingChip("Meal 3", meal["Meal 3 Time"], iso)}
+  //   </div>
+  //   <p class="note-box" style="margin-top:14px">${esc(meal["Timing Notes"] || "")}</p></div>`;
 
   // Quick log — auto-saves the moment you type each field (no Save button needed)
   const pr = progress[iso] || {};
