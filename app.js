@@ -363,7 +363,6 @@ views.today = () => {
         <label class="field">Weight (kg)<input type="number" step="0.1" id="qlw" value="${pr.weight ?? ""}" onchange="quickLog('${iso}')"></label>
         <label class="field">Steps<input type="number" id="qls" value="${pr.steps ?? ""}" onchange="quickLog('${iso}')"></label>
         <label class="field">Cardio (min)<input type="number" id="qlcardio" value="${pr.cardio ?? ""}" onchange="quickLog('${iso}')"></label>
-        <label class="field">Sleep (hrs)<input type="number" step="0.5" id="qlsleep" value="${pr.sleep ?? ""}" onchange="quickLog('${iso}')"></label>
       </div>
       <label class="field" style="margin-top:12px">Notes<textarea id="qlnotes" rows="2" onchange="quickLog('${iso}')">${esc(pr.notes || "")}</textarea></label>
       <span id="qlmsg" class="muted" style="font-size:.84rem">Auto-saves as you type ✓</span>
@@ -379,7 +378,7 @@ function timingChip(label, val, date) {
 window.quickLog = (iso) => {
   const p = progress[iso] || { date: iso };
   p.weight = numOrNull($("#qlw").value); p.steps = numOrNull($("#qls").value);
-  p.cardio = numOrNull($("#qlcardio").value); p.sleep = numOrNull($("#qlsleep").value);
+  p.cardio = numOrNull($("#qlcardio").value);
   p.notes = $("#qlnotes").value;
   progress[iso] = p; saveJSON(LS_PROG, progress);
   $("#qlmsg").textContent = "Saved ✓";

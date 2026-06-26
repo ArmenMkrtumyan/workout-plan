@@ -16,7 +16,7 @@ window.PLAN = {
   "Training": "5 days/week",
   "Cardio": "3–5 sessions/week",
   "Steps": "8,000–10,000/day",
-  "Sleep": "7–8 hours if possible",
+  "Sleep": "7 hours average",
   "Expected pace": "~0.5 kg/week",
   "Check method": "7-day average",
   "Adjustment": "Only change after 10–14 days",
