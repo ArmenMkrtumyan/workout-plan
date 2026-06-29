@@ -385,7 +385,18 @@ window.quickLog = (iso) => {
 };
 // "Did you train that day?" — derived from logged workout weights (no manual toggle).
 // Falls back to any legacy manual "Trained? Yes" so older entries still count.
-const didTrain = (date) => !!(weightLog[date] && Object.keys(weightLog[date]).length) || progress[date]?.trained === "Yes";
+// A lift day counts as done when it's in the past and not skipped — the user's rule is
+// "if I didn't train, I press Skip day." Logged weights or an explicit Yes also count
+// (e.g. for today, before the day is over). Completion can't depend on weightLog alone:
+// once weights match the baseline, nothing gets written even though the workout was done.
+const didTrain = (date) => {
+  if (isSkipped(date)) return false;
+  if (weightLog[date] && Object.keys(weightLog[date]).length) return true;
+  if (progress[date]?.trained === "Yes") return true;
+  if (date >= todayISO()) return false;                 // today/future: only once logged
+  const day = planDayFor(date);                          // shifted workout for that date
+  return !!(day && exercisesFor(day["Workout Template"]).length);
+};
 const numOrNull = (v) => (v === "" || v == null ? null : Number(v));
 
 /* ---------- DASHBOARD ---------- */
@@ -1112,7 +1123,7 @@ function weeklyReports() {
     const proClass = avgPro == null ? "" : avgPro >= proLo - 10 ? "ok" : "warn";
 
     // training (auto-detected from logged workout weights)
-    const liftDates = dates.filter((d) => { const day = P.gymCalendar.find((x) => x.Date === d); return day && !/Rest|Active Recovery/i.test(day.Focus); });
+    const liftDates = dates.filter((d) => { const day = planDayFor(d); return day && exercisesFor(day["Workout Template"]).length; });
     const trainedYes = dates.filter((d) => didTrain(d)).length;
     const skippedN = dates.filter(isSkipped).length;
 
