@@ -757,14 +757,14 @@ window.PLAN = {
   {
    "Template": "Push A",
    "Order": 3,
-   "Exercise": "Seated Shoulder Press",
+   "Exercise": "Seated Shoulder Press Machine",
    "Weeks 1–2": "2–3 x 10",
    "Weeks 3–4": "3 x 8–10",
    "Weeks 5–6": "3–4 x 8",
    "Weeks 7–8": "3 x 8–10",
    "Rest": "90 sec",
-   "Technique cue": "Do not over-arch lower back",
-   "Substitute if busy": "Machine shoulder press"
+   "Technique cue": "Back flat on the pad; press smoothly without shrugging",
+   "Substitute if busy": "Seated DB shoulder press"
   },
   {
    "Template": "Push A",
@@ -1021,14 +1021,14 @@ window.PLAN = {
   {
    "Template": "Upper Mixed",
    "Order": 4,
-   "Exercise": "Seated DB Shoulder Press",
+   "Exercise": "Seated Shoulder Press Machine",
    "Weeks 1–2": "3 x 8–10",
    "Weeks 3–4": "3 x 8–10",
    "Weeks 5–6": "3–4 x 8",
    "Weeks 7–8": "3 x 8–10",
    "Rest": "90 sec",
-   "Technique cue": "Control reps",
-   "Substitute if busy": "Machine press"
+   "Technique cue": "Back flat on the pad; control the negative",
+   "Substitute if busy": "Seated DB shoulder press"
   },
   {
    "Template": "Upper Mixed",
