@@ -1397,6 +1397,16 @@ window.PLAN = {
    "How to make": "Use when you cannot cook.",
    "Best use": "Travel/busy days",
    "Notes": "Not daily if trying to save money."
+  },
+  {
+   "Meal Name": "Think! Protein Bar",
+   "Calories": 230,
+   "Protein g": 20,
+   "Type": "Snack",
+   "Ingredients": "1 think! High Protein bar (any flavor; whey/soy protein blend)",
+   "How to make": "Grab and go — no prep or fridge needed.",
+   "Best use": "On-the-go / no-fridge days",
+   "Notes": "Convenient, but has ~11–12g maltitol (sugar alcohol) — can cause bloating/gas; low fiber. Use occasionally, not as a daily staple."
   }
  ],
  "mealCalendar": [
