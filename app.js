@@ -36,11 +36,11 @@ const saveJSON = (k, v) => { localStorage.setItem(k, JSON.stringify(v)); if (win
 const LS_SWAP = "wp_meal_overrides_v1", LS_PROG = "wp_progress_v1", LS_DONE = "wp_meal_done_v1",
       LS_TIMING = "wp_timing_done_v1", LS_WEIGHT = "wp_weights_v1", LS_BOUGHT = "wp_bought_v1",
       LS_ACTUAL = "wp_actual_price_v1", LS_CUSTOM = "wp_custom_meals_v1", LS_SKIPS = "wp_skips_v1",
-      LS_WLOG = "wp_weight_log_v1";
+      LS_WLOG = "wp_weight_log_v1", LS_PROMOTE = "wp_promotes_v1";
 const LS_GEMKEY = "wp_gemini_key"; // device-local secret — never synced
 
 // in-memory copies (assigned by STORES.load on startup and after every cloud pull)
-let overrides, progress, mealDone, timingDone, weights, bought, actualPrice, customMeals, skips, weightLog;
+let overrides, progress, mealDone, timingDone, weights, bought, actualPrice, customMeals, skips, weightLog, promotes;
 
 const STORES = [
   { key: LS_SWAP,   load: () => (overrides   = loadJSON(LS_SWAP)) },   // meal swaps        { date: { slot: recipeName } }
@@ -53,6 +53,7 @@ const STORES = [
   { key: LS_ACTUAL, load: () => (actualPrice = loadJSON(LS_ACTUAL)) }, // prices paid       { item: 4.29 }
   { key: LS_CUSTOM, load: () => (customMeals = loadJSON(LS_CUSTOM)) }, // AI custom meals   { "date__slot": {name,cal,…} }
   { key: LS_SKIPS,  load: () => (skips       = loadJSON(LS_SKIPS)) },  // skipped workouts  { date: true }
+  { key: LS_PROMOTE, load: () => (promotes   = loadJSON(LS_PROMOTE)) }, // rest→work days   { date: true }
 ];
 STORES.forEach((s) => s.load());                   // initial load
 window.WP_SYNCED_KEYS = STORES.map((s) => s.key);   // firebase-sync.js syncs exactly these
@@ -220,36 +221,102 @@ const fmtDate = (iso) => {
   return d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
 };
 const todayISO = () => new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD local
-/* ---------- workout skip: pushes the LIFTING schedule forward; meals stay put ---------- */
+/* ---------- workout scheduling: skips & makeups stay WITHIN the week ----------
+   A skipped lifting day becomes rest and its session is made up on the earliest free
+   rest/recovery day that same week (auto-swap) — the plan no longer slides forward, so
+   the calendar stays aligned. You can also manually promote a rest day to a workout of
+   your choice. Meals never move; they're anchored to the date. */
 const isSkipped = (iso) => !!skips[iso];
+const isPromoted = (iso) => promotes[iso] != null;
 const skipCount = () => Object.keys(skips).length;
-function daysFromStart(iso) {
-  const a = new Date(P.gymCalendar[0].Date + "T00:00:00"), b = new Date(iso + "T00:00:00");
-  return Math.round((b - a) / 86400000);
+const hasEx = (tmpl) => exercisesFor(tmpl).length > 0;
+const baseEntry = (iso) => P.gymCalendar.find((x) => x.Date === iso) || null;
+const weekEntriesFor = (iso) => { const e = baseEntry(iso); return e ? P.gymCalendar.filter((x) => x.Week === e.Week) : []; };
+
+// Decide, for one week, which dates host a lifting session and which template each gets.
+// Explicit promotes (a chosen template on a rest day) are placed first; a skip frees a
+// slot; any remaining sessions fill the earliest free rest days so nothing is lost.
+function weekAssignment(weekEntries) {
+  const sessions = weekEntries.filter((e) => hasEx(e["Workout Template"])).map((e) => e["Workout Template"]);
+  const assign = {};
+  const consume = (t) => { const i = sessions.indexOf(t); if (i >= 0) sessions.splice(i, 1); };
+  // 1) pin any day you've already logged a workout on to the template you actually did,
+  //    so a reshuffle can never rewrite a day you've trained
+  for (const e of weekEntries) {
+    if (skips[e.Date]) continue;
+    const log = weightLog[e.Date];
+    if (log && Object.keys(log).length) {
+      const t = Object.keys(log)[0].split("#")[0];
+      if (hasEx(t)) { assign[e.Date] = t; consume(t); }
+    }
+  }
+  // 2) explicit manual promotes: date -> chosen template (consume one copy from the pool)
+  for (const e of weekEntries) {
+    if (assign[e.Date] !== undefined) continue;
+    const p = promotes[e.Date];
+    if (typeof p === "string" && !skips[e.Date]) { assign[e.Date] = p; consume(p); }
+  }
+  // 3) remaining base lift days (minus skips) are the natural work slots
+  const work = [], rest = [];
+  for (const e of weekEntries) {
+    if (assign[e.Date] !== undefined) continue;
+    let isWork = hasEx(e["Workout Template"]);
+    if (skips[e.Date]) isWork = false;
+    (isWork ? work : rest).push(e.Date);
+  }
+  // 4) auto-swap: cover any shortfall with the earliest free rest day(s) that week
+  rest.sort();
+  while (work.length < sessions.length) {
+    const d = rest.find((x) => !skips[x] && promotes[x] == null && assign[x] === undefined);
+    if (!d) break;                         // no makeup slot left this week (heavy skipping)
+    work.push(d); rest.splice(rest.indexOf(d), 1);
+  }
+  work.sort();
+  work.forEach((d, i) => { if (i < sessions.length) assign[d] = sessions[i]; });
+  return assign;                            // date -> template; a date not present = rest
 }
-// program index of the workout that lands on a (non-skipped) date, after prior skips
-function workoutIndex(iso) {
-  let idx = daysFromStart(iso);
-  for (const s in skips) if (s < iso) idx--;
-  return Math.max(0, Math.min(P.gymCalendar.length - 1, idx));
-}
+
 window.toggleSkip = (iso) => {
-  if (skips[iso]) delete skips[iso]; else skips[iso] = true;
+  if (skips[iso]) delete skips[iso];
+  else { skips[iso] = true; if (promotes[iso] != null) { delete promotes[iso]; saveJSON(LS_PROMOTE, promotes); } }
   saveJSON(LS_SKIPS, skips);
   render();
 };
+// promote a rest day to a workout: pick which session to do there
+window.openPromote = (iso) => {
+  const wk = (baseEntry(iso) || {}).Week;
+  const tmpls = [...new Set(P.gymCalendar.filter((x) => x.Week === wk && hasEx(x["Workout Template"])).map((x) => x["Workout Template"]))];
+  let h = `<h2 style="margin-top:0">Train on ${esc(fmtDate(iso))}</h2><p class="muted">Turn this rest day into a workout — pick the session to do. Your other days stay put.</p>`;
+  for (const t of tmpls) h += `<div class="swap-option"><div><b>${esc(t)}</b></div><button class="btn small primary" onclick="setPromote('${esc(iso)}','${esc(t)}')">Do this</button></div>`;
+  openModal(h);
+};
+window.setPromote = (iso, tmpl) => {
+  promotes[iso] = tmpl;
+  if (skips[iso]) { delete skips[iso]; saveJSON(LS_SKIPS, skips); }
+  saveJSON(LS_PROMOTE, promotes); closeModal(); render();
+};
+window.clearPromote = (iso) => { delete promotes[iso]; saveJSON(LS_PROMOTE, promotes); render(); };
 
-function planDayFor(iso) {                 // workout for a date — null if that day is skipped
+// The workout for a date: a lift-day object (assigned template) or the rest/recovery
+// entry; null only when the user skipped this date.
+function planDayFor(iso) {
   if (isSkipped(iso)) return null;
-  return P.gymCalendar[workoutIndex(iso)];
+  const base = baseEntry(iso);
+  if (!base) return null;
+  const tmpl = weekAssignment(weekEntriesFor(iso))[iso];
+  if (!tmpl) return hasEx(base["Workout Template"]) ? { ...base, Focus: "Rest", "Workout Template": "Rest", Notes: "Session moved to another day this week." } : base;
+  if (tmpl === base["Workout Template"]) return base;
+  const src = P.gymCalendar.find((x) => x["Workout Template"] === tmpl);
+  return { ...base, Focus: src ? src.Focus : base.Focus, "Workout Template": tmpl, Notes: (src && src.Notes) || "" };
 }
 function mealRowFor(iso) {                  // meals are anchored to the calendar date (never shifted)
   return P.mealCalendar.find((r) => r.Date === iso) || P.mealCalendar[0];
 }
 function currentWeek() {
   const t = todayISO();
-  if (t < P.gymCalendar[0].Date) return 1;
-  return P.gymCalendar[workoutIndex(t)].Week;
+  const e = baseEntry(t);
+  if (e) return e.Week;
+  return t < P.gymCalendar[0].Date ? 1 : P.gymCalendar[P.gymCalendar.length - 1].Week;
 }
 function weekColKey(week) {
   if (week <= 2) return "Weeks 1–2";
@@ -267,7 +334,7 @@ const views = {};
 const PLAN_START = P.gymCalendar[0].Date;
 const PLAN_END = P.gymCalendar[P.gymCalendar.length - 1].Date;
 const shiftISO = (iso, days) => { const d = new Date(iso + "T00:00:00"); d.setDate(d.getDate() + days); return d.toLocaleDateString("en-CA"); };
-const planEndShifted = () => shiftISO(PLAN_END, skipCount()); // skips push the finish line out
+const planEndShifted = () => PLAN_END; // skips are absorbed within the week now — no drift
 const clampDate = (iso) => (iso < PLAN_START ? PLAN_START : iso > planEndShifted() ? planEndShifted() : iso);
 let selDate = clampDate(todayISO());
 window.navDay = (delta) => { selDate = clampDate(shiftISO(selDate, delta)); render(); };
@@ -300,7 +367,7 @@ views.today = () => {
         <h3 style="margin:0">🛌 Workout skipped</h3>
         <span class="pill grey">${esc(realDow)}</span>
       </div>
-      <p class="muted" style="margin:8px 0 12px">No lifting today — the schedule slid forward a day, so you don't lose this session.${next ? ` Next up: <b>${esc(next.Focus)}</b> tomorrow.` : ""}</p>
+      <p class="muted" style="margin:8px 0 12px">No lifting today. This session is made up on the earliest free rest day this week, so nothing is lost and the rest of your plan stays on its normal dates.${next ? ` Next up: <b>${esc(next.Focus)}</b> tomorrow.` : ""}</p>
       <div class="slot-actions">
         <button class="btn" onclick="toggleSkip('${esc(iso)}')">↩︎ Un-skip this day</button>
         ${next ? `<button class="btn primary" onclick="navDay(1)">Tomorrow's workout →</button>` : ""}
@@ -324,10 +391,12 @@ views.today = () => {
         <div class="slot-actions" style="margin-top:12px">
           <button class="btn primary small" onclick="applyWeightsForward('${esc(day["Workout Template"])}','${esc(iso)}')">⬆️ Apply today's weights to all future workouts</button>
           <button class="btn small ghost" onclick="openWorkout('${esc(day["Workout Template"])}','${esc(day.Date)}',true)">Show full 8-week progression</button>
+          ${isPromoted(iso) ? `<button class="btn small" onclick="clearPromote('${esc(iso)}')">↩︎ Back to rest day</button>` : ""}
         </div>`;
     } else {
       h += `<p class="muted" style="margin:8px 0 0">${esc(day.Notes || "")}</p>
-        <p class="note-box" style="margin-top:12px">🚶 <b>Today:</b> ${esc(day.Cardio)} · ${esc(day["Core/Mobility"])}. Focus on steps and recovery — no heavy lifting.</p>`;
+        <p class="note-box" style="margin-top:12px">🚶 <b>Today:</b> ${esc(day.Cardio)} · ${esc(day["Core/Mobility"])}. Focus on steps and recovery — no heavy lifting.</p>
+        <div class="slot-actions" style="margin-top:12px"><button class="btn small" onclick="openPromote('${esc(iso)}')">💪 Make this a workout day</button></div>`;
     }
     h += `</div>`;
   }
