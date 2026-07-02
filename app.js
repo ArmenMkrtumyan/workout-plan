@@ -177,8 +177,20 @@ window.applyWeightsForward = (template, date) => {
 };
 // shared compact exercise row (this week's prescription + editable weight). Pass a date
 // to log per-day actuals; omit it (template view) to edit the baseline directly.
+// Cable fly rotates through 3 chest angles so all regions get hit. The angle is fixed per
+// (week, Push-vs-Upper slot) so it advances one step every cable-fly session, evenly.
+const CABLE_FLY_CYCLE = ["Upper (cables low → hands up)", "Middle (cables at shoulder height)", "Lower (cables high → hands down)"];
+function cableFlyAngle(e, date) {
+  if (!/^cable fly$/i.test(e.Exercise) || !date) return null;
+  const wk = (baseEntry(date) || {}).Week;
+  if (!wk) return null;
+  const ordinal = (wk - 1) * 2 + (e.Template === "Upper Mixed" ? 1 : 0);
+  return CABLE_FLY_CYCLE[(ordinal + 1) % 3];
+}
 function exRowCompact(e, colKey, date) {
-  return `<tr><td class="num">${esc(e.Order)}</td><td><b>${esc(e.Exercise)}</b>
+  const angle = cableFlyAngle(e, date);
+  const tag = angle ? ` <span class="pill green" style="font-weight:600">🎯 ${esc(angle)}</span>` : "";
+  return `<tr><td class="num">${esc(e.Order)}</td><td><b>${esc(e.Exercise)}</b>${tag}
     <div class="muted" style="font-size:.78rem">${esc(e["Technique cue"])} · alt: ${esc(e["Substitute if busy"])}</div></td>
     <td class="num"><b>${esc(e[colKey])}</b></td>
     <td class="num">${weightCell(e, date)}</td>

@@ -781,14 +781,14 @@ window.PLAN = {
   {
    "Template": "Push A",
    "Order": 5,
-   "Exercise": "Cable Fly or Pec Deck",
+   "Exercise": "Cable Fly",
    "Weeks 1–2": "2 x 12–15",
    "Weeks 3–4": "3 x 12–15",
    "Weeks 5–6": "3 x 12–15",
    "Weeks 7–8": "2–3 x 12–15",
    "Rest": "60 sec",
-   "Technique cue": "Stretch chest without shoulder pain",
-   "Substitute if busy": "Push-ups"
+   "Technique cue": "Stretch chest without shoulder pain; use the angle shown this session",
+   "Substitute if busy": "Pec deck"
   },
   {
    "Template": "Push A",
