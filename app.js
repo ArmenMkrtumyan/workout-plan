@@ -116,6 +116,10 @@ window.setDayWeight = (date, k, val, el) => {
   saveJSON(LS_WLOG, weightLog);
 };
 const LB_TO_KG = 0.453592;
+// Barbell lifts: the bar itself weighs this much. For these the input captures only the
+// plates you add; the stored value (what progression/apply-forward/kg all use) stays the
+// TOTAL = bar + added, so nothing else has to change.
+const BARBELL = { "Barbell or DB Bench Press": 45 };
 // live-update the kg readout next to a weight input as the user types
 window.kgSync = (input) => {
   const el = input.closest("td") && input.closest("td").querySelector(".wt-kg");
@@ -123,11 +127,34 @@ window.kgSync = (input) => {
   const v = parseFloat(input.value);
   el.textContent = isNaN(v) ? "" : (v * LB_TO_KG).toFixed(1) + " kg";
 };
+// barbell input holds ADDED plates -> live-update the "= total lb · kg" readout
+window.barSync = (input, bar) => {
+  const el = input.closest("td") && input.closest("td").querySelector(".wt-kg");
+  if (!el) return;
+  const added = parseFloat(input.value);
+  const total = bar + (isNaN(added) ? 0 : added);
+  el.textContent = `= ${+total.toFixed(2)} lb · ${(total * LB_TO_KG).toFixed(1)} kg`;
+};
+// save a barbell lift: convert added plates -> total (bar + added) before storing
+window.setBarWeight = (date, k, bar, val, el) => {
+  if (val === "" || val == null) { date ? setDayWeight(date, k, "", el) : setWeight(k, "", el); return; }
+  const total = String(bar + (parseFloat(val) || 0));
+  date ? setDayWeight(date, k, total, el) : setWeight(k, total, el);
+};
 function weightCell(e, date) {
   const k = exKey(e);
   const r = resolveWeight(k, date);
   if (r.val == null) return `<span class="muted">BW</span>`;
   const kg = (r.val * LB_TO_KG).toFixed(1);
+  const bar = BARBELL[e.Exercise];
+  const dateArg = date ? `'${date}'` : "null";
+  if (bar != null) {
+    const added = Math.max(0, +(r.val - bar).toFixed(2));
+    return `<span class="muted" style="font-size:.78rem">${bar} lb bar +</span>
+      <input class="wt ${r.set ? "set" : "sug"}" type="number" inputmode="decimal" step="5" min="0" value="${added}"
+        oninput="window.barSync(this,${bar})" onchange="setBarWeight(${dateArg},'${k}',${bar},this.value,this)" aria-label="Plates added, in pounds"> <span class="muted" style="font-size:.72rem">lb plates</span>
+      <div class="wt-kg muted" style="font-size:.72rem">= ${+r.val.toFixed(2)} lb · ${kg} kg</div>`;
+  }
   const onchange = date ? `setDayWeight('${date}','${k}',this.value,this)` : `setWeight('${k}',this.value,this)`;
   return `<input class="wt ${r.set ? "set" : "sug"}" type="number" inputmode="decimal" step="2.5" value="${r.val}"
     oninput="window.kgSync(this)" onchange="${onchange}" aria-label="Working weight in pounds"> <span class="muted" style="font-size:.72rem">lb</span>
