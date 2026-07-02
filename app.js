@@ -240,23 +240,13 @@ function weekAssignment(weekEntries) {
   const sessions = weekEntries.filter((e) => hasEx(e["Workout Template"])).map((e) => e["Workout Template"]);
   const assign = {};
   const consume = (t) => { const i = sessions.indexOf(t); if (i >= 0) sessions.splice(i, 1); };
-  // 1) pin any day you've already logged a workout on to the template you actually did,
-  //    so a reshuffle can never rewrite a day you've trained
+  // 1) explicit manual promotes: date -> chosen template (consume one copy from the pool)
   for (const e of weekEntries) {
-    if (skips[e.Date]) continue;
-    const log = weightLog[e.Date];
-    if (log && Object.keys(log).length) {
-      const t = Object.keys(log)[0].split("#")[0];
-      if (hasEx(t)) { assign[e.Date] = t; consume(t); }
-    }
-  }
-  // 2) explicit manual promotes: date -> chosen template (consume one copy from the pool)
-  for (const e of weekEntries) {
-    if (assign[e.Date] !== undefined) continue;
     const p = promotes[e.Date];
     if (typeof p === "string" && !skips[e.Date]) { assign[e.Date] = p; consume(p); }
   }
-  // 3) remaining base lift days (minus skips) are the natural work slots
+  // 2) remaining base lift days (minus skips) are the natural work slots, kept in plan
+  //    order (Push→Pull→Legs→Upper→Arms) — sessions fill the earliest free slots
   const work = [], rest = [];
   for (const e of weekEntries) {
     if (assign[e.Date] !== undefined) continue;
@@ -264,7 +254,7 @@ function weekAssignment(weekEntries) {
     if (skips[e.Date]) isWork = false;
     (isWork ? work : rest).push(e.Date);
   }
-  // 4) auto-swap: cover any shortfall with the earliest free rest day(s) that week
+  // 3) auto-swap: cover any shortfall with the earliest free rest day(s) that week
   rest.sort();
   while (work.length < sessions.length) {
     const d = rest.find((x) => !skips[x] && promotes[x] == null && assign[x] === undefined);
