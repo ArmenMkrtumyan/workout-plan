@@ -1109,16 +1109,18 @@ function weeklyReports() {
     const wDelta = (lastW != null && tgtEnd != null) ? +(lastW - tgtEnd).toFixed(1) : null;
     const wClass = wDelta == null ? "" : wDelta <= 0.2 ? "ok" : wDelta <= 1.2 ? "" : "warn";
 
-    // nutrition (from meals marked Done). Avg intake uses only fully-logged days,
-    // so a half-checked day can't masquerade as under-eating.
-    let sumCal = 0, sumPro = 0, fullDays = 0, doneMeals = 0, totalMeals = 0;
+    // nutrition (from meals marked Done). A meal you didn't mark Done is a missed meal —
+    // it's never counted as eaten, and the day it's on counts at your actual (lower)
+    // intake. Every past day you logged at least one meal counts; today (still in
+    // progress) and days with nothing logged at all are left out so they can't skew it.
+    let sumCal = 0, sumPro = 0, trackedDays = 0, doneMeals = 0, totalMeals = 0;
     for (const d of dates) {
       const c = dayConsumed(mealRowFor(d));
       doneMeals += c.doneCount; totalMeals += c.totalCount;
-      if (c.totalCount && c.doneCount === c.totalCount) { sumCal += c.cal; sumPro += c.pro; fullDays++; }
+      if (c.doneCount && d < today) { sumCal += c.cal; sumPro += c.pro; trackedDays++; }
     }
-    const avgCal = fullDays ? Math.round(sumCal / fullDays) : null;
-    const avgPro = fullDays ? Math.round(sumPro / fullDays) : null;
+    const avgCal = trackedDays ? Math.round(sumCal / trackedDays) : null;
+    const avgPro = trackedDays ? Math.round(sumPro / trackedDays) : null;
     const mealPct = totalMeals ? Math.round((doneMeals / totalMeals) * 100) : null;
     const proClass = avgPro == null ? "" : avgPro >= proLo - 10 ? "ok" : "warn";
 
@@ -1132,7 +1134,7 @@ function weeklyReports() {
       `<div class="wk-metric"><div class="wk-label">Body weight</div><div class="wk-val">${lastW != null ? lastW + " kg" : "—"}</div>${
         lastW != null && wDelta != null ? sub(`target ${tgtEnd} · ${wDelta > 0 ? "+" : ""}${wDelta}`, wClass) : `<div class="wk-sub">not logged</div>`}</div>`,
       `<div class="wk-metric"><div class="wk-label">Avg intake</div><div class="wk-val">${avgCal != null ? fmtK(avgCal) + " kcal" : "—"}</div>${
-        avgCal != null ? sub(`${avgPro} g protein · ${fullDays} full day${fullDays > 1 ? "s" : ""}`, proClass) : `<div class="wk-sub">no full day logged</div>`}</div>`,
+        avgCal != null ? sub(`${avgPro} g protein · avg of ${trackedDays} logged day${trackedDays > 1 ? "s" : ""}`, proClass) : `<div class="wk-sub">no meals logged yet</div>`}</div>`,
       `<div class="wk-metric"><div class="wk-label">Meals logged</div><div class="wk-val">${doneMeals}/${totalMeals}</div>${
         mealPct != null ? sub(`${mealPct}% complete`, mealPct >= 80 ? "ok" : mealPct >= 50 ? "" : "warn") : ""}</div>`,
       `<div class="wk-metric"><div class="wk-label">Training</div><div class="wk-val">${trainedYes}/${liftDates.length}</div>` +
