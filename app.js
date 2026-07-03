@@ -245,6 +245,16 @@ function dayConsumed(dayRow) {
   }
   return { cal, pro, doneCount, totalCount };
 }
+// Rough estimate of calories burned from logged activity, so heavy-exercise days read as
+// the extra deficit they are. Cardio minutes are deliberate work (~6 kcal/min at this
+// bodyweight); steps only count above the ~10k the plan already assumes, so normal daily
+// movement isn't credited twice. Deliberately conservative — don't "eat it back."
+function activeBurn(p) {
+  if (!p) return 0;
+  const cardio = (Number(p.cardio) || 0) * 6;
+  const steps = Math.max(0, (Number(p.steps) || 0) - 10000) * 0.04;
+  return Math.round(cardio + steps);
+}
 function consumedLine(dayRow) {
   const c = dayConsumed(dayRow), t = dayTotals(dayRow);
   if (!c.doneCount) return `<div class="muted" style="font-size:.8rem;margin-top:10px">Tap <b>Done</b> as you eat — your running total appears here.</div>`;
@@ -454,6 +464,9 @@ views.today = () => {
 
   // Quick log — auto-saves the moment you type each field (no Save button needed)
   const pr = progress[iso] || {};
+  const burn = activeBurn(pr);
+  const eatenCal = dayConsumed(meal).cal;
+  const burnLine = burn ? `<div class="note-box" style="margin-top:12px">🔥 <b>Active burn ~${burn.toLocaleString()} kcal</b> <span class="muted">(rough estimate from ${(Number(pr.cardio) || 0)} min cardio${(Number(pr.steps) || 0) > 10000 ? ` + ${(pr.steps - 10000).toLocaleString()} steps over 10k` : ""}). ${eatenCal ? `Nets your ${eatenCal.toLocaleString()} kcal eaten down to ~<b>${Math.max(0, eatenCal - burn).toLocaleString()} kcal</b> effective — a big active day is bonus deficit, no need to "eat it back."` : `Mark meals Done above to see your net for the day.`}</span></div>` : "";
   h += `<h2>📈 Daily log</h2>
     <p class="muted" style="margin:-8px 0 12px;font-size:.86rem">Weigh yourself first thing in the morning, before eating or drinking. Everything here <b>saves automatically</b>. <b>Calories & protein are counted from the meals you mark Done above</b>, and training is logged from your workout weights — no need to type those.</p>
     <div class="card">
@@ -463,6 +476,7 @@ views.today = () => {
         <label class="field">Cardio (min)<input type="number" id="qlcardio" value="${pr.cardio ?? ""}" onchange="quickLog('${iso}')"></label>
       </div>
       <label class="field" style="margin-top:12px">Notes<textarea id="qlnotes" rows="2" onchange="quickLog('${iso}')">${esc(pr.notes || "")}</textarea></label>
+      ${burnLine}
       <span id="qlmsg" class="muted" style="font-size:.84rem">Auto-saves as you type ✓</span>
     </div>`;
   return h;
