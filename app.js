@@ -271,10 +271,11 @@ const fmtDate = (iso) => {
 };
 const todayISO = () => new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD local
 /* ---------- workout scheduling: skips & makeups stay WITHIN the week ----------
-   A skipped lifting day becomes rest and its session is made up on the earliest free
-   rest/recovery day that same week (auto-swap) — the plan no longer slides forward, so
-   the calendar stays aligned. You can also manually promote a rest day to a workout of
-   your choice. Meals never move; they're anchored to the date. */
+   A skipped lifting day becomes rest and ONLY its session moves — to the earliest free
+   rest/recovery day that same week. Every other day keeps its planned workout, so a
+   skipped session lands at the week's tail instead of shifting the days after it.
+   You can also manually promote a rest day to a workout of your choice. Meals never
+   move; they're anchored to the date. */
 const isSkipped = (iso) => !!skips[iso];
 const isPromoted = (iso) => promotes[iso] != null;
 const skipCount = () => Object.keys(skips).length;
@@ -288,31 +289,30 @@ const weekEntriesFor = (iso) => { const e = baseEntry(iso); return e ? P.gymCale
 function weekAssignment(weekEntries) {
   const sessions = weekEntries.filter((e) => hasEx(e["Workout Template"])).map((e) => e["Workout Template"]);
   const assign = {};
-  const consume = (t) => { const i = sessions.indexOf(t); if (i >= 0) sessions.splice(i, 1); };
+  const consume = (t) => { const i = sessions.indexOf(t); if (i >= 0) { sessions.splice(i, 1); return true; } return false; };
   // 1) explicit manual promotes: date -> chosen template (consume one copy from the pool)
   for (const e of weekEntries) {
     const p = promotes[e.Date];
     if (typeof p === "string" && !skips[e.Date]) { assign[e.Date] = p; consume(p); }
   }
-  // 2) remaining base lift days (minus skips) are the natural work slots, kept in plan
-  //    order (Push→Pull→Legs→Upper→Arms) — sessions fill the earliest free slots
-  const work = [], rest = [];
+  // 2) a lift day you didn't skip keeps ITS OWN planned session — a skip must not drag
+  //    its workout onto the next day (legs stays once a week, spaced as planned)
+  const open = [], rest = [];
   for (const e of weekEntries) {
     if (assign[e.Date] !== undefined) continue;
-    let isWork = hasEx(e["Workout Template"]);
-    if (skips[e.Date]) isWork = false;
-    (isWork ? work : rest).push(e.Date);
+    const isWork = hasEx(e["Workout Template"]) && !skips[e.Date];
+    if (isWork && consume(e["Workout Template"])) assign[e.Date] = e["Workout Template"];
+    else (isWork ? open : rest).push(e.Date);  // open = lift day whose session a promote took
   }
-  // 3) auto-swap: cover any shortfall with the earliest free rest day(s) that week
+  // 3) leftover sessions (skipped, or displaced by a promote) fill any open lift days,
+  //    then the earliest free rest day(s) — the week's tail, after everything else
   rest.sort();
-  while (work.length < sessions.length) {
-    const d = rest.find((x) => !skips[x] && promotes[x] == null && assign[x] === undefined);
-    if (!d) break;                         // no makeup slot left this week (heavy skipping)
-    work.push(d); rest.splice(rest.indexOf(d), 1);
+  for (const d of [...open, ...rest]) {
+    if (!sessions.length) break;             // everything placed
+    if (skips[d] || promotes[d] != null || assign[d] !== undefined) continue;
+    assign[d] = sessions.shift();            // no slot left = dropped (heavy skipping)
   }
-  work.sort();
-  work.forEach((d, i) => { if (i < sessions.length) assign[d] = sessions[i]; });
-  return assign;                            // date -> template; a date not present = rest
+  return assign;                             // date -> template; a date not present = rest
 }
 
 window.toggleSkip = (iso) => {
