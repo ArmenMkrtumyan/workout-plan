@@ -1329,6 +1329,16 @@ window.PLAN = {
    "Notes": "More expensive but great nutrition."
   },
   {
+   "Meal Name": "Salmon Rice Bowl",
+   "Calories": 635,
+   "Protein g": 45,
+   "Type": "Lunch/Dinner",
+   "Ingredients": "5 oz salmon/fish (palm-size); 1¼ cups cooked rice; 1 cup frozen vegetables; 1 tsp olive oil; soy sauce/sriracha",
+   "How to make": "Bake or pan-cook salmon; microwave rice and vegetables; flake fish over the top and sauce it.",
+   "Best use": "1–2x/week",
+   "Notes": "Same fish as the potato plate — swap in whichever carb you have cooked."
+  },
+  {
    "Meal Name": "Lean Beef Potato Bowl",
    "Calories": 630,
    "Protein g": 45,

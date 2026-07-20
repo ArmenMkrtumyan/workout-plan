@@ -645,7 +645,7 @@ window.openDayInfo = (date) => {
 
 /* ---------- MEALS (with swap) ---------- */
 views.meals = () => {
-  let h = `<h1>Meals</h1><p class="subtitle">Default plan repeats weekly. Tap <b>Swap</b> on any meal for a cheaper/easier alternative with matching macros — totals update live.</p>`;
+  let h = `<h1>Meals</h1><p class="subtitle">Default plan repeats weekly. Tap <b>Swap</b> on any meal to pick a different one — lunch and dinner share the same list of mains, and swapping today's meal marks it Done automatically.</p>`;
   if (Object.keys(overrides).length)
     h += `<button class="btn ghost small" style="margin-bottom:14px" onclick="resetSwaps()">↺ Reset all swaps to default plan</button>`;
 
@@ -696,22 +696,25 @@ function mealSlotRow(day, slot) {
     </div>
   </div>`;
 }
-// matching candidates: same meal type, similar calories (±120) & protein (±12); all recipes are cheap & dorm-easy
+// every recipe of the slot's type is offered — Lunch and Dinner share one pool, so the same
+// mains show up in both (they get eaten interchangeably). Closest macros first.
 function swapCandidates(currentName, slot) {
   const cur = itemMacro(currentName);
   const types = slotType(slot);
   return P.recipes
     .filter((r) => types.includes(r.Type) && r["Meal Name"] !== currentName)
-    .filter((r) => Math.abs((r["Calories"] || 0) - cur.cal) <= 120 && Math.abs((r["Protein g"] || 0) - cur.pro) <= 12)
     .sort((a, b) => Math.abs(a["Calories"] - cur.cal) - Math.abs(b["Calories"] - cur.cal));
 }
 window.openSwap = (date, slot) => {
   const current = mealFor(mealRowFor(date), slot);
   const opts = swapCandidates(current, slot);
-  let h = `<h2 style="margin-top:0">Swap ${esc(slot)}</h2><p class="muted">Currently: <b>${esc(current)}</b>. Alternatives match the meal type and macros — all use your grocery staples and need little cooking.</p>`;
+  const cur = itemMacro(current);
+  let h = `<h2 style="margin-top:0">Swap ${esc(slot)}</h2><p class="muted">Currently: <b>${esc(current)}</b>. Every ${slot === "Breakfast" ? "breakfast" : slot.startsWith("Snack") ? "snack" : "main"} you have staples for is listed, closest macros first — picking one marks it Done and updates your Eaten tally.</p>`;
   for (const r of opts) {
+    const dCal = (r["Calories"] || 0) - cur.cal, dPro = (r["Protein g"] || 0) - cur.pro;
+    const delta = `<span class="muted">(${dCal >= 0 ? "+" : ""}${dCal} kcal · ${dPro >= 0 ? "+" : ""}${dPro}g P)</span>`;
     h += `<div class="swap-option">
-      <div><b>${esc(r["Meal Name"])}</b><div class="macros">${r["Calories"]} kcal · ${r["Protein g"]}g P · ${esc(r["Best use"])}</div></div>
+      <div><b>${esc(r["Meal Name"])}</b><div class="macros">${r["Calories"]} kcal · ${r["Protein g"]}g P ${delta} · ${esc(r["Best use"])}</div></div>
       <button class="btn small primary" onclick="applySwap('${esc(date)}','${esc(slot)}','${esc(r["Meal Name"])}')">Use</button>
     </div>`;
   }
@@ -724,6 +727,9 @@ window.applySwap = (date, slot, name) => {
   if (name) overrides[date][slot] = name;
   else { delete overrides[date][slot]; if (!Object.keys(overrides[date]).length) delete overrides[date]; }
   saveJSON(LS_SWAP, overrides);
+  // swapping today's (or an earlier) meal means you ate it — mark it Done, same as a custom meal.
+  // future days are planning, not logging, so they stay unchecked.
+  if (name && date <= todayISO()) { mealDone[date] ||= {}; mealDone[date][slot] = true; saveJSON(LS_DONE, mealDone); }
   closeModal(); render();
 };
 window.resetSwaps = () => { overrides = {}; saveJSON(LS_SWAP, overrides); render(); };
