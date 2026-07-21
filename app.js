@@ -831,7 +831,22 @@ window.openCustomMeal = (date, slot) => {
   const hasKey = !!getGemKey();
   resetCmImages();
   openModal(`<h2 style="margin-top:0">Ate something else?</h2>
-    <p class="muted" style="font-size:.86rem">Type what you had <b>or add a photo</b> for <b>${esc(slot)}</b> — the AI identifies it, estimates the macros, and swaps it in (marked Done). Your <b>Eaten</b> tally uses the new numbers.</p>
+    <p class="muted" style="font-size:.86rem">Log what you actually had for <b>${esc(slot)}</b>. It swaps in, gets marked Done, and your <b>Eaten</b> tally uses the new numbers.</p>
+
+    <h3 style="margin:0 0 2px">Know the macros?</h3>
+    <p class="muted" style="font-size:.82rem;margin:0 0 8px">Off a label, a menu, or another tracker — type them straight in. No API key needed.</p>
+    <label class="field" style="margin-bottom:8px">What was it?<input id="mm-name" placeholder="e.g. Pizza (2 slices)"></label>
+    <div class="mm-grid">
+      <label class="field">Calories<input id="mm-cal" type="number" inputmode="numeric" placeholder="550"></label>
+      <label class="field">Protein g<input id="mm-pro" type="number" inputmode="numeric" placeholder="22"></label>
+      <label class="field">Carbs g<input id="mm-carbs" type="number" inputmode="numeric" placeholder="90"></label>
+      <label class="field">Fat g<input id="mm-fat" type="number" inputmode="numeric" placeholder="12"></label>
+    </div>
+    <div id="mm-msg" style="font-size:.84rem;min-height:1.1em;margin:6px 0 8px"></div>
+    <button class="btn primary" onclick="saveManualMeal('${esc(date)}','${esc(slot)}')">Log it</button>
+
+    <div class="cm-or">or let AI estimate</div>
+
     <div class="note-box" style="margin-bottom:12px">${hasKey
       ? `Gemini key saved on this device. Leave the key box blank to keep it, or paste a new one to replace it.`
       : `First time only: paste a free <b>Google Gemini</b> API key — <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" class="shop-link">get one free ↗</a> (no credit card). Stored only in this browser.`}
@@ -844,6 +859,28 @@ window.openCustomMeal = (date, slot) => {
     <label class="field" style="margin-bottom:12px">Portion / details <span class="muted">(optional)</span><input id="cm-notes" placeholder="e.g. double chicken, no rice, guac"></label>
     <div id="cm-msg" style="font-size:.84rem;min-height:1.1em;margin-bottom:10px"></div>
     <button class="btn primary" id="cm-go" onclick="estimateCustomMeal('${esc(date)}','${esc(slot)}')">Estimate &amp; use</button>`);
+};
+// store a custom meal and close up — logging one means you ate it, so it's marked Done.
+// shared by the manual-macro path and the AI estimate path.
+function commitCustomMeal(date, slot, entry) {
+  customMeals[customKey(date, slot)] = entry;
+  saveJSON(LS_CUSTOM, customMeals);
+  mealDone[date] ||= {}; mealDone[date][slot] = true; saveJSON(LS_DONE, mealDone);
+  resetCmImages();
+  closeModal(); const y = window.scrollY; render(); window.scrollTo(0, y);
+}
+// macros you already know — no API key, no network. Calories are required; the rest
+// default to 0 so a quick "550 kcal and I don't know the split" still logs.
+window.saveManualMeal = (date, slot) => {
+  const msg = $("#mm-msg");
+  const num = (id) => { const v = ($(id).value || "").trim(); return v === "" ? null : Math.round(Number(v)); };
+  const name = ($("#mm-name").value || "").trim();
+  const cal = num("#mm-cal"), pro = num("#mm-pro"), carbs = num("#mm-carbs"), fat = num("#mm-fat");
+  const bad = [cal, pro, carbs, fat].some((v) => v != null && (!Number.isFinite(v) || v < 0));
+  if (!name) { msg.style.color = "var(--danger)"; msg.textContent = "Give it a name."; return; }
+  if (cal == null) { msg.style.color = "var(--danger)"; msg.textContent = "Calories are required."; return; }
+  if (bad) { msg.style.color = "var(--danger)"; msg.textContent = "Macros must be positive numbers."; return; }
+  commitCustomMeal(date, slot, { name, cal, pro: pro ?? 0, carbs: carbs ?? 0, fat: fat ?? 0 });
 };
 window.estimateCustomMeal = async (date, slot) => {
   const msg = $("#cm-msg"), go = $("#cm-go"), keyEl = $("#cm-key");
@@ -861,12 +898,7 @@ window.estimateCustomMeal = async (date, slot) => {
     const desc = (name ? `Meal: ${name}.` : "") + (rest ? ` Restaurant: ${rest}.` : "") + (notes ? ` Details: ${notes}.` : "");
     const m = await geminiMacros({ desc, imgs });
     const finalName = name || m.name || "Custom meal";
-    customMeals[customKey(date, slot)] = { name: rest ? `${finalName} · ${rest}` : finalName, restaurant: rest, cal: m.cal, pro: m.pro, carbs: m.carbs, fat: m.fat };
-    saveJSON(LS_CUSTOM, customMeals);
-    // logging a custom meal means you ate it — mark it Done automatically
-    mealDone[date] ||= {}; mealDone[date][slot] = true; saveJSON(LS_DONE, mealDone);
-    resetCmImages();
-    closeModal(); const y = window.scrollY; render(); window.scrollTo(0, y);
+    commitCustomMeal(date, slot, { name: rest ? `${finalName} · ${rest}` : finalName, restaurant: rest, cal: m.cal, pro: m.pro, carbs: m.carbs, fat: m.fat });
   } catch (e) {
     go.disabled = false; msg.style.color = "var(--danger)";
     msg.textContent = /no-key/.test(e.message) ? "Add your Gemini key above."

@@ -214,3 +214,10 @@ details.collapse>*:not(summary){margin:0 18px 16px}
   .mealslot .slot-label{min-width:64px}
   .btn{padding:9px 14px}  /* bigger tap targets */
 }
+
+/* manual macro entry in the "ate something else" modal */
+/* 2x2 — the modal is too narrow for four across, even on desktop */
+.mm-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.cm-or{display:flex;align-items:center;gap:10px;margin:18px 0 14px;
+  font-size:.76rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+.cm-or::before,.cm-or::after{content:"";flex:1;height:1px;background:var(--line)}
