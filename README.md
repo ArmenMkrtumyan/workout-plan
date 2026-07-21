@@ -75,3 +75,17 @@ The Firebase config is public-safe (locked down by Firestore security rules).
 `data.js` is generated from the spreadsheet. If the spreadsheet changes,
 regenerate `data.js` from it (recipes are expressed in cups; lift schedule is
 Tue–Sat, active recovery Sun, rest Mon).
+
+## Deploying
+Push to `main` — that's it. `.github/workflows/deploy.yml` replaces every
+`__BUILDV__` placeholder in `index.html` with the commit SHA, then publishes to
+GitHub Pages. Each deploy therefore gets unique asset URLs
+(`app.js?v=<sha>`), so a browser that cached the previous build is forced to
+refetch instead of serving stale code.
+
+**Never hardcode a version in `index.html`.** It used to be a manual bump in
+five places, was routinely forgotten, and the site would silently keep serving
+old code to anyone with a warm cache. The stamp step fails the build if the
+placeholder is missing or if `window.__APPV` and `app.js?v=` disagree — those
+two must match for the self-heal check in `index.html` to work, which reloads
+once when it detects it booted from a stale cached `index.html`.
