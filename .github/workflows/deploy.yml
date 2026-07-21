@@ -1,0 +1,49 @@
+# Deploys the site to GitHub Pages, stamping every __BUILDV__ placeholder in index.html
+# with the commit SHA. That gives each deploy unique asset URLs, so a phone that cached
+# the previous build is forced to refetch instead of serving stale code.
+name: Deploy to Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Let a newer push supersede an in-flight deploy, but never cancel one midway.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Stamp build version
+        run: |
+          set -euo pipefail
+          V="${GITHUB_SHA::7}"
+          test -f index.html
+          grep -q __BUILDV__ index.html || { echo "::error::no __BUILDV__ placeholder in index.html"; exit 1; }
+          sed -i "s/__BUILDV__/$V/g" index.html
+          # the self-heal check in index.html only works if the boot version and the
+          # app.js query string agree, so fail loudly rather than ship a broken pair
+          grep -q "window.__APPV = \"$V\"" index.html || { echo "::error::__APPV not stamped"; exit 1; }
+          grep -q "app.js?v=$V" index.html || { echo "::error::app.js version not stamped"; exit 1; }
+          echo "Stamped build $V"
+          grep -n "?v=$V\|__APPV" index.html
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - id: deployment
+        uses: actions/deploy-pages@v4

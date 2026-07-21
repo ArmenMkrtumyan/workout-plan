@@ -4,10 +4,11 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Armen — 8-Week Gym + Meal Plan</title>
-<link rel="stylesheet" href="styles.css?v=20260710a" />
+<link rel="stylesheet" href="styles.css?v=__BUILDV__" />
 <script>
-  // Boot version — MUST equal the ?v= below. Bump both together on every deploy.
-  window.__APPV = "20260710a";
+  // Boot version. Every __BUILDV__ in this file is replaced with the commit SHA by
+  // .github/workflows/deploy.yml at deploy time — never edit these by hand.
+  window.__APPV = "__BUILDV__";
   // Self-heal a stale-cached index.html: ask the server (bypassing cache) what the latest
   // build is; if it's newer than the one we booted with, jump to a fresh cache-busted URL
   // once. Guarded by sessionStorage so it can never loop, and silent when offline.
@@ -59,10 +60,10 @@
     </div>
   </div>
 
-  <!-- ?v= is a cache-buster: bump it on every deploy so phones/browsers fetch the
-       new code instead of a stale cached copy (sync only mirrors data, not code). -->
-  <script src="data.js?v=20260710a"></script>
-  <script src="app.js?v=20260710a"></script>
-  <script type="module" src="firebase-sync.js?v=20260710a"></script>
+  <!-- ?v= is a cache-buster, stamped with the commit SHA by CI so every deploy gets a
+       fresh URL and phones can't serve stale code (sync mirrors data, not code). -->
+  <script src="data.js?v=__BUILDV__"></script>
+  <script src="app.js?v=__BUILDV__"></script>
+  <script type="module" src="firebase-sync.js?v=__BUILDV__"></script>
 </body>
 </html>
