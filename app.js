@@ -55,9 +55,22 @@ const STORES = [
   { key: LS_SKIPS,  load: () => (skips       = loadJSON(LS_SKIPS)) },  // skipped workouts  { date: true }
   { key: LS_PROMOTE, load: () => (promotes   = loadJSON(LS_PROMOTE)) }, // rest→work days   { date: true }
 ];
+// Retired recipes -> what replaced them. A saved swap still names the old recipe, and an
+// unknown name silently scores 0 kcal, so remap on load — including after a cloud pull,
+// since another device may push an override made before it updated.
+const RENAMED_MEALS = { "Protein Bar Emergency": "Think! Protein Bar" };
+function migrateRenamedMeals() {
+  let changed = false;
+  for (const day of Object.values(overrides))
+    for (const [slot, name] of Object.entries(day))
+      if (RENAMED_MEALS[name]) { day[slot] = RENAMED_MEALS[name]; changed = true; }
+  if (changed) saveJSON(LS_SWAP, overrides);
+}
+
 STORES.forEach((s) => s.load());                   // initial load
+migrateRenamedMeals();
 window.WP_SYNCED_KEYS = STORES.map((s) => s.key);   // firebase-sync.js syncs exactly these
-window.reloadFromStorage = () => { STORES.forEach((s) => s.load()); render(); }; // after a cloud pull
+window.reloadFromStorage = () => { STORES.forEach((s) => s.load()); migrateRenamedMeals(); render(); }; // after a cloud pull
 
 // shared toggle for any { date: { key: true } } store; re-renders without losing scroll
 function toggleFlag(store, lsKey, date, key) {
